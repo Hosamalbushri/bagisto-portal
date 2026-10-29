@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Platform\Portal\Http\Middleware\CacheResponse;
+use Platform\Portal\Http\Middleware\CheckStorefrontStatus;
 use Platform\Portal\Http\Middleware\Currency;
 use Platform\Portal\Http\Middleware\Locale;
 use Platform\Portal\Http\Middleware\Theme;
@@ -66,18 +67,26 @@ class PortalServiceProvider extends ServiceProvider
             Theme::class,
             Locale::class,
             Currency::class,
+            CheckStorefrontStatus::class,
         ]);
 
         $router->middlewareGroup('portal', [
             Theme::class,
             Locale::class,
             Currency::class,
+            CheckStorefrontStatus::class,
         ]);
 
         $router->aliasMiddleware('theme', Theme::class);
         $router->aliasMiddleware('locale', Locale::class);
         $router->aliasMiddleware('currency', Currency::class);
         $router->aliasMiddleware('cache.response', CacheResponse::class);
+        $router->aliasMiddleware('portal.storefront', CheckStorefrontStatus::class);
+
+        $this->app->booted(function () use ($router) {
+            $router->pushMiddlewareToGroup('shop', CheckStorefrontStatus::class);
+            $router->pushMiddlewareToGroup('portal', CheckStorefrontStatus::class);
+        });
 
         Route::middleware(['web'])->group(__DIR__.'/../Routes/web.php');
 

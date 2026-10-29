@@ -40,6 +40,16 @@ return [
             'portal' => [
                 'title' => 'Portal Platform',
                 'info' => 'Manage Portal Platform general settings, visitor sessions, and authentication.',
+                'general' => [
+                    'title' => 'General Settings',
+                    'info' => 'Manage storefront accessibility and core platform behavior.',
+                    'storefront' => [
+                        'title' => 'Storefront Status',
+                        'info' => 'Enable or disable the public storefront interfaces.',
+                        'enabled' => 'Enable Storefront',
+                        'enabled-info' => 'When disabled, visitors accessing public pages are automatically redirected to the admin login page.',
+                    ],
+                ],
                 'auth' => [
                     'title' => 'Authentication',
                     'info' => 'Configure storefront authentication integration and customer guards.',

@@ -12,6 +12,37 @@ return [
     ],
 
     /**
+     * Portal General Settings Group.
+     */
+    [
+        'key' => 'portal.general',
+        'name' => 'portal::app.admin.configuration.portal.general.title',
+        'info' => 'portal::app.admin.configuration.portal.general.info',
+        'icon' => 'settings/store.svg',
+        'sort' => 1,
+    ],
+
+    /**
+     * Portal Storefront Section.
+     */
+    [
+        'key' => 'portal.general.storefront',
+        'name' => 'portal::app.admin.configuration.portal.general.storefront.title',
+        'info' => 'portal::app.admin.configuration.portal.general.storefront.info',
+        'sort' => 1,
+        'fields' => [
+            [
+                'name' => 'enabled',
+                'title' => 'portal::app.admin.configuration.portal.general.storefront.enabled',
+                'info' => 'portal::app.admin.configuration.portal.general.storefront.enabled-info',
+                'type' => 'boolean',
+                'channel_based' => true,
+                'default' => true,
+            ],
+        ],
+    ],
+
+    /**
      * Portal Authentication Settings Group.
      */
     [
@@ -19,7 +50,7 @@ return [
         'name' => 'portal::app.admin.configuration.portal.auth.title',
         'info' => 'portal::app.admin.configuration.portal.auth.info',
         'icon' => 'settings/settings.svg',
-        'sort' => 1,
+        'sort' => 2,
     ],
 
     /**
