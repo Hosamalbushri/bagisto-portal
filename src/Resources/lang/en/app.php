@@ -1,6 +1,41 @@
 <?php
 
 return [
+    'admin' => [
+        'pages' => [
+            'title' => 'Custom Pages',
+        ],
+    ],
+    'sections' => [
+        'hero_slider' => [
+            'title' => 'Hero Slider',
+            'description' => 'Display a hero banner with slides, text, and action buttons.',
+        ],
+        'features_grid' => [
+            'title' => 'Features Grid',
+            'description' => 'Display features or services in a clean multi-column card grid.',
+        ],
+        'faq_accordion' => [
+            'title' => 'FAQ Accordion',
+            'description' => 'Collapsible frequently asked questions accordion list.',
+        ],
+        'cta_banner' => [
+            'title' => 'Call To Action Banner',
+            'description' => 'A prominent banner prompting user conversion or contact.',
+        ],
+        'testimonials' => [
+            'title' => 'Testimonials',
+            'description' => 'Display customer reviews, quotes, and partner feedback.',
+        ],
+        'rich_content' => [
+            'title' => 'Rich Content',
+            'description' => 'Custom formatted HTML or typography content block.',
+        ],
+        'contact_section' => [
+            'title' => 'Contact Section',
+            'description' => 'Contact details alongside an interactive message form.',
+        ],
+    ],
     'home' => [
         'nav' => [
             'home' => 'Home',

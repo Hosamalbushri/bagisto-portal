@@ -11,6 +11,7 @@ use Platform\Portal\Http\Middleware\CacheResponse;
 use Platform\Portal\Http\Middleware\Currency;
 use Platform\Portal\Http\Middleware\Locale;
 use Platform\Portal\Http\Middleware\Theme;
+use Platform\Portal\Sections\SectionTypeRegistry;
 
 class PortalServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,10 @@ class PortalServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(SectionTypeRegistry::class, function () {
+            return new SectionTypeRegistry;
+        });
+
         $this->mergeConfigFrom(
             dirname(__DIR__).'/Config/bagisto-vite.php',
             'bagisto-vite.viters'
@@ -29,6 +34,16 @@ class PortalServiceProvider extends ServiceProvider
         $this->app['config']->set(
             'themes.shop',
             array_merge($this->app['config']->get('themes.shop', []), $portalThemes)
+        );
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__).'/Config/menu.php',
+            'menu.admin'
+        );
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__).'/Config/acl.php',
+            'acl'
         );
     }
 
@@ -55,6 +70,8 @@ class PortalServiceProvider extends ServiceProvider
         $router->aliasMiddleware('cache.response', CacheResponse::class);
 
         Route::middleware(['web'])->group(__DIR__.'/../Routes/web.php');
+
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 
         $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'portal');
         $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'shop');

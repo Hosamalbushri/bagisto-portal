@@ -6,11 +6,18 @@ use Platform\Portal\Http\Controllers\PageController;
 use Platform\Portal\Http\Controllers\SitemapController;
 
 /**
- * CMS pages.
+ * Dynamic Modular and CMS pages.
  */
 Route::get('page/{slug}', [PageController::class, 'view'])
     ->name('shop.cms.page')
     ->middleware('cache.response');
+
+Route::get('pages/{slug}', [PageController::class, 'view'])
+    ->name('portal.page.show')
+    ->middleware('cache.response');
+
+Route::get('pages/{slug}/preview', [PageController::class, 'preview'])
+    ->name('portal.page.preview');
 
 /**
  * Search-engine discovery.
