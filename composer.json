@@ -1,0 +1,30 @@
+{
+    "name": "platform/portal",
+    "version": "1.0.0",
+    "description": "General-purpose frontend presentation and customizable portal engine for Bagisto without e-commerce lock-in.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hosam",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.3 <8.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Platform\\Portal\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Platform\\Portal\\Providers\\PortalServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev"
+}
+
