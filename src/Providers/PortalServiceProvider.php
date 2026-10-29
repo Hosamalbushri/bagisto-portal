@@ -82,6 +82,14 @@ class PortalServiceProvider extends ServiceProvider
         Blade::anonymousComponentPath(__DIR__.'/../Resources/views/components', 'portal');
         Blade::anonymousComponentPath(__DIR__.'/../Resources/views/components', 'shop');
 
+        $portalMenu = require dirname(__DIR__).'/Config/menu.php';
+        $currentMenu = config('menu.admin', []);
+        config(['menu.admin' => collect($currentMenu)->concat($portalMenu)->unique('key')->values()->toArray()]);
+
+        $portalAcl = require dirname(__DIR__).'/Config/acl.php';
+        $currentAcl = config('acl', []);
+        config(['acl' => collect($currentAcl)->concat($portalAcl)->unique('key')->values()->toArray()]);
+
         Paginator::defaultView('portal::partials.pagination');
         Paginator::defaultSimpleView('portal::partials.pagination');
     }

@@ -62,18 +62,87 @@ class PortalPageSectionRepository extends Repository
     }
 
     /**
+     * Check if a section has unpublished draft edits.
+     */
+    public function hasDraft(PortalPageSectionContract $section): bool
+    {
+        return ! is_null($section->draft_status)
+            || ! is_null($section->draft_sort_order)
+            || $section->translations->contains(fn ($trans) => ! is_null($trans->draft_options));
+    }
+
+    /**
      * Save draft options for a section.
-     *
-     * @return PortalPageSection
      */
     public function saveDraft(int $id, string $locale, array $options): PortalPageSectionContract
     {
         $section = $this->findOrFail($id);
 
+        $type = $section->getTypeInstance();
+        if ($type) {
+            $options = $type->sanitize($options);
+        }
+
         $section->translateOrNew($locale)->draft_options = $options;
         $section->save();
 
-        return $section;
+        return $section->refresh();
+    }
+
+    /**
+     * Save draft status for a section.
+     */
+    public function saveStatusDraft(int $id, bool $status): PortalPageSectionContract
+    {
+        $section = $this->findOrFail($id);
+
+        $section->draft_status = $status === (bool) $section->status ? null : $status;
+        $section->save();
+
+        return $section->refresh();
+    }
+
+    /**
+     * Save draft sort orders after reordering in editor.
+     */
+    public function saveOrderDraft(array $sectionIds): void
+    {
+        foreach (array_values($sectionIds) as $position => $id) {
+            $section = $this->find($id);
+
+            if (! $section) {
+                continue;
+            }
+
+            $order = $position + 1;
+            $section->draft_sort_order = $order === (int) $section->sort_order ? null : $order;
+            $section->save();
+        }
+    }
+
+    /**
+     * Duplicate a section on the page.
+     */
+    public function duplicate(int $id): PortalPageSectionContract
+    {
+        $section = $this->findOrFail($id);
+        $maxSort = $this->model->where('portal_page_id', $section->portal_page_id)->max('sort_order') ?? 0;
+
+        $duplicate = $section->replicate();
+        $duplicate->name = $section->name.' ('.trans('portal::app.admin.pages.customize.copy').')';
+        $duplicate->sort_order = $maxSort + 1;
+        $duplicate->draft_status = null;
+        $duplicate->draft_sort_order = null;
+        $duplicate->save();
+
+        foreach ($section->translations as $trans) {
+            $newTrans = $trans->replicate();
+            $newTrans->portal_page_section_id = $duplicate->id;
+            $newTrans->draft_options = null;
+            $newTrans->save();
+        }
+
+        return $duplicate->refresh();
     }
 
     /**

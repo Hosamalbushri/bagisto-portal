@@ -6,6 +6,7 @@ use Illuminate\View\View;
 use Platform\Portal\Repositories\PortalPageRepository;
 use Platform\Portal\Repositories\PortalPageSectionRepository;
 use Webkul\CMS\Repositories\PageRepository as CmsPageRepository;
+use Webkul\Core\Http\Middleware\SecureHeaders;
 
 class PageController extends Controller
 {
@@ -55,13 +56,18 @@ class PageController extends Controller
      */
     public function preview(string $slug): View
     {
-        $channel = core()->getCurrentChannel();
+        request()->attributes->set(SecureHeaders::FRAMABLE, true);
+
+        $channel = core()->getAllChannels()->firstWhere('code', request('channel'))
+            ?? core()->getCurrentChannel();
 
         $portalPage = $this->portalPageRepository->findBySlugForPreview($slug, $channel->id);
 
         abort_if(! $portalPage, 404);
 
-        $sections = $this->portalPageSectionRepository->getDraftSections($portalPage->id, app()->getLocale());
+        $locale = request('locale', app()->getLocale());
+
+        $sections = $this->portalPageSectionRepository->getDraftSections($portalPage->id, $locale);
 
         return view('portal::page.show', [
             'page' => $portalPage,

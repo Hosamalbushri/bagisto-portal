@@ -12,14 +12,33 @@ class HeroSlider extends SectionType
 
     protected ?string $description = 'portal::app.sections.hero_slider.description';
 
+    public function getFields(): array
+    {
+        return [
+            [
+                'key' => 'slides',
+                'type' => 'repeater',
+                'label' => trans('portal::app.sections.hero_slider.slides_label'),
+                'add_label' => trans('portal::app.sections.hero_slider.add_slide_btn'),
+                'fields' => [
+                    ['key' => 'title', 'type' => 'text', 'label' => trans('portal::app.sections.hero_slider.slide_title')],
+                    ['key' => 'subtitle', 'type' => 'textarea', 'label' => trans('portal::app.sections.hero_slider.slide_subtitle')],
+                    ['key' => 'button_text', 'type' => 'text', 'label' => trans('portal::app.sections.hero_slider.button_text')],
+                    ['key' => 'button_url', 'type' => 'text', 'label' => trans('portal::app.sections.hero_slider.button_url')],
+                    ['key' => 'image', 'type' => 'image', 'label' => trans('portal::app.sections.hero_slider.slide_image')],
+                ],
+            ],
+        ];
+    }
+
     public function getDefaultOptions(): array
     {
         return [
             'slides' => [
                 [
-                    'title' => 'مرحباً بك في بوابتنا الرقمية',
-                    'subtitle' => 'حلول حديثة وشاملة تمكنك من تحقيق أهدافك بسرعة وسلاسة.',
-                    'button_text' => 'استكشف الآن',
+                    'title' => trans('portal::app.sections.hero_slider.default_title'),
+                    'subtitle' => trans('portal::app.sections.hero_slider.default_subtitle'),
+                    'button_text' => trans('portal::app.sections.hero_slider.default_btn'),
                     'button_url' => '#services',
                     'image' => '',
                 ],

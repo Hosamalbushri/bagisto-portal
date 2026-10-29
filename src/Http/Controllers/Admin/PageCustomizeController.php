@@ -3,7 +3,6 @@
 namespace Platform\Portal\Http\Controllers\Admin;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Platform\Portal\Http\Controllers\Controller;
 use Platform\Portal\Repositories\PortalPageRepository;
@@ -22,42 +21,101 @@ class PageCustomizeController extends Controller
     ) {}
 
     /**
-     * Display the visual customizer for a specific page.
+     * Display the visual customizer for a specific page using the standard appearance section editor.
      */
     public function index(int $id): View
     {
         $page = $this->portalPageRepository->findOrFail($id);
 
+        $channel = core()->getAllChannels()->firstWhere('code', request('channel'))
+            ?? core()->getAllChannels()->firstWhere('id', $page->channel_id)
+            ?? core()->getCurrentChannel();
+
         $locale = core()->getRequestedLocaleCode();
 
-        $sections = $this->portalPageSectionRepository->getDraftSections($page->id, $locale);
+        $sections = $this->editableSections($page->id);
 
-        $sectionTypes = $this->sectionTypeRegistry->all();
+        $sectionTypes = $this->sectionTypeRegistry->all()
+            ->map(fn ($type) => $type->toArray())
+            ->values()
+            ->all();
 
-        $previewUrl = route('portal.page.preview', $page->slug);
+        $channels = core()->getAllChannels()->map(fn ($ch) => [
+            'id' => $ch->id,
+            'name' => core()->getChannelName($ch),
+            'url' => route('admin.portal.pages.customize', [
+                'id' => $page->id,
+                'channel' => $ch->code,
+            ]),
+        ])->values()->all();
 
-        return view('portal::admin.pages.customize', compact('page', 'sections', 'sectionTypes', 'previewUrl'));
+        $locales = $channel->locales->sortBy('name')->map(fn ($loc) => [
+            'code' => $loc->code,
+            'name' => $loc->name,
+            'url' => route('admin.portal.pages.customize', [
+                'id' => $page->id,
+                'channel' => $channel->code,
+                'locale' => $loc->code,
+            ]),
+        ])->values()->all();
+
+        $previewUrl = route('portal.page.preview', [
+            'slug' => $page->slug,
+            'channel' => $channel->code,
+            'locale' => $locale,
+        ]);
+
+        $reorderUrl = route('admin.portal.pages.sections.reorder', $page->id);
+        $storeUrl = route('admin.portal.pages.sections.store', $page->id);
+        $publishUrl = route('admin.portal.pages.publish', $page->id);
+        $discardUrl = route('admin.portal.pages.discard', $page->id);
+
+        $urls = [
+            'duplicate' => route('admin.portal.pages.sections.duplicate', ['id' => $page->id, 'sectionId' => '__ID__']),
+            'status' => route('admin.portal.pages.sections.status', ['id' => $page->id, 'sectionId' => '__ID__']),
+            'fields' => route('admin.portal.pages.sections.fields', ['id' => $page->id, 'sectionId' => '__ID__']),
+            'draft' => route('admin.portal.pages.sections.draft', ['id' => $page->id, 'sectionId' => '__ID__']),
+            'media' => route('admin.portal.pages.sections.media', ['id' => $page->id, 'sectionId' => '__ID__']),
+            'delete' => route('admin.portal.pages.sections.delete', ['id' => $page->id, 'sectionId' => '__ID__']),
+        ];
+
+        return view('portal::admin.pages.customize', [
+            'page' => $page,
+            'sections' => $sections,
+            'sectionTypes' => $sectionTypes,
+            'themeName' => $page->title,
+            'channels' => $channels,
+            'channelId' => $channel->id,
+            'locales' => $locales,
+            'localeCode' => $locale,
+            'previewUrl' => $previewUrl,
+            'reorderUrl' => $reorderUrl,
+            'storeUrl' => $storeUrl,
+            'publishUrl' => $publishUrl,
+            'discardUrl' => $discardUrl,
+            'urls' => $urls,
+        ]);
     }
 
     /**
      * Store a newly created section on the page.
      */
-    public function storeSection(int $id): JsonResponse|RedirectResponse
+    public function store(int $id): JsonResponse
     {
+        $this->portalPageRepository->findOrFail($id);
+
         $this->validate(request(), [
-            'type' => ['required', 'string'],
             'name' => ['required', 'string', 'max:255'],
+            'type' => ['required', 'string'],
         ]);
 
         $type = request('type');
         $name = request('name');
 
         $typeInstance = $this->sectionTypeRegistry->get($type);
-
-        abort_if(! $typeInstance, 422, 'نوع القسم غير مدعوم.');
+        abort_if(! $typeInstance, 422, trans('portal::app.admin.pages.customize.invalid-type'));
 
         $locale = core()->getRequestedLocaleCode();
-
         $maxSort = $this->portalPageSectionRepository->findWhere(['portal_page_id' => $id])->max('sort_order') ?? 0;
 
         $section = $this->portalPageSectionRepository->create([
@@ -65,140 +123,204 @@ class PageCustomizeController extends Controller
             'type' => $type,
             'name' => $name,
             'sort_order' => $maxSort + 1,
-            'status' => 1,
+            'status' => 0,
+            'draft_status' => true,
             $locale => [
                 'options' => $typeInstance->getDefaultOptions(),
                 'draft_options' => $typeInstance->getDefaultOptions(),
             ],
         ]);
 
-        if (request()->ajax()) {
-            return new JsonResponse([
-                'message' => 'تمت إضافة القسم بنجاح.',
-                'section' => $section,
-            ]);
-        }
-
-        session()->flash('success', 'تمت إضافة القسم بنجاح.');
-
-        return redirect()->route('admin.portal.pages.customize', $id);
+        return new JsonResponse([
+            'section' => $this->sectionRow($section->refresh()),
+            'message' => trans('admin::app.appearance.sections.create-success'),
+        ]);
     }
 
     /**
-     * Update section options and settings.
+     * Fetch field schema and current values for a section drawer.
      */
-    public function updateSection(int $id, int $sectionId): JsonResponse|RedirectResponse
+    public function fields(int $id, int $sectionId): JsonResponse
     {
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
-
         abort_if($section->portal_page_id !== $id, 404);
 
         $locale = core()->getRequestedLocaleCode();
+        $translation = $section->translate($locale);
+        $type = $section->getTypeInstance();
 
-        $options = request('options', []);
+        $options = $translation?->draft_options ?? $translation?->options ?? [];
 
-        $typeInstance = $this->sectionTypeRegistry->get($section->type);
+        return new JsonResponse([
+            'schema' => $type?->getFields() ?? [],
+            'options' => ($type?->prepareForEditor($options) ?? $options) ?: (object) [],
+        ]);
+    }
 
-        if ($typeInstance) {
-            $options = $typeInstance->sanitize($options);
-        }
+    /**
+     * Store unpublished edits for a section.
+     */
+    public function saveDraft(int $id, int $sectionId): JsonResponse
+    {
+        $this->validate(request(), [
+            'options' => ['required', 'array'],
+        ]);
 
-        $this->portalPageSectionRepository->saveDraft($sectionId, $locale, $options);
+        $section = $this->portalPageSectionRepository->findOrFail($sectionId);
+        abort_if($section->portal_page_id !== $id, 404);
 
-        if (request()->has('name')) {
-            $section->name = request('name');
-            $section->save();
-        }
+        $locale = core()->getRequestedLocaleCode();
+        $section = $this->portalPageSectionRepository->saveDraft($sectionId, $locale, request()->input('options'));
 
-        if (request()->ajax()) {
-            return new JsonResponse([
-                'message' => 'تم حفظ تعديلات القسم في المسودة.',
-                'section' => $section->fresh(),
-            ]);
-        }
+        return new JsonResponse([
+            'has_draft' => $this->portalPageSectionRepository->hasDraft($section),
+        ]);
+    }
 
-        session()->flash('success', 'تم حفظ تعديلات القسم في المسودة.');
+    /**
+     * Turn a section on or off in draft mode.
+     */
+    public function status(int $id, int $sectionId): JsonResponse
+    {
+        $section = $this->portalPageSectionRepository->findOrFail($sectionId);
+        abort_if($section->portal_page_id !== $id, 404);
 
-        return redirect()->route('admin.portal.pages.customize', $id);
+        $status = request()->boolean('status');
+        $section = $this->portalPageSectionRepository->saveStatusDraft($sectionId, $status);
+
+        return new JsonResponse([
+            'status' => $status,
+            'has_draft' => $this->portalPageSectionRepository->hasDraft($section),
+        ]);
+    }
+
+    /**
+     * Duplicate an existing section.
+     */
+    public function duplicate(int $id, int $sectionId): JsonResponse
+    {
+        $section = $this->portalPageSectionRepository->findOrFail($sectionId);
+        abort_if($section->portal_page_id !== $id, 404);
+
+        $duplicate = $this->portalPageSectionRepository->duplicate($sectionId);
+
+        return new JsonResponse([
+            'section' => $this->sectionRow($duplicate),
+            'message' => trans('admin::app.appearance.sections.create-success'),
+        ]);
     }
 
     /**
      * Reorder sections on the page.
      */
-    public function reorderSections(int $id): JsonResponse
+    public function reorder(int $id): JsonResponse
     {
         $this->validate(request(), [
-            'orders' => ['required', 'array'],
+            'sections' => ['required', 'array', 'min:1'],
+            'sections.*' => ['required', 'integer'],
         ]);
 
-        $orders = request('orders');
+        $sectionIds = request()->input('sections');
+        $this->portalPageSectionRepository->saveOrderDraft($sectionIds);
 
-        foreach ($orders as $index => $sectionId) {
-            $this->portalPageSectionRepository->update([
-                'draft_sort_order' => $index + 1,
-            ], $sectionId);
-        }
+        $sections = $this->portalPageSectionRepository->findWhereIn('id', $sectionIds);
 
         return new JsonResponse([
-            'message' => 'تم تحديث ترتيب الأقسام بنجاح.',
+            'pending' => $sections->mapWithKeys(fn ($section) => [
+                $section->id => $this->portalPageSectionRepository->hasDraft($section),
+            ]),
+        ]);
+    }
+
+    /**
+     * Store uploaded media file for a section.
+     */
+    public function uploadMedia(int $id, int $sectionId): JsonResponse
+    {
+        $this->validate(request(), [
+            'file' => ['required', 'mimes:bmp,jpeg,jpg,png,webp,mp4,webm,ogg', 'max:51200'],
+        ]);
+
+        $section = $this->portalPageSectionRepository->findOrFail($sectionId);
+        abort_if($section->portal_page_id !== $id, 404);
+
+        $file = request()->file('file');
+        $path = $file->store('portal/sections/'.$sectionId, 'public');
+
+        return new JsonResponse([
+            'path' => 'storage/'.$path,
+            'url' => asset('storage/'.$path),
         ]);
     }
 
     /**
      * Delete section from the page.
      */
-    public function deleteSection(int $id, int $sectionId): JsonResponse|RedirectResponse
+    public function destroy(int $id, int $sectionId): JsonResponse
     {
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
-
         abort_if($section->portal_page_id !== $id, 404);
 
         $this->portalPageSectionRepository->delete($sectionId);
 
-        if (request()->ajax()) {
-            return new JsonResponse([
-                'message' => 'تم حذف القسم بنجاح.',
-            ]);
-        }
-
-        session()->flash('success', 'تم حذف القسم بنجاح.');
-
-        return redirect()->route('admin.portal.pages.customize', $id);
+        return new JsonResponse([
+            'message' => trans('admin::app.appearance.sections.delete-success'),
+        ]);
     }
 
     /**
      * Publish all drafts for the page.
      */
-    public function publish(int $id): JsonResponse|RedirectResponse
+    public function publish(int $id): JsonResponse
     {
         $this->portalPageSectionRepository->publish($id);
 
-        if (request()->ajax()) {
-            return new JsonResponse([
-                'message' => 'تم نشر جميع التعديلات بنجاح!',
-            ]);
-        }
-
-        session()->flash('success', 'تم نشر جميع التعديلات بنجاح!');
-
-        return redirect()->route('admin.portal.pages.customize', $id);
+        return new JsonResponse([
+            'published' => count($this->editableSections($id)),
+            'sections' => $this->editableSections($id),
+            'message' => trans('admin::app.appearance.sections.update-success'),
+        ]);
     }
 
     /**
      * Discard all drafts for the page.
      */
-    public function discard(int $id): JsonResponse|RedirectResponse
+    public function discard(int $id): JsonResponse
     {
         $this->portalPageSectionRepository->discardDrafts($id);
 
-        if (request()->ajax()) {
-            return new JsonResponse([
-                'message' => 'تم التراجع عن مسودات التعديلات.',
-            ]);
-        }
+        return new JsonResponse([
+            'discarded' => count($this->editableSections($id)),
+            'sections' => $this->editableSections($id),
+            'message' => trans('admin::app.appearance.sections.index.discarded'),
+        ]);
+    }
 
-        session()->flash('success', 'تم التراجع عن مسودات التعديلات.');
+    /**
+     * Fetch sections formatted for the editor.
+     */
+    protected function editableSections(int $pageId): array
+    {
+        return $this->portalPageSectionRepository
+            ->findWhere(['portal_page_id' => $pageId])
+            ->sortBy(fn ($s) => $s->draft_sort_order ?? $s->sort_order)
+            ->map(fn ($s) => $this->sectionRow($s))
+            ->values()
+            ->toArray();
+    }
 
-        return redirect()->route('admin.portal.pages.customize', $id);
+    /**
+     * Format a single section row for the editor.
+     */
+    protected function sectionRow($section): array
+    {
+        return [
+            'id' => $section->id,
+            'name' => $section->name,
+            'type' => $section->type,
+            'status' => (bool) ($section->draft_status ?? $section->status),
+            'has_draft' => $this->portalPageSectionRepository->hasDraft($section),
+            'is_pinned' => false,
+        ];
     }
 }

@@ -2,9 +2,24 @@
 
 return [
     [
-        'key' => 'appearance.pages',
-        'name' => 'portal::app.admin.pages.title',
+        'key' => 'pages',
+        'name' => 'portal::app.admin.pages.menu.pages',
         'route' => 'admin.portal.pages.index',
+        'sort' => 2,
+        'icon' => 'icon-cms',
+        'icon-class' => 'cms-icon',
+    ],
+    [
+        'key' => 'pages.index',
+        'name' => 'portal::app.admin.pages.menu.all-pages',
+        'route' => 'admin.portal.pages.index',
+        'sort' => 1,
+        'icon' => '',
+    ],
+    [
+        'key' => 'pages.create',
+        'name' => 'portal::app.admin.pages.menu.create',
+        'route' => 'admin.portal.pages.create',
         'sort' => 2,
         'icon' => '',
     ],

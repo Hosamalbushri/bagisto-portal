@@ -12,11 +12,22 @@ class ContactSection extends SectionType
 
     protected ?string $description = 'portal::app.sections.contact_section.description';
 
+    public function getFields(): array
+    {
+        return [
+            ['key' => 'heading', 'type' => 'text', 'label' => trans('portal::app.sections.contact_section.heading')],
+            ['key' => 'subheading', 'type' => 'textarea', 'label' => trans('portal::app.sections.contact_section.subheading')],
+            ['key' => 'email', 'type' => 'text', 'label' => trans('portal::app.sections.contact_section.email')],
+            ['key' => 'phone', 'type' => 'text', 'label' => trans('portal::app.sections.contact_section.phone')],
+            ['key' => 'address', 'type' => 'textarea', 'label' => trans('portal::app.sections.contact_section.address')],
+        ];
+    }
+
     public function getDefaultOptions(): array
     {
         return [
-            'heading' => 'تواصل معنا مباشرة',
-            'subheading' => 'نسعد دائماً بالإجابة على استفساراتكم ومناقشة مقترحاتكم',
+            'heading' => trans('portal::app.sections.contact_section.default_heading'),
+            'subheading' => trans('portal::app.sections.contact_section.default_subheading'),
             'email' => 'contact@example.com',
             'phone' => '+966 50 000 0000',
             'address' => 'الرياض، المملكة العربية السعودية',

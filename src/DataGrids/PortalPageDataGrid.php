@@ -22,7 +22,7 @@ class PortalPageDataGrid extends DataGrid
      */
     public function prepareQueryBuilder()
     {
-        $currentLocale = app()->getLocale();
+        $currentLocale = core()->getRequestedLocaleCode();
 
         $queryBuilder = DB::table('portal_pages')
             ->select(
@@ -31,17 +31,22 @@ class PortalPageDataGrid extends DataGrid
                 'portal_pages.status',
                 'portal_pages.created_at',
                 'portal_page_translations.title',
-                'channels.name as channel_name'
+                DB::raw('COALESCE(channel_translations.name, channels.code) as channel_name')
             )
             ->leftJoin('portal_page_translations', function ($join) use ($currentLocale) {
                 $join->on('portal_pages.id', '=', 'portal_page_translations.portal_page_id')
                     ->where('portal_page_translations.locale', '=', $currentLocale);
             })
-            ->leftJoin('channels', 'portal_pages.channel_id', '=', 'channels.id');
+            ->leftJoin('channels', 'portal_pages.channel_id', '=', 'channels.id')
+            ->leftJoin('channel_translations', function ($join) use ($currentLocale) {
+                $join->on('channels.id', '=', 'channel_translations.channel_id')
+                    ->where('channel_translations.locale', '=', $currentLocale);
+            });
 
         $this->addFilter('id', 'portal_pages.id');
         $this->addFilter('slug', 'portal_pages.slug');
         $this->addFilter('status', 'portal_pages.status');
+        $this->addFilter('channel_name', 'channel_translations.name');
 
         return $queryBuilder;
     }
@@ -55,7 +60,7 @@ class PortalPageDataGrid extends DataGrid
     {
         $this->addColumn([
             'index' => 'id',
-            'label' => 'المعرف',
+            'label' => trans('portal::app.admin.pages.index.datagrid.id'),
             'type' => 'integer',
             'filterable' => true,
             'sortable' => true,
@@ -63,7 +68,7 @@ class PortalPageDataGrid extends DataGrid
 
         $this->addColumn([
             'index' => 'title',
-            'label' => 'عنوان الصفحة',
+            'label' => trans('portal::app.admin.pages.index.datagrid.title'),
             'type' => 'string',
             'searchable' => true,
             'filterable' => true,
@@ -72,7 +77,7 @@ class PortalPageDataGrid extends DataGrid
 
         $this->addColumn([
             'index' => 'slug',
-            'label' => 'الرابط (Slug)',
+            'label' => trans('portal::app.admin.pages.index.datagrid.slug'),
             'type' => 'string',
             'searchable' => true,
             'filterable' => true,
@@ -81,7 +86,7 @@ class PortalPageDataGrid extends DataGrid
 
         $this->addColumn([
             'index' => 'channel_name',
-            'label' => 'القناة',
+            'label' => trans('portal::app.admin.pages.index.datagrid.channel'),
             'type' => 'string',
             'filterable' => false,
             'sortable' => true,
@@ -89,16 +94,16 @@ class PortalPageDataGrid extends DataGrid
 
         $this->addColumn([
             'index' => 'status',
-            'label' => 'الحالة',
+            'label' => trans('portal::app.admin.pages.index.datagrid.status'),
             'type' => 'boolean',
             'sortable' => true,
             'filterable' => true,
             'closure' => function ($row) {
                 if ($row->status) {
-                    return '<span class="badge badge-md badge-success">منشورة</span>';
+                    return '<span class="badge badge-md badge-success">'.trans('portal::app.admin.pages.index.datagrid.published').'</span>';
                 }
 
-                return '<span class="badge badge-md badge-danger">معطلة</span>';
+                return '<span class="badge badge-md badge-danger">'.trans('portal::app.admin.pages.index.datagrid.disabled').'</span>';
             },
         ]);
     }
@@ -112,7 +117,7 @@ class PortalPageDataGrid extends DataGrid
     {
         $this->addAction([
             'icon' => 'icon-view',
-            'title' => 'معاينة في المتجر',
+            'title' => trans('portal::app.admin.pages.index.datagrid.view'),
             'method' => 'GET',
             'target' => '_blank',
             'url' => function ($row) {
@@ -122,7 +127,7 @@ class PortalPageDataGrid extends DataGrid
 
         $this->addAction([
             'icon' => 'icon-settings',
-            'title' => 'تخصيص المكونات',
+            'title' => trans('portal::app.admin.pages.index.datagrid.customize'),
             'method' => 'GET',
             'url' => function ($row) {
                 return route('admin.portal.pages.customize', $row->id);
@@ -131,7 +136,7 @@ class PortalPageDataGrid extends DataGrid
 
         $this->addAction([
             'icon' => 'icon-edit',
-            'title' => 'تعديل البيانات',
+            'title' => trans('portal::app.admin.pages.index.datagrid.edit'),
             'method' => 'GET',
             'url' => function ($row) {
                 return route('admin.portal.pages.edit', $row->id);
@@ -140,7 +145,7 @@ class PortalPageDataGrid extends DataGrid
 
         $this->addAction([
             'icon' => 'icon-delete',
-            'title' => 'حذف الصفحة',
+            'title' => trans('portal::app.admin.pages.index.datagrid.delete'),
             'method' => 'DELETE',
             'url' => function ($row) {
                 return route('admin.portal.pages.delete', $row->id);

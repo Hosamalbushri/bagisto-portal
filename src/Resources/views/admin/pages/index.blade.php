@@ -1,15 +1,15 @@
 <x-admin::layouts>
     <x-slot:title>
-        إدارة الصفحات والمكونات
+        @lang('portal::app.admin.pages.index.title')
     </x-slot>
 
     <div class="flex items-center justify-between mb-6">
         <div>
             <h1 class="text-xl font-bold text-gray-800 dark:text-white">
-                الصفحات المخصصة
+                @lang('portal::app.admin.pages.index.title')
             </h1>
             <p class="text-sm text-gray-500 mt-1">
-                أنشئ وخصص صفحات موقعك وأضف إليها المكونات المودولية بالسحب والإفلات.
+                @lang('portal::app.admin.pages.index.description')
             </p>
         </div>
 
@@ -18,7 +18,7 @@
                 href="{{ route('admin.portal.pages.create') }}"
                 class="primary-button"
             >
-                إنشاء صفحة جديدة
+                @lang('portal::app.admin.pages.index.create-btn')
             </a>
         </div>
     </div>

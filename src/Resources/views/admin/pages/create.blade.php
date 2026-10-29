@@ -1,154 +1,193 @@
 <x-admin::layouts>
     <x-slot:title>
-        إنشاء صفحة مخصصة جديدة
+        @lang('portal::app.admin.pages.create.title')
     </x-slot>
 
-    <form method="POST" action="{{ route('admin.portal.pages.store') }}">
-        @csrf
+    {!! view_render_event('bagisto.admin.portal.pages.create.before') !!}
 
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="text-xl font-bold text-gray-800 dark:text-white">
-                إنشاء صفحة مخصصة جديدة
-            </h1>
+    <x-admin::form :action="route('admin.portal.pages.store')">
+        <div class="flex items-center justify-between gap-4 max-sm:flex-wrap">
+            <p class="text-xl font-bold text-gray-800 dark:text-white">
+                @lang('portal::app.admin.pages.create.title')
+            </p>
 
             <div class="flex items-center gap-x-2.5">
                 <a
                     href="{{ route('admin.portal.pages.index') }}"
-                    class="transparent-button hover:bg-gray-200 dark:hover:bg-gray-800"
+                    class="transparent-button hover:bg-gray-200 dark:text-white dark:hover:bg-gray-800"
                 >
-                    إلغاء
+                    @lang('portal::app.admin.pages.create.cancel-btn')
                 </a>
 
-                <button type="submit" class="primary-button">
-                    حفظ ومتابعة إلى التخصيص
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    @lang('portal::app.admin.pages.create.save-btn')
                 </button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 space-y-6">
-                <div class="p-6 bg-white dark:bg-gray-900 rounded-lg box-shadow space-y-4">
-                    <h2 class="text-base font-semibold text-gray-800 dark:text-white mb-2">
-                        المعلومات الأساسية
-                    </h2>
+        <div class="mt-3.5 flex gap-2.5 max-xl:flex-wrap">
+            <!-- Left sub-component: SEO & Details -->
+            <div class="flex flex-1 flex-col gap-2 max-xl:flex-auto">
+                <div class="box-shadow rounded bg-white p-4 dark:bg-gray-900">
+                    <p class="mb-4 text-base font-semibold text-gray-800 dark:text-white">
+                        @lang('portal::app.admin.pages.create.seo')
+                    </p>
 
+                    <!-- SEO Title & Description Blade Component -->
+                    <x-admin::seo
+                        slug="pages"
+                        meta-title-field="meta_title"
+                        url-key-field="slug"
+                        meta-description-field="meta_description"
+                    />
+
+                    <!-- Slug / URL Key -->
                     <x-admin::form.control-group>
                         <x-admin::form.control-group.label class="required">
-                            عنوان الصفحة
+                            @lang('portal::app.admin.pages.create.slug')
                         </x-admin::form.control-group.label>
 
                         <x-admin::form.control-group.control
                             type="text"
-                            :name="core()->getRequestedLocaleCode() . '[title]'"
-                            rules="required"
-                            value="{{ old(core()->getRequestedLocaleCode() . '.title') }}"
-                            placeholder="مثال: من نحن، خدماتنا، حلول الأعمال"
-                        />
-
-                        <x-admin::form.control-group.error :control-name="core()->getRequestedLocaleCode() . '[title]'" />
-                    </x-admin::form.control-group>
-
-                    <x-admin::form.control-group>
-                        <x-admin::form.control-group.label class="required">
-                            الرابط الدائم (Slug)
-                        </x-admin::form.control-group.label>
-
-                        <x-admin::form.control-group.control
-                            type="text"
+                            id="slug"
                             name="slug"
                             rules="required"
-                            value="{{ old('slug') }}"
-                            placeholder="مثال: about-us, our-services"
+                            :value="old('slug')"
+                            :label="trans('portal::app.admin.pages.create.slug')"
+                            :placeholder="trans('portal::app.admin.pages.create.slug-placeholder')"
                         />
 
                         <x-admin::form.control-group.error control-name="slug" />
                     </x-admin::form.control-group>
-                </div>
 
-                <div class="p-6 bg-white dark:bg-gray-900 rounded-lg box-shadow space-y-4">
-                    <h2 class="text-base font-semibold text-gray-800 dark:text-white mb-2">
-                        تهيئة محركات البحث (SEO)
-                    </h2>
-
+                    <!-- Meta Title -->
                     <x-admin::form.control-group>
                         <x-admin::form.control-group.label>
-                            عنوان Meta
+                            @lang('portal::app.admin.pages.create.meta-title')
                         </x-admin::form.control-group.label>
 
                         <x-admin::form.control-group.control
                             type="text"
-                            :name="core()->getRequestedLocaleCode() . '[meta_title]'"
-                            value="{{ old(core()->getRequestedLocaleCode() . '.meta_title') }}"
+                            id="meta_title"
+                            name="meta_title"
+                            :value="old('meta_title')"
+                            :label="trans('portal::app.admin.pages.create.meta-title')"
                         />
+
+                        <x-admin::form.control-group.error control-name="meta_title" />
                     </x-admin::form.control-group>
 
+                    <!-- Meta Keywords -->
                     <x-admin::form.control-group>
                         <x-admin::form.control-group.label>
-                            وصف Meta
+                            @lang('portal::app.admin.pages.create.meta-keywords')
                         </x-admin::form.control-group.label>
 
                         <x-admin::form.control-group.control
                             type="textarea"
-                            :name="core()->getRequestedLocaleCode() . '[meta_description]'"
-                            value="{{ old(core()->getRequestedLocaleCode() . '.meta_description') }}"
-                            rows="3"
+                            id="meta_keywords"
+                            name="meta_keywords"
+                            :value="old('meta_keywords')"
+                            :label="trans('portal::app.admin.pages.create.meta-keywords')"
                         />
+
+                        <x-admin::form.control-group.error control-name="meta_keywords" />
                     </x-admin::form.control-group>
 
-                    <x-admin::form.control-group>
+                    <!-- Meta Description -->
+                    <x-admin::form.control-group class="!mb-0">
                         <x-admin::form.control-group.label>
-                            الكلمات المفتاحية
+                            @lang('portal::app.admin.pages.create.meta-description')
                         </x-admin::form.control-group.label>
 
                         <x-admin::form.control-group.control
-                            type="text"
-                            :name="core()->getRequestedLocaleCode() . '[meta_keywords]'"
-                            value="{{ old(core()->getRequestedLocaleCode() . '.meta_keywords') }}"
+                            type="textarea"
+                            id="meta_description"
+                            name="meta_description"
+                            :value="old('meta_description')"
+                            :label="trans('portal::app.admin.pages.create.meta-description')"
                         />
+
+                        <x-admin::form.control-group.error control-name="meta_description" />
                     </x-admin::form.control-group>
                 </div>
             </div>
 
-            <div class="space-y-6">
-                <div class="p-6 bg-white dark:bg-gray-900 rounded-lg box-shadow space-y-4">
-                    <h2 class="text-base font-semibold text-gray-800 dark:text-white mb-2">
-                        إعدادات النشر
-                    </h2>
+            <!-- Right sub-component: General Settings & Channel -->
+            <div class="flex w-[360px] max-w-full flex-col gap-2 max-sm:w-full">
+                <x-admin::accordion>
+                    <x-slot:header>
+                        <p class="p-2.5 text-base font-semibold text-gray-800 dark:text-white">
+                            @lang('portal::app.admin.pages.create.general')
+                        </p>
+                    </x-slot>
 
-                    <x-admin::form.control-group>
-                        <x-admin::form.control-group.label class="required">
-                            القناة
-                        </x-admin::form.control-group.label>
+                    <x-slot:content>
+                        <!-- Page Title -->
+                        <x-admin::form.control-group>
+                            <x-admin::form.control-group.label class="required">
+                                @lang('portal::app.admin.pages.create.page-title')
+                            </x-admin::form.control-group.label>
 
-                        <x-admin::form.control-group.control
-                            type="select"
-                            name="channel_id"
-                            rules="required"
-                        >
-                            @foreach ($channels as $channel)
-                                <option value="{{ $channel->id }}">
-                                    {{ $channel->name }}
-                                </option>
-                            @endforeach
-                        </x-admin::form.control-group.control>
+                            <x-admin::form.control-group.control
+                                type="text"
+                                id="title"
+                                name="title"
+                                rules="required"
+                                :value="old('title')"
+                                :label="trans('portal::app.admin.pages.create.page-title')"
+                                :placeholder="trans('portal::app.admin.pages.create.page-title-placeholder')"
+                            />
 
-                        <x-admin::form.control-group.error control-name="channel_id" />
-                    </x-admin::form.control-group>
+                            <x-admin::form.control-group.error control-name="title" />
+                        </x-admin::form.control-group>
 
-                    <x-admin::form.control-group>
-                        <x-admin::form.control-group.label>
-                            حالة الصفحة
-                        </x-admin::form.control-group.label>
+                        <!-- Select Channel -->
+                        <x-admin::form.control-group>
+                            <x-admin::form.control-group.label class="required">
+                                @lang('portal::app.admin.pages.create.channel')
+                            </x-admin::form.control-group.label>
 
-                        <x-admin::form.control-group.control
-                            type="switch"
-                            name="status"
-                            value="1"
-                            :checked="true"
-                        />
-                    </x-admin::form.control-group>
-                </div>
+                            <x-admin::form.control-group.control
+                                type="select"
+                                id="channel_id"
+                                name="channel_id"
+                                rules="required"
+                                :value="old('channel_id', core()->getCurrentChannel()->id)"
+                                :label="trans('portal::app.admin.pages.create.channel')"
+                            >
+                                @foreach ($channels as $channel)
+                                    <option value="{{ $channel->id }}">
+                                        {{ core()->getChannelName($channel) }}
+                                    </option>
+                                @endforeach
+                            </x-admin::form.control-group.control>
+
+                            <x-admin::form.control-group.error control-name="channel_id" />
+                        </x-admin::form.control-group>
+
+                        <!-- Status Switch -->
+                        <x-admin::form.control-group class="!mb-0">
+                            <x-admin::form.control-group.label>
+                                @lang('portal::app.admin.pages.create.status')
+                            </x-admin::form.control-group.label>
+
+                            <x-admin::form.control-group.control
+                                type="switch"
+                                id="status"
+                                name="status"
+                                :value="1"
+                                :checked="(bool) old('status', true)"
+                            />
+                        </x-admin::form.control-group>
+                    </x-slot>
+                </x-admin::accordion>
             </div>
         </div>
-    </form>
+    </x-admin::form>
+
+    {!! view_render_event('bagisto.admin.portal.pages.create.after') !!}
 </x-admin::layouts>
