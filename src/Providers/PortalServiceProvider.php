@@ -45,6 +45,16 @@ class PortalServiceProvider extends ServiceProvider
             dirname(__DIR__).'/Config/acl.php',
             'acl'
         );
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__).'/Config/portal.php',
+            'portal'
+        );
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__).'/Config/system.php',
+            'core'
+        );
     }
 
     /**
@@ -89,6 +99,10 @@ class PortalServiceProvider extends ServiceProvider
         $portalAcl = require dirname(__DIR__).'/Config/acl.php';
         $currentAcl = config('acl', []);
         config(['acl' => collect($currentAcl)->concat($portalAcl)->unique('key')->values()->toArray()]);
+
+        $portalSystem = require dirname(__DIR__).'/Config/system.php';
+        $currentCore = config('core', []);
+        config(['core' => collect($currentCore)->concat($portalSystem)->unique('key')->values()->toArray()]);
 
         Paginator::defaultView('portal::partials.pagination');
         Paginator::defaultSimpleView('portal::partials.pagination');

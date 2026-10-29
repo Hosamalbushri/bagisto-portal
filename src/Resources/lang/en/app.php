@@ -1,7 +1,58 @@
 <?php
 
 return [
+    'auth' => [
+        'login' => [
+            'title' => 'Sign In',
+            'heading' => 'Welcome Back',
+            'subheading' => 'Sign in with your email and password to continue.',
+            'email' => 'Email Address',
+            'password' => 'Password',
+            'remember-me' => 'Remember me',
+            'submit' => 'Sign In',
+            'no-account' => 'Don\'t have an account?',
+            'register-link' => 'Create Account',
+            'invalid-credentials' => 'The provided credentials do not match our records.',
+            'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+            'success' => 'You have been signed in successfully.',
+        ],
+        'logout' => [
+            'title' => 'Sign Out',
+            'success' => 'You have been signed out successfully.',
+        ],
+        'register' => [
+            'title' => 'Create Account',
+            'heading' => 'Create New Account',
+            'subheading' => 'Join our platform to get started.',
+            'name' => 'Full Name',
+            'email' => 'Email Address',
+            'password' => 'Password',
+            'password-confirmation' => 'Confirm Password',
+            'submit' => 'Register Now',
+            'already-have-account' => 'Already have an account?',
+            'login-link' => 'Sign In',
+            'email-taken' => 'The email address is already in use.',
+            'success' => 'Your account has been created successfully.',
+        ],
+    ],
     'admin' => [
+        'configuration' => [
+            'portal' => [
+                'title' => 'Portal Platform',
+                'info' => 'Manage Portal Platform general settings, visitor sessions, and authentication.',
+                'auth' => [
+                    'title' => 'Authentication',
+                    'info' => 'Configure storefront authentication integration and customer guards.',
+                    'settings' => [
+                        'title' => 'Authentication Settings',
+                        'info' => 'Enable or disable optional user login and specify the active authentication guard.',
+                        'enabled' => 'Enable Storefront Authentication',
+                        'guard' => 'Authentication Guard',
+                        'guard-info' => 'Select which guard to use for authenticating storefront users.',
+                    ],
+                ],
+            ],
+        ],
         'pages' => [
             'title' => 'Pages',
             'create-success' => 'Page created successfully.',
@@ -206,6 +257,8 @@ return [
             'home' => 'Home',
             'contact-us' => 'Contact Us',
             'dashboard' => 'Dashboard',
+            'languages' => 'Languages',
+            'login' => 'Sign In',
         ],
         'welcome-title' => 'Your Platform is Ready',
         'welcome-description' => 'Customize your landing page sections easily from the Admin panel under Appearance.',

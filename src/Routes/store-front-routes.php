@@ -1,7 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Platform\Portal\Http\Controllers\Auth\LoginController;
+use Platform\Portal\Http\Controllers\Auth\RegisterController;
+use Platform\Portal\Http\Controllers\CurrencyController;
 use Platform\Portal\Http\Controllers\HomeController;
+use Platform\Portal\Http\Controllers\LocaleController;
 use Platform\Portal\Http\Controllers\PageController;
 use Platform\Portal\Http\Controllers\SitemapController;
 
@@ -53,3 +57,33 @@ Route::get('contact-us', [HomeController::class, 'contactUs'])
 Route::post('contact-us/send-mail', [HomeController::class, 'sendContactUsMail'])
     ->name('shop.home.contact_us.send_mail')
     ->middleware('cache.response');
+
+/**
+ * Locale switch.
+ */
+Route::get('locale/{code}', [LocaleController::class, 'switch'])
+    ->name('portal.locale.switch');
+
+/**
+ * Currency switch.
+ */
+Route::get('currency/{code}', [CurrencyController::class, 'switch'])
+    ->name('portal.currency.switch');
+
+/**
+ * Portal Authentication Routes (Available when enabled).
+ */
+Route::get('login', [LoginController::class, 'showLoginForm'])
+    ->name('portal.auth.login');
+
+Route::post('login', [LoginController::class, 'login'])
+    ->name('portal.auth.login.store');
+
+Route::any('logout', [LoginController::class, 'logout'])
+    ->name('portal.auth.logout');
+
+Route::get('register', [RegisterController::class, 'showRegistrationForm'])
+    ->name('portal.auth.register');
+
+Route::post('register', [RegisterController::class, 'register'])
+    ->name('portal.auth.register.store');
