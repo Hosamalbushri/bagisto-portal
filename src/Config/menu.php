@@ -23,4 +23,12 @@ return [
         'sort' => 2,
         'icon' => '',
     ],
+    [
+        'key' => 'portal_menus',
+        'name' => 'portal::app.admin.menus.menu.title',
+        'route' => 'admin.portal.menus.index',
+        'sort' => 3,
+        'icon' => 'icon-menu',
+        'icon-class' => 'menu-icon',
+    ],
 ];

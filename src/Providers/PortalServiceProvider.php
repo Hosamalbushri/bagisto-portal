@@ -21,6 +21,10 @@ class PortalServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        require_once __DIR__.'/../Helpers/helpers.php';
+
+        $this->app->register(ModuleServiceProvider::class);
+
         $this->app->singleton(SectionTypeRegistry::class, function () {
             return new SectionTypeRegistry;
         });

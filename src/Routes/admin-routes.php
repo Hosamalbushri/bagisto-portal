@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Platform\Portal\Http\Controllers\Admin\MenuController;
 use Platform\Portal\Http\Controllers\Admin\PageController;
 use Platform\Portal\Http\Controllers\Admin\PageCustomizeController;
 
@@ -26,5 +27,16 @@ Route::group(['middleware' => ['web', 'admin'], 'prefix' => config('app.admin_ur
         Route::post('customize/{id}/sections/{sectionId}/status', [PageCustomizeController::class, 'status'])->name('admin.portal.pages.sections.status');
         Route::post('customize/{id}/sections/{sectionId}/duplicate', [PageCustomizeController::class, 'duplicate'])->name('admin.portal.pages.sections.duplicate');
         Route::delete('customize/{id}/sections/{sectionId}', [PageCustomizeController::class, 'destroy'])->name('admin.portal.pages.sections.delete');
+    });
+
+    Route::prefix('portal/menus')->group(function () {
+        Route::get('', [MenuController::class, 'index'])->name('admin.portal.menus.index');
+        Route::get('create', [MenuController::class, 'create'])->name('admin.portal.menus.create');
+        Route::post('create', [MenuController::class, 'store'])->name('admin.portal.menus.store');
+        Route::get('edit/{id}', [MenuController::class, 'edit'])->name('admin.portal.menus.edit');
+        Route::put('edit/{id}', [MenuController::class, 'update'])->name('admin.portal.menus.update');
+        Route::get('builder/{id}', [MenuController::class, 'builder'])->name('admin.portal.menus.builder');
+        Route::post('builder/{id}/items', [MenuController::class, 'saveItems'])->name('admin.portal.menus.items.save');
+        Route::delete('delete/{id}', [MenuController::class, 'destroy'])->name('admin.portal.menus.delete');
     });
 });

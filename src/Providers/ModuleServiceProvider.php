@@ -3,6 +3,9 @@
 namespace Platform\Portal\Providers;
 
 use Konekt\Concord\BaseModuleServiceProvider;
+use Platform\Portal\Models\PortalMenu;
+use Platform\Portal\Models\PortalMenuItem;
+use Platform\Portal\Models\PortalMenuItemTranslation;
 use Platform\Portal\Models\PortalPage;
 use Platform\Portal\Models\PortalPageSection;
 
@@ -16,5 +19,8 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
     protected $models = [
         PortalPage::class,
         PortalPageSection::class,
+        PortalMenu::class,
+        PortalMenuItem::class,
+        PortalMenuItemTranslation::class,
     ];
 }
