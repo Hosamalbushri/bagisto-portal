@@ -32,20 +32,20 @@
                                 type="text"
                                 name="search"
                                 :value="getSearchedValues('all')"
-                                class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-base text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 max-md:max-w-[250px] max-md:py-2 max-sm:py-1.5 ltr:pr-8 rtl:pl-8"
+                                class="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-2 text-base text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] max-md:max-w-[250px] max-md:py-2 max-sm:py-1.5 ltr:pr-8 rtl:pl-8"
                                 placeholder="@lang('portal::app.components.datagrid.toolbar.search.title')"
                                 autocomplete="off"
                                 @keyup.enter="search"
                             >
 
-                            <div class="icon-search pointer-events-none absolute top-2.5 flex items-center text-xl max-sm:top-2 ltr:right-2.5 rtl:left-2.5">
+                            <div class="icon-search pointer-events-none absolute top-2.5 flex items-center text-xl text-[var(--text-muted)] max-sm:top-2 ltr:right-2.5 rtl:left-2.5">
                             </div>
                         </div>
                     </div>
 
                     <!-- Information Panel -->
                     <div class="max-md:hidden ltr:pl-2.5 rtl:pr-2.5">
-                        <p class="text-sm font-light text-gray-800 max-md:w-full">
+                        <p class="text-sm font-normal text-[var(--text-muted)] max-md:w-full">
                             @{{ "@lang('portal::app.components.datagrid.toolbar.results')".replace(':total', available.meta.total) }}
                         </p>
                     </div>

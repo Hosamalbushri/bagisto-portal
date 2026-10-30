@@ -2,7 +2,7 @@
     'item',
     'depth' => 0,
     'itemClass' => '',
-    'activeClass' => 'text-blue-600 font-semibold',
+    'activeClass' => 'text-[var(--brand-primary)] font-semibold',
     'dropdownClass' => '',
 ])
 
@@ -20,7 +20,7 @@
             href="{{ $url }}"
             target="{{ $item->target ?: '_self' }}"
             @if ($item->target === '_blank') rel="noopener noreferrer" @endif
-            class="flex items-center gap-1.5 transition-colors duration-150 {{ $depth === 0 ? 'py-2 px-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 text-sm font-medium' : 'px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 w-full' }} {{ $active ? $activeClass : '' }} {{ $itemClass }}"
+            class="flex items-center gap-1.5 transition-colors duration-150 {{ $depth === 0 ? 'py-2 px-1 text-[var(--text-secondary)] hover:text-[var(--brand-primary)] text-sm font-medium' : 'px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-surface-muted)] hover:text-[var(--brand-primary)] w-full' }} {{ $active ? $activeClass : '' }} {{ $itemClass }}"
         >
             @if (! empty($item->icon))
                 <i class="{{ $item->icon }} text-xs"></i>
@@ -30,11 +30,11 @@
 
             @if ($hasChildren)
                 @if ($depth === 0)
-                    <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 @else
-                    <svg class="w-3.5 h-3.5 ms-auto rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3.5 h-3.5 ms-auto rtl:rotate-180 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 @endif
@@ -44,7 +44,7 @@
 
     @if ($hasChildren)
         <ul
-            class="hidden group-hover:block {{ $depth === 0 ? 'absolute start-0 top-full mt-1 min-w-[200px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-100 dark:border-gray-800 py-1 z-50' : 'absolute start-full top-0 min-w-[200px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-100 dark:border-gray-800 py-1 z-50' }} {{ $dropdownClass }}"
+            class="hidden group-hover:block {{ $depth === 0 ? 'absolute start-0 top-full mt-1 min-w-[200px] bg-[var(--bg-surface)] rounded-xl shadow-[var(--shadow-card)] border border-[var(--border-subtle)] py-1.5 z-50' : 'absolute start-full top-0 min-w-[200px] bg-[var(--bg-surface)] rounded-xl shadow-[var(--shadow-card)] border border-[var(--border-subtle)] py-1.5 z-50' }} {{ $dropdownClass }}"
         >
             @foreach ($children as $child)
                 <x-portal::menu.item

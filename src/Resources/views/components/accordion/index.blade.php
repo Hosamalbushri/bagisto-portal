@@ -2,7 +2,7 @@
     'isActive' => true,
 ])
 
-<div {{ $attributes->merge(['class' => 'border-b border-zinc-200 dark:border-zinc-800']) }}>
+<div {{ $attributes->merge(['class' => 'border-b border-[var(--border-subtle)]']) }}>
     <v-accordion
         {{ $attributes->except('class') }}
         is-active="{{ $isActive }}"
@@ -10,7 +10,7 @@
         @isset($header)
             <template v-slot:header="{ toggle, isOpen }">
                 <div
-                    {{ $header->attributes->merge(['class' => 'flex cursor-pointer select-none items-center justify-between p-4']) }}
+                    {{ $header->attributes->merge(['class' => 'flex cursor-pointer select-none items-center justify-between p-4 text-[var(--text-primary)] hover:text-[var(--brand-primary)] transition-colors']) }}
                     role="button"
                     tabindex="0"
                     @click="toggle"
@@ -18,7 +18,7 @@
                     {{ $header }}
 
                     <span
-                        v-bind:class="isOpen ? 'icon-arrow-up text-2xl' : 'icon-arrow-down text-2xl'"
+                        v-bind:class="isOpen ? 'icon-arrow-up text-2xl text-[var(--brand-primary)]' : 'icon-arrow-down text-2xl text-[var(--text-muted)]'"
                         role="button"
                         aria-label="Toggle accordion"
                         tabindex="0"
@@ -30,7 +30,7 @@
         @isset($content)
             <template v-slot:content="{ isOpen }">
                 <div
-                    {{ $content->attributes->merge(['class' => 'z-10 rounded-lg bg-white dark:bg-zinc-900 p-1.5 text-zinc-600 dark:text-zinc-300']) }}
+                    {{ $content->attributes->merge(['class' => 'z-10 rounded-xl bg-[var(--bg-surface)] p-3 text-[var(--text-secondary)]']) }}
                     v-show="isOpen"
                 >
                     {{ $content }}

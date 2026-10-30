@@ -8,10 +8,10 @@
 @endphp
 
 <div class="container mt-20 max-1180:px-5 max-md:mt-10 max-md:px-4" v-pre>
-    <div class="rounded-2xl bg-zinc-950 px-12 py-16 text-center text-white max-md:px-6 max-md:py-10">
-        <div class="m-auto max-w-[700px]">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0b101b] via-[#111827] to-[#0b101b] border border-[var(--border-subtle)] px-12 py-16 text-center text-white max-md:px-6 max-md:py-10 shadow-[var(--shadow-card)]">
+        <div class="m-auto max-w-[700px] relative z-10">
             @if ($heading)
-                <h2 class="font-dmserif text-4xl max-md:text-3xl max-sm:text-xl">
+                <h2 class="font-cairo font-bold text-4xl max-md:text-3xl max-sm:text-xl text-white">
                     {{ $heading }}
                 </h2>
             @endif
@@ -26,7 +26,7 @@
                 <div class="mt-8 flex justify-center">
                     <a
                         href="{{ $buttonUrl }}"
-                        class="inline-block rounded-2xl bg-white px-11 py-3.5 text-center text-base font-semibold text-zinc-900 transition-all hover:bg-zinc-100 shadow-sm max-md:rounded-lg max-md:py-2.5 max-sm:py-2"
+                        class="btn-primary !px-10 !py-3.5 text-base shadow-md hover:shadow-[var(--shadow-glow)]"
                     >
                         {{ $buttonText }}
                     </a>

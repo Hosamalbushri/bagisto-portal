@@ -11,15 +11,15 @@
         id="v-flash-item-template"
     >
         <div
-            class="flex w-max max-w-[408px] justify-between gap-12 rounded-lg px-5 py-3 max-sm:max-w-80 max-sm:items-center max-sm:gap-2 max-sm:p-3"
+            class="flex w-max max-w-[408px] justify-between gap-8 rounded-xl px-4 py-3 border shadow-[var(--shadow-card)] max-sm:max-w-80 max-sm:items-center max-sm:gap-2 max-sm:p-3"
             :style="typeStyles[flash.type]['container']"
         >
             <p
-                class="flex items-center break-words text-sm"
+                class="flex items-center break-words text-sm font-medium"
                 :style="typeStyles[flash.type]['message']"
             >
                 <span
-                    class="icon-toast-done text-2xl ltr:mr-2.5 rtl:ml-2.5"
+                    class="icon-toast-done text-2xl ltr:mr-2.5 rtl:ml-2.5 shrink-0"
                     :class="iconClasses[flash.type]"
                     :style="typeStyles[flash.type]['icon']"
                 ></span>
@@ -28,8 +28,7 @@
             </p>
 
 			<span
-                class="icon-cancel max-h-4 max-w-4 cursor-pointer"
-                :style="typeStyles[flash.type]['icon']"
+                class="icon-cancel max-h-4 max-w-4 cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                 @click="remove"
             ></span>
         </div>
@@ -55,35 +54,35 @@
 
                     typeStyles: {
                         success: {
-                            container: 'background: #D4EDDA',
+                            container: 'background: var(--bg-surface-elevated); border-color: rgba(34, 197, 94, 0.4);',
 
-                            message: 'color: #155721',
+                            message: 'color: var(--text-primary)',
 
-                            icon: 'color: #155721'
+                            icon: 'color: #22c55e'
                         },
 
                         error: {
-                            container: 'background: #F8D7DA',
+                            container: 'background: var(--bg-surface-elevated); border-color: rgba(239, 68, 68, 0.4);',
 
-                            message: 'color: #721C24',
+                            message: 'color: var(--text-primary)',
 
-                            icon: 'color: #721C24'
+                            icon: 'color: #ef4444'
                         },
 
                         warning: {
-                            container: 'background: #FFF3CD',
+                            container: 'background: var(--bg-surface-elevated); border-color: rgba(254, 131, 18, 0.4);',
 
-                            message: 'color: #856404',
+                            message: 'color: var(--text-primary)',
 
-                            icon: 'color: #856404'
+                            icon: 'color: #fe8312'
                         },
 
                         info: {
-                            container: 'background: #E2E3E5',
+                            container: 'background: var(--bg-surface-elevated); border-color: rgba(28, 102, 246, 0.4);',
 
-                            message: 'color: #383D41',
+                            message: 'color: var(--text-primary)',
 
-                            icon: 'color: #383D41'
+                            icon: 'color: #1c66f6'
                         },
                     },
                 };

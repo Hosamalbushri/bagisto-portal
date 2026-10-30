@@ -1,14 +1,14 @@
-<div class="flex justify-center gap-8 bg-zinc-100 pt-5 max-1180:hidden">
+<div class="flex justify-center gap-8 bg-[var(--bg-surface-elevated)] border-b border-[var(--border-subtle)] pt-5 max-1180:hidden">
     <div class="px-8 pb-5">
-        <span class="shimmer block h-[30px] w-[200px] bg-zinc-300"></span>
+        <span class="shimmer block h-[30px] w-[200px] rounded-lg"></span>
     </div>
 
     <div class="px-8 pb-5">
-        <span class="shimmer block h-[30px] w-[200px] bg-zinc-300"></span>
+        <span class="shimmer block h-[30px] w-[200px] rounded-lg"></span>
     </div>
 
     <div class="px-8 pb-5">
-        <span class="shimmer block h-[30px] w-[150px] bg-zinc-300"></span>
+        <span class="shimmer block h-[30px] w-[150px] rounded-lg"></span>
     </div>
 </div>
 

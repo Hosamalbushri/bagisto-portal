@@ -45,6 +45,14 @@
             @endif
 
             @switch ($section->type)
+                @case ('hero_scaffold')
+                    <x-portal::sections.hero-scaffold :options="$data" />
+                    @break
+
+                @case ('bento_grid')
+                    <x-portal::sections.bento-grid :options="$data" />
+                    @break
+
                 @case ('hero_slider')
                     <x-portal::sections.hero-slider :options="$data" />
                     @break
@@ -111,10 +119,10 @@
     @else
         <div class="py-24 text-center">
             <div class="container m-auto max-w-xl max-1180:px-5 max-md:px-4">
-                <h1 class="font-dmserif text-4xl text-zinc-900 mb-4 max-md:text-3xl max-sm:text-xl">
+                <h1 class="font-cairo font-bold text-4xl text-[var(--text-primary)] mb-4 max-md:text-3xl max-sm:text-xl">
                     {{ $page->title }}
                 </h1>
-                <p class="text-zinc-500 text-base">
+                <p class="text-[var(--text-secondary)] text-base">
                     @lang('portal::app.page.no-sections')
                 </p>
             </div>

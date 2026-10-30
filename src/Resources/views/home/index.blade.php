@@ -15,18 +15,18 @@
 
     @if ($sections->isEmpty())
         <div class="py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
-            <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+            <h1 class="text-4xl font-extrabold tracking-tight text-[var(--text-primary)] font-cairo sm:text-5xl">
                 @lang('portal::app.home.welcome-title')
             </h1>
 
-            <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">
+            <p class="mt-4 text-lg text-[var(--text-secondary)]">
                 @lang('portal::app.home.welcome-description')
             </p>
 
             <div class="mt-8">
                 <a
                     href="{{ route('admin.appearance.themes.index') }}"
-                    class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                    class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-xl shadow-sm text-white bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] transition-all"
                 >
                     @lang('portal::app.home.customize-appearance') &rarr;
                 </a>

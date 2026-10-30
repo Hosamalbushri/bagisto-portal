@@ -26,23 +26,23 @@
     >
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             @foreach ($section->options['services'] as $service)
-                <div class="flex items-start gap-4 p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm">
+                <x-portal::card :interactive="true" class="flex items-start gap-4 !p-6 group">
                     <span
-                        class="{{ $service['service_icon'] ?? 'icon-cms' }} flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-2xl flex-shrink-0"
+                        class="{{ $service['service_icon'] ?? 'icon-cms' }} flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--brand-primary-light)] text-[var(--brand-primary)] text-2xl flex-shrink-0 group-hover:scale-105 transition-transform"
                         role="presentation"
                     >
                     </span>
 
                     <div>
-                        <h3 class="text-base font-bold text-gray-900 dark:text-white">
+                        <h3 class="text-base font-bold text-[var(--text-primary)] font-cairo">
                             {{ $service['title'] ?? '' }}
                         </h3>
 
-                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                        <p class="mt-2 text-sm text-[var(--text-secondary)] leading-relaxed">
                             {{ $service['description'] ?? '' }}
                         </p>
                     </div>
-                </div>
+                </x-portal::card>
             @endforeach
         </div>
     </div>

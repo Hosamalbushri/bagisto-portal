@@ -14,11 +14,11 @@
 
     @isset($header)
         <template v-slot:header="{ toggle, isOpen }">
-            <div {{ $header->attributes->merge(['class' => 'flex items-center justify-between gap-5 border-b border-zinc-200 bg-white p-8 max-sm:px-4 max-sm:py-3']) }}>
+            <div {{ $header->attributes->merge(['class' => 'flex items-center justify-between gap-5 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-primary)] p-6 max-sm:px-4 max-sm:py-3']) }}>
                 {{ $header }}
 
                 <span
-                    class="icon-cancel cursor-pointer text-3xl max-sm:text-2xl"
+                    class="icon-cancel cursor-pointer text-3xl max-sm:text-2xl text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                     @click="toggle"
                 >
                 </span>
@@ -28,7 +28,7 @@
 
     @isset($content)
         <template v-slot:content>
-            <div {{ $content->attributes->merge(['class' => 'bg-white p-8 max-sm:p-5']) }}>
+            <div {{ $content->attributes->merge(['class' => 'bg-[var(--bg-surface)] text-[var(--text-secondary)] p-6 max-sm:p-4']) }}>
                 {{ $content }}
             </div>
         </template>
@@ -36,7 +36,7 @@
 
     @isset($footer)
         <template v-slot:footer>
-            <div {{ $footer->attributes->merge(['class' => 'mt-5 bg-white p-8 max-sm:mt-0.5 max-sm:py-4 max-sm:px-4']) }}>
+            <div {{ $footer->attributes->merge(['class' => 'mt-4 border-t border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)] p-6 max-sm:mt-0.5 max-sm:py-4 max-sm:px-4']) }}>
                 {{ $footer }}
             </div>
         </template>
@@ -68,7 +68,7 @@
                 leave-to-class="opacity-0"
             >
                 <div
-                    class="fixed inset-0 z-10 bg-gray-500 bg-opacity-50 transition-opacity"
+                    class="fixed inset-0 z-10 bg-[#080b11]/80 backdrop-blur-sm transition-opacity"
                     v-show="isOpen"
                 ></div>
             </transition>
@@ -88,7 +88,7 @@
                 >
                     <div class="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-0">
                         <div
-                            class="absolute left-1/2 top-1/2 z-[999] w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg bg-zinc-100 max-md:w-[90%]"
+                            class="absolute left-1/2 top-1/2 z-[999] w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-[var(--shadow-card)] max-md:w-[90%]"
                             :class="panelClass || 'max-w-[595px]'"
                         >
                             <!-- Header Slot-->

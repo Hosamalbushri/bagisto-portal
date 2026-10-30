@@ -108,5 +108,19 @@ class PortalServiceProvider extends ServiceProvider
         $portalSystem = require dirname(__DIR__).'/Config/system.php';
         $currentCore = config('core', []);
         config(['core' => collect($currentCore)->concat($portalSystem)->unique('key')->values()->toArray()]);
+
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../Resources/views' => resource_path('views/vendor/portal'),
+            ], 'portal-views');
+
+            $this->publishes([
+                dirname(__DIR__).'/Config/portal.php' => config_path('portal.php'),
+            ], 'portal-config');
+
+            $this->publishes([
+                __DIR__.'/../Resources/lang' => $this->app->langPath('vendor/portal'),
+            ], 'portal-lang');
+        }
     }
 }

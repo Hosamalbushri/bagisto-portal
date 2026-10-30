@@ -20,8 +20,8 @@
         type="text/x-template"
         id="v-datagrid-table-template"
     >
-        <div class="w-full overflow-x-auto rounded-xl border max-md:rounded-none max-md:border-0">
-            <div class="table-responsive box-shadow grid w-full overflow-hidden rounded bg-white">
+        <div class="w-full overflow-x-auto rounded-xl border border-[var(--border-subtle)] max-md:rounded-none max-md:border-0">
+            <div class="table-responsive box-shadow grid w-full overflow-hidden rounded-xl bg-[var(--bg-surface)] text-[var(--text-primary)]">
                 <slot
                     name="header"
                     :is-loading="isLoading"
@@ -40,7 +40,7 @@
 
                     <template v-else>
                         <div
-                            class="row grid items-center gap-2.5 border-b border-zinc-200 bg-zinc-100 px-6 py-4 text-sm font-medium text-black max-md:p-4"
+                            class="row grid items-center gap-2.5 border-b border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)] px-6 py-4 text-sm font-semibold text-[var(--text-primary)] max-md:p-4"
                             :style="`grid-template-columns: repeat(${gridsCount}, minmax(0, 1fr))`"
                         >
                             <!-- Mass Actions -->
@@ -115,7 +115,7 @@
                     <template v-else>
                         <template v-if="available.records.length">
                             <div
-                                class="row grid items-center gap-2.5 border-b bg-white px-6 py-4 font-medium text-gray-600 transition-all max-md:p-4 max-md:text-xs"
+                                class="row grid items-center gap-2.5 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-muted)] px-6 py-4 font-normal text-[var(--text-secondary)] transition-colors max-md:p-4 max-md:text-xs"
                                 v-for="record in available.records"
                                 :style="`grid-template-columns: repeat(${gridsCount}, minmax(0, 1fr))`"
                             >
@@ -131,7 +131,7 @@
                                             v-model="applied.massActions.indices"
                                         >
 
-                                        <span class="icon-uncheck peer-checked:icon-check-box cursor-pointer rounded-md text-2xl">
+                                        <span class="icon-uncheck peer-checked:icon-check-box cursor-pointer rounded-md text-2xl text-[var(--text-muted)] peer-checked:text-[var(--brand-primary)]">
                                         </span>
                                     </label>
                                 </p>
@@ -149,7 +149,7 @@
                                 <!-- Actions -->
                                 <p v-if="available.actions.length">
                                     <span
-                                        class="float-right cursor-pointer rounded-md p-1.5 text-2xl transition-all hover:bg-gray-200"
+                                        class="float-right cursor-pointer rounded-md p-1.5 text-2xl text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-surface-elevated)] hover:text-[var(--text-primary)]"
                                         :class="action.icon"
                                         v-for="action in record.actions"
                                         @click="performAction(action)"
@@ -161,7 +161,7 @@
                         </template>
 
                         <template v-else>
-                            <div class="row grid border-b border-gray-300 px-4 py-4 text-center text-gray-600">
+                            <div class="row grid border-b border-[var(--border-subtle)] px-4 py-8 text-center text-[var(--text-muted)]">
                                 <p>
                                     @lang('portal::app.components.datagrid.table.no-records-available')
                                 </p>

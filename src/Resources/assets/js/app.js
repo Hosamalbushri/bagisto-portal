@@ -164,4 +164,21 @@ import Debounce from "./directives/debounce";
 
 app.directive("debounce", Debounce);
 
+/**
+ * Interactive spotlight glow tracking for cards.
+ */
+if (typeof window !== "undefined") {
+    document.addEventListener(
+        "pointermove",
+        (e) => {
+            const card = e.target?.closest?.("[data-spotlight]");
+            if (!card) return;
+            const rect = card.getBoundingClientRect();
+            card.style.setProperty("--spotlight-x", `${e.clientX - rect.left}px`);
+            card.style.setProperty("--spotlight-y", `${e.clientY - rect.top}px`);
+        },
+        { passive: true }
+    );
+}
+
 export default app;

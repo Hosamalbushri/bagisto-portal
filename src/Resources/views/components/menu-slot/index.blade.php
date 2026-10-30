@@ -28,7 +28,7 @@
 @if ($menu && $menu->rootItems && $menu->rootItems->isNotEmpty())
     <div>
         @if (! empty($assignment?->title))
-            <p class="font-semibold text-gray-800 dark:text-white mb-3 text-sm">
+            <p class="font-semibold text-[var(--text-primary)] mb-3 text-sm">
                 {{ $assignment->title }}
             </p>
         @endif

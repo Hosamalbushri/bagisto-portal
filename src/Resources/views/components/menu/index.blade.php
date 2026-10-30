@@ -6,7 +6,7 @@
     'class' => '',
     'listClass' => null,
     'itemClass' => '',
-    'activeClass' => 'text-blue-600 font-semibold',
+    'activeClass' => 'text-[var(--brand-primary)] font-semibold',
     'dropdownClass' => '',
 ])
 

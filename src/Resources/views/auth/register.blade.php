@@ -4,24 +4,31 @@
     </x-slot>
 
     <div class="min-h-[75vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8 bg-white dark:bg-gray-900 p-8 sm:p-10 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800">
+        <div class="max-w-md w-full space-y-8 bg-[var(--bg-surface)] p-8 sm:p-10 rounded-2xl shadow-[var(--shadow-card)] border border-[var(--border-subtle)]">
             <!-- Header -->
             <div class="text-center">
                 <a href="{{ portal_home_url() }}" class="inline-block mb-4">
                     @if ($logo = core()->getCurrentChannel()->logo_url)
                         <img src="{{ $logo }}" class="h-10 mx-auto" alt="{{ config('app.name') }}" />
                     @else
-                        <span class="text-2xl font-extrabold text-blue-600 dark:text-blue-400">
-                            {{ core()->getCurrentChannel()->name ?? config('app.name') }}
+                        <span class="flex items-center justify-center gap-2">
+                            <svg class="h-8 w-8 rounded-lg shrink-0 shadow-sm" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="32" height="32" rx="8" fill="#1c66f6"/>
+                                <path d="M10 8H20C21.6569 8 23 9.34315 23 11C23 12.6569 21.6569 14 20 14H10V8Z" fill="#fe8312"/>
+                                <path d="M10 14H19L23 24H18L15 16.5H10V24H7V8H10V14Z" fill="white"/>
+                            </svg>
+                            <span class="text-2xl font-bold tracking-tight text-[var(--text-primary)] font-cairo">
+                                {{ core()->getCurrentChannel()->name ?? config('app.name') }}
+                            </span>
                         </span>
                     @endif
                 </a>
 
-                <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                <h1 class="text-2xl font-bold tracking-tight text-[var(--text-primary)] font-cairo">
                     @lang('portal::app.auth.register.heading')
                 </h1>
 
-                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <p class="mt-2 text-sm text-[var(--text-secondary)]">
                     @lang('portal::app.auth.register.subheading')
                 </p>
             </div>
@@ -107,7 +114,7 @@
                 <div class="pt-2">
                     <button
                         type="submit"
-                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                        class="w-full flex justify-center py-3 px-4 rounded-xl shadow-sm text-sm font-semibold text-white bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--brand-primary)] transition-all"
                     >
                         @lang('portal::app.auth.register.submit')
                     </button>
@@ -115,11 +122,11 @@
             </x-portal::form>
 
             <!-- Login Footer -->
-            <div class="text-center text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-100 dark:border-gray-800">
+            <div class="text-center text-sm text-[var(--text-secondary)] pt-4 border-t border-[var(--border-subtle)]">
                 <span>@lang('portal::app.auth.register.already-have-account')</span>
                 <a
                     href="{{ route('portal.auth.login') }}"
-                    class="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 ltr:ml-1 rtl:mr-1 hover:underline"
+                    class="font-semibold text-[var(--brand-primary)] hover:text-[var(--brand-primary-hover)] ltr:ml-1 rtl:mr-1 hover:underline"
                 >
                     @lang('portal::app.auth.register.login-link')
                 </a>

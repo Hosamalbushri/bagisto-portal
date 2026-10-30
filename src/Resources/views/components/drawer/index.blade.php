@@ -18,12 +18,12 @@
 
     @isset($header)
         <template v-slot:header="{ close }">
-            <div {{ $header->attributes->merge(['class' => 'grid gap-y-2.5 p-6 pb-5 max-md:gap-y-1.5 max-md:border-b max-md:border-zinc-200 max-md:p-4 max-md:gap-y-1 max-md:font-semibold']) }}>
+            <div {{ $header->attributes->merge(['class' => 'grid gap-y-2.5 p-6 pb-5 border-b border-[var(--border-subtle)] max-md:p-4 max-md:gap-y-1 font-semibold text-[var(--text-primary)]']) }}>
                 {{ $header }}
 
                 <div class="absolute top-5 max-sm:top-4 ltr:right-5 rtl:left-5">
                     <span
-                        class="icon-cancel cursor-pointer text-3xl max-md:text-2xl"
+                        class="icon-cancel cursor-pointer text-3xl max-md:text-2xl text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                         @click="close"
                     >
                     </span>
@@ -72,7 +72,7 @@
                 leave-to-class="opacity-0"
             >
                 <div
-                    class="fixed inset-0 z-20 bg-gray-500 bg-opacity-50 transition-opacity"
+                    class="fixed inset-0 z-20 bg-[#080b11]/80 backdrop-blur-sm transition-opacity"
                     v-show="isOpen"
                 ></div>
             </transition>
@@ -89,7 +89,7 @@
                 :leave-to-class="enterFromLeaveToClasses"
             >
                 <div
-                    class="fixed z-[1000] overflow-hidden bg-white max-md:!w-full"
+                    class="fixed z-[1000] overflow-hidden bg-[var(--bg-surface)] text-[var(--text-primary)] border-[var(--border-subtle)] shadow-[var(--shadow-card)] max-md:!w-full"
                     :class="{
                         'inset-x-0 top-0': position == 'top',
                         'inset-x-0 bottom-0 max-sm:max-h-full': position == 'bottom',

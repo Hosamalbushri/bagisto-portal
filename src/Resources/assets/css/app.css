@@ -2,6 +2,170 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   Roa Soft Design System Tokens — Foundation
+   Verified from Roa Web Design System
+   ========================================================================== */
+
+:root {
+    /* Fonts */
+    --font-arabic: 'Cairo', system-ui, -apple-system, sans-serif;
+    --font-latin: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Brand Baseline */
+    --brand-primary: #1c66f6;
+    --brand-primary-hover: #1551c6;
+    --brand-primary-light: #e0edff;
+    --on-brand-primary: #ffffff;
+
+    --brand-accent: #fe8312;
+    --brand-accent-hover: #e0700a;
+    --brand-accent-light: #fff3e6;
+    --on-brand-accent: #090d16;
+
+    /* Light Theme (Default) */
+    --bg-app: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-surface-elevated: #f1f5f9;
+    --bg-surface-muted: #e2e8f0;
+
+    --text-primary: #090d16;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --text-inverse: #ffffff;
+
+    --border-subtle: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --border-focus: #1c66f6;
+
+    --shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+    --shadow-glow: 0 0 25px rgba(28, 102, 246, 0.2);
+    --shadow-glow-accent: 0 0 25px rgba(254, 131, 18, 0.2);
+
+    /* Semantic Status Tokens */
+    --color-success: #10b981;
+    --color-success-bg: rgba(16, 185, 129, 0.12);
+    --color-success-border: rgba(16, 185, 129, 0.25);
+    --color-warning: #f59e0b;
+    --color-warning-bg: rgba(245, 158, 11, 0.12);
+    --color-warning-border: rgba(245, 158, 11, 0.25);
+    --color-danger: #ef4444;
+    --color-danger-bg: rgba(239, 68, 68, 0.12);
+    --color-danger-border: rgba(239, 68, 68, 0.25);
+    --color-info: #1c66f6;
+    --color-info-bg: rgba(28, 102, 246, 0.12);
+    --color-info-border: rgba(28, 102, 246, 0.25);
+
+    /* Glassmorphism Tokens */
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.3);
+
+    /* Architectural Blueprint Grid Tokens */
+    --grid-line-color: rgba(15, 23, 42, 0.05);
+    --hero-glow-color: rgba(28, 102, 246, 0.08);
+    --code-bg: #0f172a;
+    --code-text: #e2e8f0;
+}
+
+.dark,
+[data-theme="dark"] {
+    /* Dark Theme (High-End Technical Navy OLED-Grade) */
+    --bg-app: #080b11;
+    --bg-surface: #0f141f;
+    --bg-surface-elevated: #161e2e;
+    --bg-surface-muted: #1f2a3f;
+
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --text-inverse: #090d16;
+
+    --brand-primary: #1c66f6;
+    --brand-primary-hover: #3b82f6;
+    --brand-primary-light: rgba(28, 102, 246, 0.15);
+    --on-brand-primary: #ffffff;
+
+    --brand-accent: #fe8312;
+    --brand-accent-hover: #ff9431;
+    --brand-accent-light: rgba(254, 131, 18, 0.15);
+    --on-brand-accent: #080b11;
+
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.16);
+    --border-focus: #3b82f6;
+
+    --shadow-card: 0 4px 10px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 35px rgba(28, 102, 246, 0.35);
+    --shadow-glow-accent: 0 0 30px rgba(254, 131, 18, 0.3);
+
+    /* Semantic Status Tokens (Dark Adjusted) */
+    --color-success: #34d399;
+    --color-success-bg: rgba(16, 185, 129, 0.15);
+    --color-success-border: rgba(52, 211, 153, 0.3);
+    --color-warning: #fbbf24;
+    --color-warning-bg: rgba(245, 158, 11, 0.15);
+    --color-warning-border: rgba(251, 191, 36, 0.3);
+    --color-danger: #f87171;
+    --color-danger-bg: rgba(239, 68, 68, 0.15);
+    --color-danger-border: rgba(248, 113, 113, 0.3);
+    --color-info: #60a5fa;
+    --color-info-bg: rgba(28, 102, 246, 0.2);
+    --color-info-border: rgba(96, 165, 250, 0.3);
+
+    /* Glassmorphism Tokens (Dark) */
+    --glass-bg: rgba(15, 20, 31, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.08);
+
+    /* Architectural Blueprint Grid Tokens */
+    --grid-line-color: rgba(255, 255, 255, 0.06);
+    --hero-glow-color: rgba(28, 102, 246, 0.28);
+    --code-bg: #06090e;
+    --code-text: #f1f5f9;
+}
+
+/* Typography & Directional Typography Rules */
+[dir="rtl"],
+[dir="rtl"] * {
+    font-family: var(--font-arabic);
+    letter-spacing: normal !important;
+}
+
+[dir="ltr"] {
+    font-family: var(--font-latin);
+}
+
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3 {
+    line-height: 1.35;
+}
+
+[dir="rtl"] p,
+[dir="rtl"] span,
+[dir="rtl"] a,
+[dir="rtl"] button {
+    line-height: 1.65;
+}
+
+/* Accessibility Focus Rings */
+:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 3px;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Blueprint Grid Utility */
+.bg-blueprint-grid {
+    background-image:
+        linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
 @font-face {
     font-family: "bagisto-shop";
     src: url("../fonts/bagisto-shop.woff") format("woff");
@@ -449,11 +613,131 @@ img.lazy {
     }
 
     .primary-button {
-        @apply flex gap-x-1.5 items-center place-content-center font-medium rounded-xl text-white bg-navyBlue border border-navyBlue px-8 py-4 max-w-max cursor-pointer transition-all hover:opacity-[0.9];
+        @apply flex gap-x-1.5 items-center place-content-center font-medium rounded-xl text-white bg-[var(--brand-primary)] border border-[var(--brand-primary)] px-8 py-4 max-w-max cursor-pointer transition-all hover:bg-[var(--brand-primary-hover)];
     }
 
     .secondary-button {
-        @apply flex gap-x-1.5 items-center place-content-center font-medium rounded-xl bg-white text-navyBlue border border-navyBlue px-8 py-4 max-w-max cursor-pointer transition-all hover:bg-[#050e3a0d];
+        @apply flex gap-x-1.5 items-center place-content-center font-medium rounded-xl bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-strong)] px-8 py-4 max-w-max cursor-pointer transition-all hover:bg-[var(--bg-surface-elevated)];
+    }
+
+    /* Expanded Roa Soft Button System (Touch-Target Compliant min-h-[44px]) */
+    .btn-primary {
+        @apply inline-flex items-center justify-center font-semibold rounded-xl text-white bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] px-5 py-2.5 min-h-[44px] gap-2 transition-all shadow-sm hover:shadow-[var(--shadow-glow)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .btn-accent {
+        @apply inline-flex items-center justify-center font-semibold rounded-xl text-[var(--on-brand-accent)] bg-[var(--brand-accent)] hover:bg-[var(--brand-accent-hover)] px-5 py-2.5 min-h-[44px] gap-2 transition-all shadow-sm hover:shadow-[var(--shadow-glow-accent)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center font-medium rounded-xl text-[var(--text-primary)] bg-[var(--bg-surface-elevated)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] px-5 py-2.5 min-h-[44px] gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .btn-outline {
+        @apply inline-flex items-center justify-center font-medium rounded-xl text-[var(--text-primary)] bg-transparent hover:bg-[var(--bg-surface-elevated)] border border-[var(--border-strong)] hover:border-[var(--brand-primary)] px-5 py-2.5 min-h-[44px] gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .btn-ghost {
+        @apply inline-flex items-center justify-center font-medium rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-transparent hover:bg-[var(--bg-surface-elevated)] px-4 py-2 min-h-[44px] gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    /* Expanded Roa Soft Badge System */
+    .badge {
+        @apply inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full select-none transition-colors;
+    }
+    .badge-primary {
+        @apply badge bg-[var(--brand-primary-light)] text-[var(--brand-primary)];
+        border: 1px solid rgba(28, 102, 246, 0.25);
+    }
+    .badge-accent {
+        @apply badge bg-[var(--brand-accent-light)] text-[#b45309] dark:text-[#f59e0b];
+        border: 1px solid rgba(254, 131, 18, 0.25);
+    }
+    .badge-success {
+        @apply badge bg-[var(--color-success-bg)] text-[var(--color-success)];
+        border: 1px solid var(--color-success-border);
+    }
+    .badge-warning {
+        @apply badge bg-[var(--color-warning-bg)] text-[var(--color-warning)];
+        border: 1px solid var(--color-warning-border);
+    }
+    .badge-danger {
+        @apply badge bg-[var(--color-danger-bg)] text-[var(--color-danger)];
+        border: 1px solid var(--color-danger-border);
+    }
+    .badge-muted {
+        @apply badge bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] border border-[var(--border-subtle)];
+    }
+
+    /* Glassmorphism Surface Utility */
+    .glass-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--shadow-card);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+
+    /* Interactive Spotlight Glow System */
+    [data-spotlight] {
+        --spotlight-x: -1000px;
+        --spotlight-y: -1000px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    [data-spotlight]::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: inherit;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        background: radial-gradient(
+            600px circle at var(--spotlight-x) var(--spotlight-y),
+            rgba(28, 102, 246, 0.08),
+            transparent 40%
+        );
+        z-index: 1;
+    }
+
+    .dark [data-spotlight]::before,
+    [data-theme="dark"] [data-spotlight]::before {
+        background: radial-gradient(
+            600px circle at var(--spotlight-x) var(--spotlight-y),
+            rgba(28, 102, 246, 0.16),
+            transparent 40%
+        );
+    }
+
+    [data-spotlight]:hover::before {
+        opacity: 1;
+    }
+
+    [data-spotlight] > * {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Architectural Blueprint Grid & Shader Simulation Fallback */
+    .portal-shader-glow {
+        background-image: radial-gradient(circle at 82% 45%, var(--hero-glow-color) 0%, transparent 65%),
+                          radial-gradient(circle at 65% 20%, rgba(254, 131, 18, 0.08) 0%, transparent 40%),
+                          radial-gradient(circle at 90% 80%, var(--hero-glow-color) 0%, transparent 50%);
+    }
+
+    [dir="rtl"] .portal-shader-glow,
+    html[dir="rtl"] .portal-shader-glow {
+        background-image: radial-gradient(circle at 18% 45%, var(--hero-glow-color) 0%, transparent 65%),
+                          radial-gradient(circle at 35% 20%, rgba(254, 131, 18, 0.08) 0%, transparent 40%),
+                          radial-gradient(circle at 10% 80%, var(--hero-glow-color) 0%, transparent 50%);
+    }
+
+    .portal-grid-pattern {
+        background-size: 36px 36px;
+        background-image: linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+                          linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
     }
 
     .shimmer {
@@ -463,6 +747,11 @@ img.lazy {
         animation-name: skeleton;
         animation-timing-function: linear;
         background: linear-gradient(to right, #F6F6F6 8%, #F0F0F0 18%, #F6F6F6 33%);
+        background-size: 1250px 100%;
+    }
+
+    .dark .shimmer {
+        background: linear-gradient(to right, #111622 8%, #1c2333 18%, #111622 33%);
         background-size: 1250px 100%;
     }
 

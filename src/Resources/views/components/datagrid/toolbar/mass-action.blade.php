@@ -23,24 +23,24 @@
                     <x-slot:toggle>
                         <button
                             type="button"
-                            class="inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-2 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-center leading-6 text-gray-600 transition-all marker:shadow hover:border-gray-400 focus:border-gray-400 focus:ring-black"
+                            class="inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-1.5 text-center leading-6 text-[var(--text-primary)] transition-all hover:border-[var(--border-strong)]"
                         >
                             <span>
                                 @lang('portal::app.components.datagrid.toolbar.mass-actions.select-action')
                             </span>
 
-                            <span class="icon-arrow-down text-2xl"></span>
+                            <span class="icon-arrow-down text-2xl text-[var(--text-muted)]"></span>
                         </button>
                     </x-slot>
 
-                    <x-slot:menu class="border-gray-300 !p-0 shadow-[0_5px_20px_rgba(0,0,0,0.15)]">
+                    <x-slot:menu class="border border-[var(--border-subtle)] bg-[var(--bg-surface)] !p-0 shadow-[var(--shadow-card)] rounded-xl overflow-hidden">
                         <template v-for="massAction in available.massActions">
                             <li
                                 class="group/item relative overflow-visible"
                                 v-if="massAction?.options?.length"
                             >
                                 <a
-                                    class="whitespace-no-wrap !rounded-0 flex cursor-not-allowed justify-between gap-1.5 bg-white px-4 py-2 hover:bg-gray-100"
+                                    class="whitespace-no-wrap !rounded-0 flex cursor-not-allowed justify-between gap-1.5 bg-[var(--bg-surface)] px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-surface-muted)] hover:text-[var(--text-primary)]"
                                     href="javascript:void(0);"
                                 >
                                     <i

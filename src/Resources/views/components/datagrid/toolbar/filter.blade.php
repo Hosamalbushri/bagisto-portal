@@ -36,8 +36,8 @@
                 >
                     <x-slot:toggle>
                         <div
-                            class="flex w-full max-w-[200px] cursor-pointer items-center justify-between gap-4 rounded-lg border border-zinc-200 bg-white py-2 text-sm transition-all hover:border-gray-400 focus:border-gray-400 max-md:w-fit ltr:pl-3 ltr:pr-4 max-md:ltr:pl-2.5 max-md:ltr:pr-2.5 rtl:pl-4 rtl:pr-3 max-md:rtl:pl-2.5 max-md:rtl:pr-2.5"
-                            :class="{'[&>*]:text-blue-600': filters.columns.length > 0}"
+                            class="flex w-full max-w-[200px] cursor-pointer items-center justify-between gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] py-2 text-sm text-[var(--text-primary)] transition-all hover:border-[var(--border-strong)] max-md:w-fit ltr:pl-3 ltr:pr-4 max-md:ltr:pl-2.5 max-md:ltr:pr-2.5 rtl:pl-4 rtl:pr-3 max-md:rtl:pl-2.5 max-md:rtl:pr-2.5"
+                            :class="{'[&>*]:text-[var(--brand-primary)]': filters.columns.length > 0}"
                         >
                             <span class="flex items-center justify-between gap-1.5">
                                 <span class="icon-filter text-2xl"></span>
@@ -49,8 +49,8 @@
                         </div>
                     </x-slot>
 
-                    <x-slot:header class="border-b border-zinc-200 !px-4">
-                        <p class="text-lg font-semibold">
+                    <x-slot:header class="border-b border-[var(--border-subtle)] !px-4">
+                        <p class="text-lg font-semibold text-[var(--text-primary)]">
                             @lang('portal::app.components.datagrid.toolbar.filter.apply-filter')
                         </p>
                     </x-slot>

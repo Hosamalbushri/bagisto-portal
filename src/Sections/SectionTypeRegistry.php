@@ -26,6 +26,8 @@ class SectionTypeRegistry
      */
     protected function registerDefaults(): void
     {
+        $this->register(new HeroScaffold);
+        $this->register(new BentoGrid);
         $this->register(new HeroSlider);
         $this->register(new FeaturesGrid);
         $this->register(new FaqAccordion);

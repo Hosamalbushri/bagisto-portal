@@ -11,13 +11,13 @@
         @if ($heading || $subheading)
             <div class="text-center mb-10 max-md:mb-6" v-pre>
                 @if ($heading)
-                    <h2 class="font-dmserif text-4xl max-md:text-3xl max-sm:text-xl text-zinc-900 dark:text-white">
+                    <h2 class="font-cairo font-bold text-4xl max-md:text-3xl max-sm:text-xl text-[var(--text-primary)]">
                         {{ $heading }}
                     </h2>
                 @endif
 
                 @if ($subheading)
-                    <p class="mt-3 text-lg max-sm:text-sm text-zinc-500 dark:text-zinc-400">
+                    <p class="mt-3 text-lg max-sm:text-sm text-[var(--text-secondary)]">
                         {{ $subheading }}
                     </p>
                 @endif
@@ -27,12 +27,12 @@
         @if (! empty($items))
             <div class="grid gap-3">
                 @foreach ($items as $item)
-                    <x-portal::accordion class="border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
-                        <x-slot:header class="p-5 font-semibold text-base text-zinc-900 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50 cursor-pointer">
+                    <x-portal::accordion class="border border-[var(--border-subtle)] rounded-xl bg-[var(--bg-surface)] overflow-hidden shadow-sm">
+                        <x-slot:header class="p-5 font-semibold text-base text-[var(--text-primary)] hover:bg-[var(--bg-surface-muted)] cursor-pointer transition-colors">
                             {{ $item['question'] ?? '' }}
                         </x-slot>
 
-                        <x-slot:content class="p-5 pt-0 text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                        <x-slot:content class="p-5 pt-0 text-sm text-[var(--text-secondary)] leading-relaxed">
                             {{ $item['answer'] ?? '' }}
                         </x-slot>
                     </x-portal::accordion>

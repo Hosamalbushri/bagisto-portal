@@ -47,14 +47,14 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
 
     @stack('styles')
 
     {!! view_render_event('bagisto.shop.layout.head.after') !!}
 </head>
 
-<body class="bg-gray-50 text-gray-800 antialiased dark:bg-gray-950 dark:text-gray-100 min-h-screen flex flex-col justify-between">
+<body class="antialiased min-h-screen flex flex-col justify-between transition-colors duration-200" style="background-color: var(--bg-app); color: var(--text-primary);">
     {!! view_render_event('bagisto.shop.layout.body.before') !!}
 
     <div id="app" class="flex min-h-screen flex-col justify-between">

@@ -4,12 +4,12 @@
     </x-slot>
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="m-auto w-full rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-8 sm:p-14 shadow-sm">
-            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+        <div class="m-auto w-full rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-8 sm:p-14 shadow-[var(--shadow-card)]">
+            <h1 class="text-3xl font-extrabold text-[var(--text-primary)] font-cairo sm:text-4xl">
                 @lang('portal::app.home.contact-us.heading')
             </h1>
 
-            <p class="mt-4 text-base text-gray-600 dark:text-gray-400">
+            <p class="mt-4 text-base text-[var(--text-secondary)]">
                 @lang('portal::app.home.contact-us.subheading')
             </p>
 
@@ -96,7 +96,7 @@
                     <!-- Submit Button -->
                     <div class="mt-8">
                         <x-portal::button
-                            class="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm"
+                            class="w-full sm:w-auto px-8 py-3 bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] text-white font-semibold rounded-xl shadow-sm transition-all"
                             type="submit"
                         >
                             @lang('portal::app.home.contact-us.submit')
