@@ -27,6 +27,7 @@ class PortalMenuSlotAssignment extends Model implements PortalMenuSlotAssignment
         'portal_menu_id',
         'channel_id',
         'theme_code',
+        'locale_code',
         'title',
         'options',
         'status',

@@ -5,9 +5,12 @@
 
     {!! view_render_event('bagisto.admin.portal.navigation.before') !!}
 
-    <x-admin::form :action="route('admin.portal.navigation.update')">
+    <x-admin::form :action="route('admin.portal.navigation.update', ['channel' => $currentChannel->code, 'locale' => $currentLocale->code])">
+        <input type="hidden" name="channel" value="{{ $currentChannel->code }}" />
+        <input type="hidden" name="locale" value="{{ $currentLocale->code }}" />
+        <input type="hidden" name="theme_code" value="{{ $themeCode }}" />
         <!-- Page Header -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between gap-4 max-sm:flex-wrap">
             <p class="text-xl font-bold text-gray-800 dark:text-white">
                 @lang('portal::app.admin.navigation.title')
             </p>
@@ -29,21 +32,26 @@
             </div>
         </div>
 
-        <!-- Channel Switcher -->
+        <!-- Channel and Locale Switcher Row (Standard Bagisto Admin Pattern) -->
         <div class="mt-7 flex items-center justify-between gap-4 max-md:flex-wrap">
             <div class="flex items-center gap-x-1">
-                <x-admin::dropdown
-                    position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'left' : 'right' }}"
-                    :class="$channels->count() <= 1 ? 'hidden' : ''"
-                >
+                <!-- Channel Switcher -->
+                <x-admin::dropdown :class="$channels->count() <= 1 ? 'hidden' : ''">
                     <x-slot:toggle>
                         <button
                             type="button"
                             class="transparent-button px-1 py-1.5 hover:bg-gray-200 focus:bg-gray-200 dark:text-white dark:hover:bg-gray-800 dark:focus:bg-gray-800"
                         >
                             <span class="icon-store text-2xl"></span>
+
                             <span v-pre>{{ $currentChannel->name }}</span>
-                            <input type="hidden" name="channel_id" value="{{ $currentChannel->id }}" />
+
+                            <input
+                                type="hidden"
+                                name="channel"
+                                value="{{ $currentChannel->code }}"
+                            />
+
                             <span class="icon-sort-down text-2xl"></span>
                         </button>
                     </x-slot>
@@ -51,19 +59,49 @@
                     <x-slot:content class="!p-0">
                         @foreach ($channels as $channel)
                             <a
-                                href="?{{ Arr::query(['channel_id' => $channel->id]) }}"
+                                href="?{{ Arr::query(['channel' => $channel->code, 'locale' => $channel->default_locale?->code ?? $currentLocale->code]) }}"
                                 class="flex cursor-pointer gap-2.5 px-5 py-2 text-base hover:bg-gray-100 dark:text-white dark:hover:bg-gray-950 {{ $channel->id == $currentChannel->id ? 'bg-gray-100 font-bold dark:bg-gray-950' : '' }}"
                                 v-pre
                             >
                                 {{ $channel->name }}
                             </a>
                         @endforeach
-                    </x-slot:content>
+                    </x-slot>
                 </x-admin::dropdown>
 
-                @if ($channels->count() <= 1)
-                    <input type="hidden" name="channel_id" value="{{ $currentChannel->id }}" />
-                @endif
+                <!-- Locale Switcher -->
+                <x-admin::dropdown :class="$currentChannel->locales->count() <= 1 ? 'hidden' : ''">
+                    <x-slot:toggle>
+                        <button
+                            type="button"
+                            class="transparent-button px-1 py-1.5 hover:bg-gray-200 focus:bg-gray-200 dark:text-white dark:hover:bg-gray-800 dark:focus:bg-gray-800"
+                        >
+                            <span class="icon-language text-2xl"></span>
+
+                            <span v-pre>{{ $currentLocale->name }}</span>
+
+                            <input
+                                type="hidden"
+                                name="locale"
+                                value="{{ $currentLocale->code }}"
+                            />
+
+                            <span class="icon-sort-down text-2xl"></span>
+                        </button>
+                    </x-slot>
+
+                    <x-slot:content class="!p-0">
+                        @foreach ($currentChannel->locales->sortBy('name') as $locale)
+                            <a
+                                href="?{{ Arr::query(['channel' => $currentChannel->code, 'locale' => $locale->code]) }}"
+                                class="flex gap-2.5 px-5 py-2 text-base cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-950 dark:text-white {{ $locale->code == $currentLocale->code ? 'bg-gray-100 dark:bg-gray-950' : '' }}"
+                                v-pre
+                            >
+                                {{ $locale->name }}
+                            </a>
+                        @endforeach
+                    </x-slot>
+                </x-admin::dropdown>
 
                 <input type="hidden" name="theme_code" value="{{ $themeCode }}" />
             </div>
@@ -144,6 +182,13 @@
                                     <x-admin::form.control-group class="!mb-0">
                                         <x-admin::form.control-group.label>
                                             @lang('portal::app.admin.navigation.assigned-menu')
+
+                                            <span
+                                                class="rounded border border-gray-200 bg-gray-100 px-1 py-0.5 text-[10px] font-semibold leading-normal text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                                v-pre
+                                            >
+                                                {{ $currentLocale->name }}
+                                            </span>
                                         </x-admin::form.control-group.label>
 
                                         <x-admin::form.control-group.control
@@ -195,8 +240,9 @@
                             @foreach ($slots['footer'] as $slotId => $slotInfo)
                                 @php
                                     $assignment = $assignments->get($slotId);
+                                    $isCurrentLocale = $assignment && $assignment->locale_code === $currentLocale->code;
                                     $selectedMenuId = $assignment?->portal_menu_id;
-                                    $slotTitle = $assignment?->title;
+                                    $slotTitle = $isCurrentLocale ? $assignment->title : ($assignment?->title ?? '');
                                     $slotStatus = $assignment ? (bool) $assignment->status : true;
                                     $slotLabel = Lang::has('portal::app.admin.navigation.slots.' . $slotId)
                                         ? trans('portal::app.admin.navigation.slots.' . $slotId)
@@ -246,6 +292,13 @@
                                         <x-admin::form.control-group class="!mb-0">
                                             <x-admin::form.control-group.label>
                                                 @lang('portal::app.admin.navigation.assigned-menu')
+
+                                                <span
+                                                    class="rounded border border-gray-200 bg-gray-100 px-1 py-0.5 text-[10px] font-semibold leading-normal text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                                    v-pre
+                                                >
+                                                    {{ $currentLocale->name }}
+                                                </span>
                                             </x-admin::form.control-group.label>
 
                                             <x-admin::form.control-group.control
@@ -273,6 +326,13 @@
                                         <x-admin::form.control-group class="!mb-0">
                                             <x-admin::form.control-group.label>
                                                 @lang('portal::app.admin.navigation.slot-title')
+
+                                                <span
+                                                    class="rounded border border-gray-200 bg-gray-100 px-1 py-0.5 text-[10px] font-semibold leading-normal text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                                    v-pre
+                                                >
+                                                    {{ $currentLocale->name }}
+                                                </span>
                                             </x-admin::form.control-group.label>
 
                                             <x-admin::form.control-group.control
@@ -280,6 +340,7 @@
                                                 id="slot_title_{{ $slotId }}"
                                                 name="slots[{{ $slotId }}][title]"
                                                 :value="$slotTitle"
+                                                :placeholder="trans('portal::app.admin.navigation.slot-title')"
                                             />
                                         </x-admin::form.control-group>
                                     </div>
@@ -356,6 +417,13 @@
                                     <x-admin::form.control-group class="!mb-0">
                                         <x-admin::form.control-group.label>
                                             @lang('portal::app.admin.navigation.assigned-menu')
+
+                                            <span
+                                                class="rounded border border-gray-200 bg-gray-100 px-1 py-0.5 text-[10px] font-semibold leading-normal text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                                v-pre
+                                            >
+                                                {{ $currentLocale->name }}
+                                            </span>
                                         </x-admin::form.control-group.label>
 
                                         <x-admin::form.control-group.control
@@ -407,6 +475,15 @@
 
                         <div class="flex items-center justify-between border-b pb-2 text-sm dark:border-gray-800">
                             <span class="text-gray-500">
+                                @lang('portal::app.admin.navigation.locale')
+                            </span>
+                            <span class="font-semibold text-gray-800 dark:text-white">
+                                {{ $currentLocale->name }} ({{ $currentLocale->code }})
+                            </span>
+                        </div>
+
+                        <div class="flex items-center justify-between border-b pb-2 text-sm dark:border-gray-800">
+                            <span class="text-gray-500">
                                 @lang('portal::app.admin.navigation.theme')
                             </span>
                             <span class="font-mono text-xs text-gray-700 dark:text-gray-300">
@@ -449,7 +526,7 @@
                         </p>
 
                         <div class="rounded bg-gray-100 p-2.5 font-mono text-[11px] text-gray-800 dark:bg-gray-950 dark:text-gray-200" dir="ltr">
-                            &lt;x-portal::menu-slot id="slot_id" label="Title" /&gt;
+                            &lt;x-portal::menu-slot id="slot_id" /&gt;
                         </div>
 
                         <p class="text-[11px] text-gray-500">

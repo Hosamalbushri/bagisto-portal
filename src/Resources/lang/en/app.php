@@ -287,6 +287,7 @@ return [
             'no-slots-found' => 'No menu slots found in this section.',
             'general-info' => 'Theme & Store Scope',
             'channel' => 'Selected Channel',
+            'locale' => 'Selected Locale',
             'theme' => 'Active Theme',
             'slots-count' => 'Discovered Slots',
             'menus-count' => 'Available Menus',

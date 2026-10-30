@@ -14,7 +14,8 @@
     $assignment = app(\Platform\Portal\Repositories\PortalMenuSlotAssignmentRepository::class)->findForSlot(
         $id,
         $channelId ?? 0,
-        $themeCode
+        $themeCode,
+        app()->getLocale()
     );
 
     $menu = null;

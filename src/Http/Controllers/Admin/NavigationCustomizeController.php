@@ -31,12 +31,23 @@ class NavigationCustomizeController extends Controller
 
         $channels = core()->getAllChannels();
 
-        $currentChannel = $request->filled('channel_id')
-            ? $channels->firstWhere('id', (int) $request->input('channel_id'))
-            : core()->getCurrentChannel();
+        $channelCode = $request->query('channel') ?: $request->input('channel');
+        $localeCode = $request->query('locale') ?: $request->input('locale');
+
+        $currentChannel = $channelCode
+            ? $channels->firstWhere('code', $channelCode)
+            : core()->getRequestedChannel();
 
         if (! $currentChannel) {
-            $currentChannel = $channels->first();
+            $currentChannel = core()->getCurrentChannel();
+        }
+
+        $currentLocale = $localeCode
+            ? core()->getAllLocales()->firstWhere('code', $localeCode)
+            : core()->getRequestedLocale();
+
+        if (! $currentLocale) {
+            $currentLocale = core()->getCurrentLocale();
         }
 
         $themeCode = $currentChannel?->theme ?? config('themes.shop-default', 'default');
@@ -44,8 +55,12 @@ class NavigationCustomizeController extends Controller
         // Scan layout files for slots
         $scannedSlots = $this->menuSlotScanner->scan();
 
-        // Get saved assignments from DB
-        $assignments = $this->portalMenuSlotAssignmentRepository->getAssignments($currentChannel->id, $themeCode);
+        // Get saved assignments from DB for channel, theme, and locale
+        $assignments = $this->portalMenuSlotAssignmentRepository->getAssignments(
+            $currentChannel->id,
+            $themeCode,
+            $currentLocale->code
+        );
 
         // Get available menus for channel + global
         $menus = $this->portalMenuRepository->findWhere(['channel_id' => $currentChannel->id])
@@ -55,6 +70,7 @@ class NavigationCustomizeController extends Controller
         return view('portal::admin.navigation.index', [
             'channels' => $channels,
             'currentChannel' => $currentChannel,
+            'currentLocale' => $currentLocale,
             'themeCode' => $themeCode,
             'slots' => $scannedSlots,
             'assignments' => $assignments,
@@ -70,30 +86,55 @@ class NavigationCustomizeController extends Controller
         abort_unless(bouncer()->hasPermission('portal.navigation'), 403);
 
         $request->validate([
-            'channel_id' => 'required|integer|exists:channels,id',
+            'channel' => 'nullable|string',
+            'locale' => 'nullable|string',
             'theme_code' => 'nullable|string',
             'slots' => 'nullable|array',
         ]);
 
-        $channelId = (int) $request->input('channel_id');
-        $themeCode = $request->input('theme_code', 'default');
+        $channelCode = $request->input('channel') ?: $request->query('channel');
+        $localeCode = $request->input('locale') ?: $request->query('locale');
+
+        $currentChannel = $channelCode
+            ? core()->getAllChannels()->firstWhere('code', $channelCode)
+            : core()->getRequestedChannel();
+
+        if (! $currentChannel) {
+            $currentChannel = core()->getCurrentChannel();
+        }
+
+        $currentLocale = $localeCode
+            ? core()->getAllLocales()->firstWhere('code', $localeCode)
+            : core()->getRequestedLocale();
+
+        if (! $currentLocale) {
+            $currentLocale = core()->getCurrentLocale();
+        }
+
+        $themeCode = $request->input('theme_code', $currentChannel?->theme ?? 'default');
         $slots = $request->input('slots', []);
 
-        $this->portalMenuSlotAssignmentRepository->saveAssignments($slots, $channelId, $themeCode);
+        $this->portalMenuSlotAssignmentRepository->saveAssignments(
+            $slots,
+            $currentChannel->id,
+            $themeCode,
+            $currentLocale->code
+        );
 
         session()->flash('success', trans('portal::app.admin.navigation.update-success'));
+
+        $redirectParams = [
+            'channel' => $currentChannel->code,
+            'locale' => $currentLocale->code,
+        ];
 
         if ($request->ajax()) {
             return response()->json([
                 'message' => trans('portal::app.admin.navigation.update-success'),
-                'redirect' => route('admin.portal.navigation.index', [
-                    'channel_id' => $channelId,
-                ]),
+                'redirect' => route('admin.portal.navigation.index', $redirectParams),
             ]);
         }
 
-        return redirect()->route('admin.portal.navigation.index', [
-            'channel_id' => $channelId,
-        ]);
+        return redirect()->route('admin.portal.navigation.index', $redirectParams);
     }
 }
