@@ -51,7 +51,7 @@
 
             <!-- Right Form using standard Bagisto Form Components -->
             <div>
-                <x-portal::form :action="route('shop.home.contact_us.send_mail')">
+                <x-portal::form :action="portal_route('portal.contact_us.send_mail')">
                     <!-- Name -->
                     <x-portal::form.control-group>
                         <x-portal::form.control-group.label class="required">

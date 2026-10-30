@@ -20,7 +20,7 @@
             :get-searched-values="getSearchedValues"
         >
             <template v-if="isLoading">
-                <x-shop::shimmer.datagrid.toolbar.search />
+                <x-portal::shimmer.datagrid.toolbar.search />
             </template>
 
             <template v-else>
@@ -33,7 +33,7 @@
                                 name="search"
                                 :value="getSearchedValues('all')"
                                 class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-base text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 max-md:max-w-[250px] max-md:py-2 max-sm:py-1.5 ltr:pr-8 rtl:pl-8"
-                                placeholder="@lang('shop::app.components.datagrid.toolbar.search.title')"
+                                placeholder="@lang('portal::app.components.datagrid.toolbar.search.title')"
                                 autocomplete="off"
                                 @keyup.enter="search"
                             >
@@ -46,7 +46,7 @@
                     <!-- Information Panel -->
                     <div class="max-md:hidden ltr:pl-2.5 rtl:pr-2.5">
                         <p class="text-sm font-light text-gray-800 max-md:w-full">
-                            @{{ "@lang('shop::app.components.datagrid.toolbar.results')".replace(':total', available.meta.total) }}
+                            @{{ "@lang('portal::app.components.datagrid.toolbar.results')".replace(':total', available.meta.total) }}
                         </p>
                     </div>
                 </div>

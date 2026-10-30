@@ -21,4 +21,15 @@ return [
         'enabled' => env('PORTAL_AUTH_ENABLED', false),
         'guard' => env('PORTAL_AUTH_GUARD', 'customer'),
     ],
+
+    /*
+     * Portal Routing Mode Configuration.
+     *
+     * - 'override_shop': Portal acts as the primary storefront for the application.
+     * - 'prefix': Portal runs alongside the default shop on a dedicated URL prefix (e.g., /portal).
+     */
+    'routing' => [
+        'mode' => env('PORTAL_ROUTING_MODE', 'override_shop'),
+        'prefix' => env('PORTAL_PREFIX', 'portal'),
+    ],
 ];

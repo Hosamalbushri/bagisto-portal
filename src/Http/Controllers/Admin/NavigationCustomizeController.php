@@ -27,7 +27,7 @@ class NavigationCustomizeController extends Controller
      */
     public function index(Request $request): View
     {
-        abort_unless(bouncer()->hasPermission('portal.navigation'), 403);
+        abort_unless(bouncer()->hasPermission('portal_menus.navigation'), 403);
 
         $channels = core()->getAllChannels();
 
@@ -83,7 +83,7 @@ class NavigationCustomizeController extends Controller
      */
     public function update(Request $request): RedirectResponse|JsonResponse
     {
-        abort_unless(bouncer()->hasPermission('portal.navigation'), 403);
+        abort_unless(bouncer()->hasPermission('portal_menus.navigation'), 403);
 
         $request->validate([
             'channel' => 'nullable|string',

@@ -9,13 +9,11 @@ use Platform\Portal\Http\Controllers\LocaleController;
 use Platform\Portal\Http\Controllers\PageController;
 use Platform\Portal\Http\Controllers\SitemapController;
 
+$overrideShop = config('portal.routing.mode', 'override_shop') === 'override_shop';
+
 /**
  * Dynamic Modular and CMS pages.
  */
-Route::get('page/{slug}', [PageController::class, 'view'])
-    ->name('shop.cms.page')
-    ->middleware('cache.response');
-
 Route::get('pages/{slug}', [PageController::class, 'view'])
     ->name('portal.page.show')
     ->middleware('cache.response');
@@ -23,20 +21,17 @@ Route::get('pages/{slug}', [PageController::class, 'view'])
 Route::get('pages/{slug}/preview', [PageController::class, 'preview'])
     ->name('portal.page.preview');
 
-/**
- * Search-engine discovery.
- */
-Route::get('sitemap.xml', [SitemapController::class, 'index'])
-    ->name('shop.sitemap.index');
-
-Route::get('robots.txt', [SitemapController::class, 'robots'])
-    ->name('shop.robots');
+if ($overrideShop) {
+    Route::get('page/{slug}', [PageController::class, 'view'])
+        ->name('shop.cms.page')
+        ->middleware('cache.response');
+}
 
 /**
  * Store front home.
  */
 Route::get('/', [HomeController::class, 'index'])
-    ->name('shop.home.index')
+    ->name($overrideShop ? 'shop.home.index' : 'portal.home')
     ->middleware('cache.response');
 
 /**
@@ -45,18 +40,27 @@ Route::get('/', [HomeController::class, 'index'])
  * The path must stay one segment deep: storefront markup emits relative asset urls.
  */
 Route::get('appearance-preview', [HomeController::class, 'preview'])
-    ->name('shop.appearance.preview');
+    ->name($overrideShop ? 'shop.appearance.preview' : 'portal.appearance.preview');
 
 /**
  * Contact Us.
  */
 Route::get('contact-us', [HomeController::class, 'contactUs'])
-    ->name('shop.home.contact_us')
+    ->name($overrideShop ? 'shop.home.contact_us' : 'portal.contact_us')
     ->middleware('cache.response');
 
 Route::post('contact-us/send-mail', [HomeController::class, 'sendContactUsMail'])
-    ->name('shop.home.contact_us.send_mail')
+    ->name($overrideShop ? 'shop.home.contact_us.send_mail' : 'portal.contact_us.send_mail')
     ->middleware('cache.response');
+
+/**
+ * Search-engine discovery.
+ */
+Route::get('sitemap.xml', [SitemapController::class, 'index'])
+    ->name($overrideShop ? 'shop.sitemap.index' : 'portal.sitemap.index');
+
+Route::get('robots.txt', [SitemapController::class, 'robots'])
+    ->name($overrideShop ? 'shop.robots' : 'portal.robots');
 
 /**
  * Locale switch.

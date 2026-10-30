@@ -1,5 +1,5 @@
 <template v-if="isLoading">
-    <x-shop::shimmer.datagrid.toolbar />
+    <x-portal::shimmer.datagrid.toolbar />
 </template>
 
 <template v-else>
@@ -8,7 +8,7 @@
         <div class="flex w-full gap-x-1">
             <!-- Mass Actions Panel -->
             <template v-if="applied.massActions.indices.length">
-                <x-shop::datagrid.toolbar.mass-action>
+                <x-portal::datagrid.toolbar.mass-action>
                     <template #mass-action="{
                         available,
                         applied,
@@ -26,12 +26,12 @@
                         >
                         </slot>
                     </template>
-                </x-shop::datagrid.toolbar.mass-action>
+                </x-portal::datagrid.toolbar.mass-action>
             </template>
 
             <!-- Search Panel -->
             <template v-else>
-                <x-shop::datagrid.toolbar.search>
+                <x-portal::datagrid.toolbar.search>
                     <template #search="{
                         available,
                         applied,
@@ -47,10 +47,10 @@
                         >
                         </slot>
                     </template>
-                </x-shop::datagrid.toolbar.search>
+                </x-portal::datagrid.toolbar.search>
 
                 <div class="hidden w-11 max-md:block">
-                    <x-shop::datagrid.toolbar.filter>
+                    <x-portal::datagrid.toolbar.filter>
                         <template #filter="{
                             available,
                             applied,
@@ -78,7 +78,7 @@
                             >
                             </slot>
                         </template>
-                    </x-shop::datagrid.toolbar.filter>
+                    </x-portal::datagrid.toolbar.filter>
                 </div>
             </template>
         </div>
@@ -86,7 +86,7 @@
         <!-- Right Toolbar -->
         <div class="flex gap-x-4 max-md:my-4 max-md:items-center max-md:justify-between">
             <!-- Pagination Panel -->
-            <x-shop::datagrid.toolbar.pagination>
+            <x-portal::datagrid.toolbar.pagination>
                 <template #pagination="{
                     available,
                     applied,
@@ -102,17 +102,17 @@
                     >
                     </slot>
                 </template>
-            </x-shop::datagrid.toolbar.pagination>                
+            </x-portal::datagrid.toolbar.pagination>                
 
             <div class="hidden max-md:block ltr:pl-2.5 rtl:pr-2.5">
                 <p class="text-sm font-light text-gray-800 max-md:w-full">
-                    @{{ "@lang('shop::app.components.datagrid.toolbar.results')".replace(':total', available.meta.total) }}
+                    @{{ "@lang('portal::app.components.datagrid.toolbar.results')".replace(':total', available.meta.total) }}
                 </p>
             </div>
 
             <!-- Filter Panel -->
             <div class="max-md:hidden">
-                <x-shop::datagrid.toolbar.filter>
+                <x-portal::datagrid.toolbar.filter>
                     <template #filter="{
                         available,
                         applied,
@@ -140,7 +140,7 @@
                         >
                         </slot>
                     </template>
-                </x-shop::datagrid.toolbar.filter>
+                </x-portal::datagrid.toolbar.filter>
             </div>
         </div>
     </div>

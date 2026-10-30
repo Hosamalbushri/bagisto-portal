@@ -19,14 +19,14 @@
             :perform-mass-action="performMassAction"
         >
             <div class="flex w-full items-center gap-x-1">
-                <x-shop::dropdown position="bottom-left">
+                <x-portal::dropdown position="bottom-left">
                     <x-slot:toggle>
                         <button
                             type="button"
                             class="inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-2 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-center leading-6 text-gray-600 transition-all marker:shadow hover:border-gray-400 focus:border-gray-400 focus:ring-black"
                         >
                             <span>
-                                @lang('shop::app.components.datagrid.toolbar.mass-actions.select-action')
+                                @lang('portal::app.components.datagrid.toolbar.mass-actions.select-action')
                             </span>
 
                             <span class="icon-arrow-down text-2xl"></span>
@@ -88,13 +88,13 @@
                             </li>
                         </template>
                     </x-slot>
-                </x-shop::dropdown>
+                </x-portal::dropdown>
 
                 <div class="ltr:pl-2.5 rtl:pr-2.5">
                     <p class="text-sm font-light text-gray-800">
-                        @{{ "@lang('shop::app.components.datagrid.toolbar.length-of')".replace(':length', massActions.indices.length) }}
+                        @{{ "@lang('portal::app.components.datagrid.toolbar.length-of')".replace(':length', massActions.indices.length) }}
 
-                        @{{ "@lang('shop::app.components.datagrid.toolbar.selected')".replace(':total', available.meta.total) }}
+                        @{{ "@lang('portal::app.components.datagrid.toolbar.selected')".replace(':total', available.meta.total) }}
                     </p>
                 </div>
             </div>
@@ -136,13 +136,13 @@
                  */
                 validateMassAction() {
                     if (! this.massActions.indices.length) {
-                        this.$emitter.emit('add-flash', { type: 'warning', message: "@lang('shop::app.components.datagrid.toolbar.mass-actions.no-records-selected')" });
+                        this.$emitter.emit('add-flash', { type: 'warning', message: "@lang('portal::app.components.datagrid.toolbar.mass-actions.no-records-selected')" });
 
                         return false;
                     }
 
                     if (! this.massActions.meta.action) {
-                        this.$emitter.emit('add-flash', { type: 'warning', message: "@lang('shop::app.components.datagrid.toolbar.mass-actions.must-select-a-mass-action')" });
+                        this.$emitter.emit('add-flash', { type: 'warning', message: "@lang('portal::app.components.datagrid.toolbar.mass-actions.must-select-a-mass-action')" });
 
                         return false;
                     }
@@ -151,7 +151,7 @@
                         this.massActions.meta.action?.options?.length &&
                         this.massActions.value === null
                     ) {
-                        this.$emitter.emit('add-flash', { type: 'warning', message: "@lang('shop::app.components.datagrid.toolbar.mass-actions.must-select-a-mass-action-option')" });
+                        this.$emitter.emit('add-flash', { type: 'warning', message: "@lang('portal::app.components.datagrid.toolbar.mass-actions.must-select-a-mass-action-option')" });
 
                         return false;
                     }

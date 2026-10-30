@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use Platform\Portal\Contracts\PortalMenu;
 use Platform\Portal\Repositories\PortalMenuRepository;
 use Platform\Portal\Repositories\PortalMenuSlotAssignmentRepository;
@@ -34,5 +35,51 @@ if (! function_exists('portal_menu_slot')) {
         }
 
         return null;
+    }
+}
+
+if (! function_exists('portal_home_url')) {
+    /**
+     * Retrieve the active portal storefront home URL.
+     */
+    function portal_home_url(): string
+    {
+        if (Route::has('portal.home')) {
+            return route('portal.home');
+        }
+
+        if (Route::has('shop.home.index')) {
+            return route('shop.home.index');
+        }
+
+        return url('/');
+    }
+}
+
+if (! function_exists('portal_route')) {
+    /**
+     * Resolve a portal route with fallback if operating in override mode.
+     */
+    function portal_route(string $name, mixed $parameters = [], bool $absolute = true): string
+    {
+        if (Route::has($name)) {
+            return route($name, $parameters, $absolute);
+        }
+
+        $shopFallback = match ($name) {
+            'portal.home' => 'shop.home.index',
+            'portal.contact_us' => 'shop.home.contact_us',
+            'portal.contact_us.send_mail' => 'shop.home.contact_us.send_mail',
+            'portal.appearance.preview' => 'shop.appearance.preview',
+            'portal.sitemap.index' => 'shop.sitemap.index',
+            'portal.robots' => 'shop.robots',
+            default => null,
+        };
+
+        if ($shopFallback && Route::has($shopFallback)) {
+            return route($shopFallback, $parameters, $absolute);
+        }
+
+        return url('/');
     }
 }

@@ -21,7 +21,7 @@ class RegisterController extends Controller
         abort_unless(PortalAuth::isEnabled(), 404);
 
         if (PortalAuth::check()) {
-            return redirect()->route('shop.home.index');
+            return redirect()->to(portal_home_url());
         }
 
         return view('portal::auth.register');
@@ -107,6 +107,6 @@ class RegisterController extends Controller
 
         session()->flash('success', trans('portal::app.auth.register.success'));
 
-        return redirect()->route('shop.home.index');
+        return redirect()->to(portal_home_url());
     }
 }

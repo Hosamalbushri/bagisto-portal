@@ -14,12 +14,7 @@
     $url = $item->getUrl();
 @endphp
 
-<li
-    x-data="{ open: false }"
-    @mouseenter="open = true"
-    @mouseleave="open = false"
-    class="relative group {{ $depth > 0 ? 'w-full' : '' }}"
->
+<li class="relative group {{ $depth > 0 ? 'w-full' : '' }}">
     <div class="flex items-center justify-between {{ $depth > 0 ? 'w-full' : '' }}">
         <a
             href="{{ $url }}"
@@ -35,7 +30,7 @@
 
             @if ($hasChildren)
                 @if ($depth === 0)
-                    <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 @else
@@ -49,15 +44,7 @@
 
     @if ($hasChildren)
         <ul
-            x-show="open"
-            x-transition:enter="transition ease-out duration-150"
-            x-transition:enter-start="opacity-0 translate-y-1"
-            x-transition:enter-end="opacity-100 translate-y-0"
-            x-transition:leave="transition ease-in duration-100"
-            x-transition:leave-start="opacity-100 translate-y-0"
-            x-transition:leave-end="opacity-0 translate-y-1"
-            style="display: none;"
-            class="{{ $depth === 0 ? 'absolute start-0 top-full mt-1 min-w-[200px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-100 dark:border-gray-800 py-1 z-50' : 'absolute start-full top-0 min-w-[200px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-100 dark:border-gray-800 py-1 z-50' }} {{ $dropdownClass }}"
+            class="hidden group-hover:block {{ $depth === 0 ? 'absolute start-0 top-full mt-1 min-w-[200px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-100 dark:border-gray-800 py-1 z-50' : 'absolute start-full top-0 min-w-[200px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-100 dark:border-gray-800 py-1 z-50' }} {{ $dropdownClass }}"
         >
             @foreach ($children as $child)
                 <x-portal::menu.item
@@ -71,4 +58,3 @@
         </ul>
     @endif
 </li>
-

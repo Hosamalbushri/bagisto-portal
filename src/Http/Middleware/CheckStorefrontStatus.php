@@ -18,6 +18,7 @@ class CheckStorefrontStatus
         if (
             $request->attributes->get(SecureHeaders::FRAMABLE)
             || $request->routeIs('shop.appearance.preview')
+            || $request->routeIs('portal.appearance.preview')
             || $request->routeIs('portal.page.preview')
             || $request->boolean('preview')
         ) {

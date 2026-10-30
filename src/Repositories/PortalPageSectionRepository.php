@@ -40,10 +40,10 @@ class PortalPageSectionRepository extends Repository
             ->get();
 
         return $sections->map(function ($section) use ($locale) {
-            $trans = $section->translate($locale);
+            $trans = $section->translate($locale, true);
 
-            if ($trans && ! is_null($trans->draft_options)) {
-                $section->options = $trans->draft_options;
+            if ($trans) {
+                $section->options = ! is_null($trans->draft_options) ? $trans->draft_options : $trans->options;
             }
 
             if (! is_null($section->draft_status)) {

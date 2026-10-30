@@ -50,6 +50,13 @@ class PortalPageSection extends TranslatableModel implements PortalPageSectionCo
     ];
 
     /**
+     * Whether to use translation fallback.
+     *
+     * @var bool
+     */
+    protected $useTranslationFallback = true;
+
+    /**
      * With the translations given attributes.
      *
      * @var array

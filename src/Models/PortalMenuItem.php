@@ -51,6 +51,13 @@ class PortalMenuItem extends TranslatableModel implements PortalMenuItemContract
     ];
 
     /**
+     * Whether to use translation fallback.
+     *
+     * @var bool
+     */
+    protected $useTranslationFallback = true;
+
+    /**
      * Get the menu that owns the item.
      */
     public function menu(): BelongsTo

@@ -85,6 +85,7 @@ return [
                 'title' => 'Custom Pages',
                 'description' => 'Create and customize modular pages with drag & drop components.',
                 'create-btn' => 'Create New Page',
+                'customize-home-btn' => 'Customize Home Page',
                 'datagrid' => [
                     'id' => 'ID',
                     'title' => 'Page Title',

@@ -51,6 +51,13 @@ class PortalPage extends TranslatableModel implements PortalPageContract
     ];
 
     /**
+     * Whether to use translation fallback.
+     *
+     * @var bool
+     */
+    protected $useTranslationFallback = true;
+
+    /**
      * With the translations given attributes.
      *
      * @var array

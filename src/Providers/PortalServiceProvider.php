@@ -2,7 +2,6 @@
 
 namespace Platform\Portal\Providers;
 
-use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
@@ -67,13 +66,6 @@ class PortalServiceProvider extends ServiceProvider
      */
     public function boot(Router $router): void
     {
-        $router->middlewareGroup('shop', [
-            Theme::class,
-            Locale::class,
-            Currency::class,
-            CheckStorefrontStatus::class,
-        ]);
-
         $router->middlewareGroup('portal', [
             Theme::class,
             Locale::class,
@@ -88,7 +80,6 @@ class PortalServiceProvider extends ServiceProvider
         $router->aliasMiddleware('portal.storefront', CheckStorefrontStatus::class);
 
         $this->app->booted(function () use ($router) {
-            $router->pushMiddlewareToGroup('shop', CheckStorefrontStatus::class);
             $router->pushMiddlewareToGroup('portal', CheckStorefrontStatus::class);
         });
 
@@ -97,13 +88,10 @@ class PortalServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 
         $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'portal');
-        $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'shop');
 
         $this->loadViewsFrom(__DIR__.'/../Resources/views', 'portal');
-        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'shop');
 
         Blade::anonymousComponentPath(__DIR__.'/../Resources/views/components', 'portal');
-        Blade::anonymousComponentPath(__DIR__.'/../Resources/views/components', 'shop');
 
         Blade::directive('portalMenuSlot', function ($expression) {
             return "<?php echo Blade::render('<x-portal::menu-slot id=\"' . {$expression} . '\" />'); ?>";
@@ -120,8 +108,5 @@ class PortalServiceProvider extends ServiceProvider
         $portalSystem = require dirname(__DIR__).'/Config/system.php';
         $currentCore = config('core', []);
         config(['core' => collect($currentCore)->concat($portalSystem)->unique('key')->values()->toArray()]);
-
-        Paginator::defaultView('portal::partials.pagination');
-        Paginator::defaultSimpleView('portal::partials.pagination');
     }
 }

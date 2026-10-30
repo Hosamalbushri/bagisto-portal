@@ -16,13 +16,13 @@ return [
     [
         'key' => 'pages.create',
         'name' => 'portal::app.admin.pages.acl.create',
-        'route' => 'admin.portal.pages.create',
+        'route' => ['admin.portal.pages.create', 'admin.portal.pages.store'],
         'sort' => 2,
     ],
     [
         'key' => 'pages.edit',
         'name' => 'portal::app.admin.pages.acl.edit',
-        'route' => 'admin.portal.pages.edit',
+        'route' => ['admin.portal.pages.edit', 'admin.portal.pages.update'],
         'sort' => 3,
     ],
     [
@@ -34,7 +34,19 @@ return [
     [
         'key' => 'pages.customize',
         'name' => 'portal::app.admin.pages.acl.customize',
-        'route' => 'admin.portal.pages.customize',
+        'route' => [
+            'admin.portal.pages.customize',
+            'admin.portal.pages.sections.store',
+            'admin.portal.pages.sections.reorder',
+            'admin.portal.pages.publish',
+            'admin.portal.pages.discard',
+            'admin.portal.pages.sections.fields',
+            'admin.portal.pages.sections.draft',
+            'admin.portal.pages.sections.media',
+            'admin.portal.pages.sections.status',
+            'admin.portal.pages.sections.duplicate',
+            'admin.portal.pages.sections.delete',
+        ],
         'sort' => 5,
     ],
     [
@@ -52,7 +64,7 @@ return [
     [
         'key' => 'portal_menus.create',
         'name' => 'portal::app.admin.menus.acl.create',
-        'route' => 'admin.portal.menus.store',
+        'route' => ['admin.portal.menus.create', 'admin.portal.menus.store'],
         'sort' => 2,
     ],
     [
@@ -64,7 +76,7 @@ return [
     [
         'key' => 'portal_menus.edit',
         'name' => 'portal::app.admin.menus.acl.edit',
-        'route' => 'admin.portal.menus.update',
+        'route' => ['admin.portal.menus.edit', 'admin.portal.menus.update'],
         'sort' => 4,
     ],
     [
@@ -76,7 +88,7 @@ return [
     [
         'key' => 'portal_menus.navigation',
         'name' => 'portal::app.admin.navigation.acl.title',
-        'route' => 'admin.portal.navigation.index',
+        'route' => ['admin.portal.navigation.index', 'admin.portal.navigation.update'],
         'sort' => 6,
     ],
 ];

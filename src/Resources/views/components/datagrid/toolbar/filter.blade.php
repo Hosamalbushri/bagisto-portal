@@ -26,11 +26,11 @@
             :remove-applied-column-all-values="removeAppliedColumnAllValues"
         >
             <template v-if="isLoading">
-                <x-shop::shimmer.datagrid.toolbar.filter />
+                <x-portal::shimmer.datagrid.toolbar.filter />
             </template>
 
             <template v-else>
-                <x-shop::drawer
+                <x-portal::drawer
                     width="350px"
                     ref="filterDrawer"
                 >
@@ -43,7 +43,7 @@
                                 <span class="icon-filter text-2xl"></span>
 
                                 <span class="max-md:hidden">
-                                    @lang('shop::app.components.datagrid.toolbar.filter.title')
+                                    @lang('portal::app.components.datagrid.toolbar.filter.title')
                                 </span>
                             </span>
                         </div>
@@ -51,7 +51,7 @@
 
                     <x-slot:header class="border-b border-zinc-200 !px-4">
                         <p class="text-lg font-semibold">
-                            @lang('shop::app.components.datagrid.toolbar.filter.apply-filter')
+                            @lang('portal::app.components.datagrid.toolbar.filter.apply-filter')
                         </p>
                     </x-slot>
 
@@ -77,13 +77,13 @@
                                                     class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
-                                                    @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
+                                                    @lang('portal::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
                                                 </p>
                                             </div>
                                         </div>
 
                                         <div class="mb-2 mt-1.5">
-                                            <x-shop::dropdown>
+                                            <x-portal::dropdown>
                                                 <x-slot:toggle>
                                                     <button
                                                         type="button"
@@ -91,14 +91,14 @@
                                                     >
                                                         <!-- If Allow Multiple Values -->
                                                         <span
-                                                            v-text="'@lang('shop::app.components.datagrid.toolbar.filter.dropdown.select')'"
+                                                            v-text="'@lang('portal::app.components.datagrid.toolbar.filter.dropdown.select')'"
                                                             v-if="column.allow_multiple_values"
                                                         >
                                                         </span>
 
                                                         <!-- If Allow Single Value -->
                                                         <span
-                                                            v-text="column.filterable_options.find((option => option.value === getAppliedColumnValues(column.index)))?.label ?? '@lang('shop::app.components.datagrid.filters.select')'"
+                                                            v-text="column.filterable_options.find((option => option.value === getAppliedColumnValues(column.index)))?.label ?? '@lang('portal::app.components.datagrid.filters.select')'"
                                                             v-else
                                                         >
                                                         </span>
@@ -108,14 +108,14 @@
                                                 </x-slot>
 
                                                 <x-slot:menu>
-                                                    <x-shop::dropdown.menu.item
+                                                    <x-portal::dropdown.menu.item
                                                         v-for="option in column.filterable_options"
                                                         v-text="option.label"
                                                         @click="addFilter(option.value, column)"
                                                     >
-                                                    </x-shop::dropdown.menu.item>
+                                                    </x-portal::dropdown.menu.item>
                                                 </x-slot>
-                                            </x-shop::dropdown>
+                                            </x-portal::dropdown>
                                         </div>
 
                                         <div class="mb-4 flex flex-wrap gap-2">
@@ -161,7 +161,7 @@
                                                     class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
-                                                    @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
+                                                    @lang('portal::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
                                                 </p>
                                             </div>
                                         </div>
@@ -179,7 +179,7 @@
                                             >
                                             </p>
 
-                                            <x-shop::flat-picker.date ::allow-input="false">
+                                            <x-portal::flat-picker.date ::allow-input="false">
                                                 <input
                                                     type="date"
                                                     :name="`${column.index}[from]`"
@@ -193,9 +193,9 @@
                                                         { range: { name: 'from' }, quickFilter: { isActive: false } }
                                                     )"
                                                 />
-                                            </x-shop::flat-picker.date>
+                                            </x-portal::flat-picker.date>
 
-                                            <x-shop::flat-picker.date ::allow-input="false">
+                                            <x-portal::flat-picker.date ::allow-input="false">
                                                 <input
                                                     type="date"
                                                     :name="`${column.index}[to]`"
@@ -209,7 +209,7 @@
                                                         { range: { name: 'to' }, quickFilter: { isActive: false } }
                                                     )"
                                                 />
-                                            </x-shop::flat-picker.date>
+                                            </x-portal::flat-picker.date>
 
                                             <div class="mb-4 flex flex-wrap gap-2">
                                                 <p
@@ -245,13 +245,13 @@
                                                     class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
-                                                    @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
+                                                    @lang('portal::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
                                                 </p>
                                             </div>
                                         </div>
 
                                         <div class="mt-4 grid max-sm:my-2">
-                                            <x-shop::flat-picker.date ::allow-input="false">
+                                            <x-portal::flat-picker.date ::allow-input="false">
                                                 <input
                                                     type="date"
                                                     :name="column.index"
@@ -261,7 +261,7 @@
                                                     :ref="column.index"
                                                     @change="addFilter($event, column)"
                                                 />
-                                            </x-shop::flat-picker.date>
+                                            </x-portal::flat-picker.date>
 
                                             <div class="mb-4 flex flex-wrap gap-2">
                                                 <p
@@ -300,7 +300,7 @@
                                                     class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
-                                                    @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
+                                                    @lang('portal::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
                                                 </p>
                                             </div>
                                         </div>
@@ -318,7 +318,7 @@
                                             >
                                             </p>
 
-                                            <x-shop::flat-picker.datetime ::allow-input="false">
+                                            <x-portal::flat-picker.datetime ::allow-input="false">
                                                 <input
                                                     type="datetime-local"
                                                     :name="`${column.index}[from]`"
@@ -332,9 +332,9 @@
                                                         { range: { name: 'from' }, quickFilter: { isActive: false } }
                                                     )"
                                                 />
-                                            </x-shop::flat-picker.datetime>
+                                            </x-portal::flat-picker.datetime>
 
-                                            <x-shop::flat-picker.datetime ::allow-input="false">
+                                            <x-portal::flat-picker.datetime ::allow-input="false">
                                                 <input
                                                     type="datetime-local"
                                                     :name="`${column.index}[to]`"
@@ -348,7 +348,7 @@
                                                         { range: { name: 'to' }, quickFilter: { isActive: false } }
                                                     )"
                                                 />
-                                            </x-shop::flat-picker.datetime>
+                                            </x-portal::flat-picker.datetime>
 
                                             <div class="mb-4 flex flex-wrap gap-2">
                                                 <p
@@ -384,13 +384,13 @@
                                                     class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
-                                                    @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
+                                                    @lang('portal::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
                                                 </p>
                                             </div>
                                         </div>
 
                                         <div class="my-4 grid">
-                                            <x-shop::flat-picker.datetime ::allow-input="false">
+                                            <x-portal::flat-picker.datetime ::allow-input="false">
                                                 <input
                                                     :type="datetime-local"
                                                     :name="column.index"
@@ -400,7 +400,7 @@
                                                     :ref="column.index"
                                                     @change="addFilter($event, column)"
                                                 />
-                                            </x-shop::flat-picker.datetime>
+                                            </x-portal::flat-picker.datetime>
 
                                             <div class="mb-4 flex flex-wrap gap-2">
                                                 <p
@@ -437,13 +437,13 @@
                                                 class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
                                                 v-if="hasAnyAppliedColumnValues(column.index)"
                                             >
-                                                @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
+                                                @lang('portal::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
                                             </p>
                                         </div>
                                     </div>
 
                                     <div class="mb-2 mt-1.5 grid gap-1.5">
-                                        <x-shop::dropdown>
+                                        <x-portal::dropdown>
                                             <x-slot:toggle>
                                                 <button
                                                     type="button"
@@ -456,14 +456,14 @@
                                             </x-slot>
 
                                             <x-slot:menu>
-                                                <x-shop::dropdown.menu.item
+                                                <x-portal::dropdown.menu.item
                                                     v-for="operator in numericOperators"
                                                     v-text="operator.label"
                                                     @click="filterOperator[column.index] = operator.value; applyNumericFilter(column)"
                                                 >
-                                                </x-shop::dropdown.menu.item>
+                                                </x-portal::dropdown.menu.item>
                                             </x-slot>
-                                        </x-shop::dropdown>
+                                        </x-portal::dropdown>
 
                                         <div
                                             class="grid grid-cols-2 gap-1.5"
@@ -474,7 +474,7 @@
                                                 step="any"
                                                 class="w-full rounded-lg border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400"
                                                 v-model="filterValue[column.index]"
-                                                placeholder="@lang('shop::app.components.datagrid.toolbar.filter.number-options.from')"
+                                                placeholder="@lang('portal::app.components.datagrid.toolbar.filter.number-options.from')"
                                                 @keyup.enter="applyNumericFilter(column)"
                                                 @change="applyNumericFilter(column)"
                                             />
@@ -484,7 +484,7 @@
                                                 step="any"
                                                 class="w-full rounded-lg border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400"
                                                 v-model="filterValueMax[column.index]"
-                                                placeholder="@lang('shop::app.components.datagrid.toolbar.filter.number-options.to')"
+                                                placeholder="@lang('portal::app.components.datagrid.toolbar.filter.number-options.to')"
                                                 @keyup.enter="applyNumericFilter(column)"
                                                 @change="applyNumericFilter(column)"
                                             />
@@ -513,7 +513,7 @@
                                                     type="button"
                                                     class="absolute top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md bg-navyBlue text-white transition-colors hover:opacity-90 ltr:right-2 rtl:left-2"
                                                     v-show="filterValue[column.index]"
-                                                    :aria-label="'@lang('shop::app.components.datagrid.toolbar.filter.apply-filter')'"
+                                                    :aria-label="'@lang('portal::app.components.datagrid.toolbar.filter.apply-filter')'"
                                                     @click="applyNumericFilter(column)"
                                                 >
                                                     <span class="icon-arrow-right rtl:icon-arrow-left text-lg"></span>
@@ -557,13 +557,13 @@
                                                     class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
-                                                    @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
+                                                    @lang('portal::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
                                                 </p>
                                             </div>
                                         </div>
 
                                         <div class="mb-2 mt-1.5">
-                                            <x-shop::dropdown>
+                                            <x-portal::dropdown>
                                                 <x-slot:toggle>
                                                     <button
                                                         type="button"
@@ -571,14 +571,14 @@
                                                     >
                                                         <!-- If Allow Multiple Values -->
                                                         <span
-                                                            v-text="'@lang('shop::app.components.datagrid.toolbar.filter.dropdown.select')'"
+                                                            v-text="'@lang('portal::app.components.datagrid.toolbar.filter.dropdown.select')'"
                                                             v-if="column.allow_multiple_values"
                                                         >
                                                         </span>
 
                                                         <!-- If Allow Single Value -->
                                                         <span
-                                                            v-text="column.filterable_options.find((option => option.value === getAppliedColumnValues(column.index)))?.label ?? '@lang('shop::app.components.datagrid.toolbar.filter.dropdown.select')'"
+                                                            v-text="column.filterable_options.find((option => option.value === getAppliedColumnValues(column.index)))?.label ?? '@lang('portal::app.components.datagrid.toolbar.filter.dropdown.select')'"
                                                             v-else
                                                         >
                                                         </span>
@@ -588,14 +588,14 @@
                                                 </x-slot>
 
                                                 <x-slot:menu class="max-sm:!py-0">
-                                                    <x-shop::dropdown.menu.item
+                                                    <x-portal::dropdown.menu.item
                                                         v-for="option in column.filterable_options"
                                                         v-text="option.label"
                                                         @click="addFilter(option.value, column)"
                                                     >
-                                                    </x-shop::dropdown.menu.item>
+                                                    </x-portal::dropdown.menu.item>
                                                 </x-slot>
-                                            </x-shop::dropdown>
+                                            </x-portal::dropdown>
                                         </div>
 
                                         <div class="mb-4 flex flex-wrap gap-2">
@@ -635,7 +635,7 @@
                                                     class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
-                                                    @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
+                                                    @lang('portal::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
                                                 </p>
                                             </div>
                                         </div>
@@ -663,7 +663,7 @@
                                                     type="button"
                                                     class="absolute top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md bg-navyBlue text-white transition-colors hover:opacity-90 ltr:right-2 rtl:left-2"
                                                     v-show="filterValue[column.index]"
-                                                    :aria-label="'@lang('shop::app.components.datagrid.toolbar.filter.apply-filter')'"
+                                                    :aria-label="'@lang('portal::app.components.datagrid.toolbar.filter.apply-filter')'"
                                                     @click="applyTextFilter(column)"
                                                 >
                                                     <span class="icon-arrow-right rtl:icon-arrow-left text-lg"></span>
@@ -729,12 +729,12 @@
                                     :disabled="! isFilterDirty"
                                     @click="applyFilters"
                                 >
-                                    @lang('shop::app.components.datagrid.toolbar.filter.apply-filter')
+                                    @lang('portal::app.components.datagrid.toolbar.filter.apply-filter')
                                 </button>
                             </div>
                         </transition>
                     </x-slot>
-                </x-shop::drawer>
+                </x-portal::drawer>
             </template>
         </slot>
     </script>
@@ -760,12 +760,12 @@
                     filterValueMax: {},
 
                     numericOperators: [
-                        { value: '=', label: @json(trans('shop::app.components.datagrid.toolbar.filter.number-options.equals')) },
-                        { value: '>', label: @json(trans('shop::app.components.datagrid.toolbar.filter.number-options.greater-than')) },
-                        { value: '>=', label: @json(trans('shop::app.components.datagrid.toolbar.filter.number-options.greater-than-or-equal')) },
-                        { value: '<', label: @json(trans('shop::app.components.datagrid.toolbar.filter.number-options.less-than')) },
-                        { value: '<=', label: @json(trans('shop::app.components.datagrid.toolbar.filter.number-options.less-than-or-equal')) },
-                        { value: 'between', label: @json(trans('shop::app.components.datagrid.toolbar.filter.number-options.between')) },
+                        { value: '=', label: @json(trans('portal::app.components.datagrid.toolbar.filter.number-options.equals')) },
+                        { value: '>', label: @json(trans('portal::app.components.datagrid.toolbar.filter.number-options.greater-than')) },
+                        { value: '>=', label: @json(trans('portal::app.components.datagrid.toolbar.filter.number-options.greater-than-or-equal')) },
+                        { value: '<', label: @json(trans('portal::app.components.datagrid.toolbar.filter.number-options.less-than')) },
+                        { value: '<=', label: @json(trans('portal::app.components.datagrid.toolbar.filter.number-options.less-than-or-equal')) },
+                        { value: 'between', label: @json(trans('portal::app.components.datagrid.toolbar.filter.number-options.between')) },
                     ],
 
                     isFilterDirty: false,

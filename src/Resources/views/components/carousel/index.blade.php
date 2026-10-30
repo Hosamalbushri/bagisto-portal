@@ -60,7 +60,7 @@
                 sizes="100vw"
                 class="aspect-[2.743/1] max-h-screen w-screen select-none object-cover"
                 style="width:100vw;aspect-ratio:2.743/1;max-height:100vh;object-fit:cover;display:block"
-                alt="{{ $firstImage['title'] ?? trans('shop::app.home.index.image-carousel') }}"
+                alt="{{ $firstImage['title'] ?? trans('portal::app.home.index.image-carousel') }}"
                 fetchpriority="high"
                 decoding="sync"
             >
@@ -88,7 +88,7 @@
                     @click="visitLink(image)"
                     ref="slide"
                 >
-                    <x-shop::media.images.lazy
+                    <x-portal::media.images.lazy
                         class="aspect-[2.743/1] max-h-full w-full max-w-full select-none transition-transform duration-300 ease-in-out will-change-transform"
                         ::lazy="index === 0 ? false : true"
                         ::src="image.src"
@@ -110,7 +110,7 @@
                     'cursor-pointer hover:opacity-100': direction == 'ltr' ? currentIndex > 0 : currentIndex <= 0
                 }"
                 role="button"
-                aria-label="@lang('shop::components.carousel.previous')"
+                aria-label="@lang('portal::app.components.carousel.previous')"
                 tabindex="0"
                 v-if="images?.length >= 2"
                 @click="navigate('prev')"
@@ -124,7 +124,7 @@
                     'cursor-pointer hover:opacity-100': direction == 'rtl' ? currentIndex < 0 : currentIndex >= 0
                 }"
                 role="button"
-                aria-label="@lang('shop::components.carousel.next')"
+                aria-label="@lang('portal::app.components.carousel.next')"
                 tabindex="0"
                 v-if="images?.length >= 2"
                 @click="navigate('next')"

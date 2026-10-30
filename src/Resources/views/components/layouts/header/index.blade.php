@@ -15,7 +15,7 @@
             </button>
 
             <!-- Brand Logo -->
-            <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2 shrink-0 transition-transform hover:scale-[1.02]">
+            <a href="{{ portal_home_url() }}" class="flex items-center gap-2 shrink-0 transition-transform hover:scale-[1.02]">
                 @if ($logo = core()->getCurrentChannel()->logo_url)
                     <img id="logo-image" src="{{ $logo }}" class="h-8 w-auto" alt="{{ config('app.name') }}" />
                 @else

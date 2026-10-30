@@ -42,7 +42,7 @@
                     <button
                         type="button"
                         class="absolute bottom-1.5 top-0 flex items-center px-4 text-zinc-500 transition-colors hover:text-zinc-700 ltr:right-0 rtl:left-0"
-                        aria-label="@lang('shop::app.components.form.control-group.control.show-password')"
+                        aria-label="@lang('portal::app.components.form.control-group.control.show-password')"
                         :aria-pressed="isVisible"
                         @click="toggle"
                     >
@@ -167,12 +167,12 @@
             </textarea>
 
             @if ($attributes->get('tinymce', false) || $attributes->get(':tinymce', false))
-                <x-shop::tinymce
+                <x-portal::tinymce
                     :selector="'textarea#' . $attributes->get('id')"
                     :prompt="stripcslashes($attributes->get('prompt', ''))"
                     ::field="field"
                 >
-                </x-shop::tinymce>
+                </x-portal::tinymce>
             @endif
         </v-field>
         @break
@@ -183,7 +183,7 @@
             {{ $attributes->only(['name', ':name', 'value', ':value', 'v-model', 'rules', ':rules', 'label', ':label']) }}
             name="{{ $name }}"
         >
-            <x-shop::flat-picker.date {{ $attributes }}>
+            <x-portal::flat-picker.date {{ $attributes }}>
                 <input
                     name="{{ $name }}"
                     v-bind="field"
@@ -191,7 +191,7 @@
                     {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-lg border px-5 py-3 text-base text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 max-sm:px-4 max-md:py-2 max-sm:text-sm']) }}
                     autocomplete="off"
                 >
-            </x-shop::flat-picker.date>
+            </x-portal::flat-picker.date>
         </v-field>
         @break
 
@@ -201,7 +201,7 @@
             {{ $attributes->only(['name', ':name', 'value', ':value', 'v-model', 'rules', ':rules', 'label', ':label']) }}
             name="{{ $name }}"
         >
-            <x-shop::flat-picker.datetime>
+            <x-portal::flat-picker.datetime>
                 <input
                     name="{{ $name }}"
                     v-bind="field"
@@ -209,7 +209,7 @@
                     {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-lg border px-5 py-3 text-base text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 max-sm:px-4 max-md:py-2 max-sm:text-sm']) }}
                     autocomplete="off"
                 >
-            </x-shop::flat-picker.datetime>
+            </x-portal::flat-picker.datetime>
         </v-field>
         @break
 
@@ -318,7 +318,7 @@
         @break
 
     @case('image')
-        <x-shop::media
+        <x-portal::media
             ::class="[errors && errors['{{ $name }}'] ? 'border !border-red-500' : '']"
             {{ $attributes }}
             name="{{ $name }}"

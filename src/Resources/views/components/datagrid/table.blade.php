@@ -32,7 +32,7 @@
                     :perform-action="performAction"
                 >
                     <template v-if="isLoading">
-                        <x-shop::shimmer.datagrid.table.head
+                        <x-portal::shimmer.datagrid.table.head
                             :columns="$shimmerColumns"
                             :isMultiRow="$isMultiRow"
                         />
@@ -90,7 +90,7 @@
                                 class="place-self-end max-md:place-self-auto"
                                 v-if="available.actions.length"
                             >
-                                @lang('shop::app.components.datagrid.table.actions')
+                                @lang('portal::app.components.datagrid.table.actions')
                             </p>
                         </div>
                     </template>
@@ -106,7 +106,7 @@
                     :perform-action="performAction"
                 >
                     <template v-if="isLoading">
-                        <x-shop::shimmer.datagrid.table.body
+                        <x-portal::shimmer.datagrid.table.body
                             :columns="$shimmerColumns"
                             :isMultiRow="$isMultiRow"
                         />
@@ -163,7 +163,7 @@
                         <template v-else>
                             <div class="row grid border-b border-gray-300 px-4 py-4 text-center text-gray-600">
                                 <p>
-                                    @lang('shop::app.components.datagrid.table.no-records-available')
+                                    @lang('portal::app.components.datagrid.table.no-records-available')
                                 </p>
                             </div>
                         </template>
@@ -177,16 +177,16 @@
                     :change-page="changePage"
                 >
                     <template v-if="isLoading">
-                        <x-shop::shimmer.datagrid.table.footer />
+                        <x-portal::shimmer.datagrid.table.footer />
                     </template>
 
                     <template v-else>
                         <!-- Information Panel -->
                         <div v-if="$parent.available.records.length" class="flex items-center justify-between p-6 max-md:p-2">
                             <p class="text-xs font-medium">
-                                @{{ "@lang('shop::app.components.datagrid.table.showing')".replace(':firstItem', $parent.available.meta.from) }}
-                                @{{ "@lang('shop::app.components.datagrid.table.to')".replace(':lastItem', $parent.available.meta.to) }}
-                                @{{ "@lang('shop::app.components.datagrid.table.of')".replace(':total', $parent.available.meta.total) }}
+                                @{{ "@lang('portal::app.components.datagrid.table.showing')".replace(':firstItem', $parent.available.meta.from) }}
+                                @{{ "@lang('portal::app.components.datagrid.table.to')".replace(':lastItem', $parent.available.meta.to) }}
+                                @{{ "@lang('portal::app.components.datagrid.table.of')".replace(':total', $parent.available.meta.total) }}
                             </p>
 
                             <!-- Pagination -->
@@ -206,13 +206,13 @@
                                 </div>
                             </div>
 
-                            <nav aria-label="@lang('shop::app.components.datagrid.table.page-navigation')">
+                            <nav aria-label="@lang('portal::app.components.datagrid.table.page-navigation')">
                                 <ul class="inline-flex items-center -space-x-px rounded-lg border border-zinc-200 max-md:px-0">
                                     <li  @click="changePage('previous')">
                                         <a
                                             href="javascript:void(0);"
                                             class="flex h-10 w-9 items-center justify-center font-medium leading-normal hover:bg-gray-100 max-md:h-8 max-md:w-6 max-md:justify-normal"
-                                            aria-label="@lang('shop::app.components.datagrid.table.previous-page')"
+                                            aria-label="@lang('portal::app.components.datagrid.table.previous-page')"
                                         >
                                             <span class="icon-arrow-left rtl:icon-arrow-right text-2xl"></span>
                                         </a>
@@ -224,7 +224,7 @@
                                             :value="$parent.available.meta.current_page"
                                             class="max-w-[42px] items-center border-l border-r px-4 py-2 font-medium leading-normal text-black hover:bg-gray-100 max-md:max-w-9 max-md:justify-normal max-md:px-0 max-md:py-1 max-md:text-center"
                                             @change="changePage(parseInt($event.target.value))"
-                                            aria-label="@lang('shop::app.components.datagrid.table.page-number')"
+                                            aria-label="@lang('portal::app.components.datagrid.table.page-number')"
                                         >
                                     </li>
 
@@ -232,7 +232,7 @@
                                         <a
                                             href="javascript:void(0);"
                                             class="flex h-10 w-9 items-center justify-center font-medium leading-normal hover:bg-gray-100 max-md:h-8 max-md:w-6 max-md:justify-normal"
-                                            aria-label="@lang('shop::app.components.datagrid.table.next-page')"
+                                            aria-label="@lang('portal::app.components.datagrid.table.next-page')"
                                         >
                                             <span class="icon-arrow-right rtl:icon-arrow-left text-2xl"></span>
                                         </a>

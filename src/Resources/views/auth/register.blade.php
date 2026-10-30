@@ -7,7 +7,7 @@
         <div class="max-w-md w-full space-y-8 bg-white dark:bg-gray-900 p-8 sm:p-10 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800">
             <!-- Header -->
             <div class="text-center">
-                <a href="{{ route('shop.home.index') }}" class="inline-block mb-4">
+                <a href="{{ portal_home_url() }}" class="inline-block mb-4">
                     @if ($logo = core()->getCurrentChannel()->logo_url)
                         <img src="{{ $logo }}" class="h-10 mx-auto" alt="{{ config('app.name') }}" />
                     @else

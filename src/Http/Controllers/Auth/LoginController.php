@@ -21,7 +21,7 @@ class LoginController extends Controller
         abort_unless(PortalAuth::isEnabled(), 404);
 
         if (PortalAuth::check()) {
-            return redirect()->route('shop.home.index');
+            return redirect()->to(portal_home_url());
         }
 
         return view('portal::auth.login');
@@ -58,7 +58,7 @@ class LoginController extends Controller
 
             session()->flash('success', trans('portal::app.auth.login.success'));
 
-            return redirect()->intended(route('shop.home.index'));
+            return redirect()->intended(portal_home_url());
         }
 
         RateLimiter::hit($throttleKey);
@@ -82,6 +82,6 @@ class LoginController extends Controller
             session()->flash('success', trans('portal::app.auth.logout.success'));
         }
 
-        return redirect()->route('shop.home.index');
+        return redirect()->to(portal_home_url());
     }
 }

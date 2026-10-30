@@ -125,31 +125,37 @@ class PortalPageDataGrid extends DataGrid
             },
         ]);
 
-        $this->addAction([
-            'icon' => 'icon-settings',
-            'title' => trans('portal::app.admin.pages.index.datagrid.customize'),
-            'method' => 'GET',
-            'url' => function ($row) {
-                return route('admin.portal.pages.customize', $row->id);
-            },
-        ]);
+        if (bouncer()->hasPermission('pages.customize')) {
+            $this->addAction([
+                'icon' => 'icon-settings',
+                'title' => trans('portal::app.admin.pages.index.datagrid.customize'),
+                'method' => 'GET',
+                'url' => function ($row) {
+                    return route('admin.portal.pages.customize', $row->id);
+                },
+            ]);
+        }
 
-        $this->addAction([
-            'icon' => 'icon-edit',
-            'title' => trans('portal::app.admin.pages.index.datagrid.edit'),
-            'method' => 'GET',
-            'url' => function ($row) {
-                return route('admin.portal.pages.edit', $row->id);
-            },
-        ]);
+        if (bouncer()->hasPermission('pages.edit')) {
+            $this->addAction([
+                'icon' => 'icon-edit',
+                'title' => trans('portal::app.admin.pages.index.datagrid.edit'),
+                'method' => 'GET',
+                'url' => function ($row) {
+                    return route('admin.portal.pages.edit', $row->id);
+                },
+            ]);
+        }
 
-        $this->addAction([
-            'icon' => 'icon-delete',
-            'title' => trans('portal::app.admin.pages.index.datagrid.delete'),
-            'method' => 'DELETE',
-            'url' => function ($row) {
-                return route('admin.portal.pages.delete', $row->id);
-            },
-        ]);
+        if (bouncer()->hasPermission('pages.delete')) {
+            $this->addAction([
+                'icon' => 'icon-delete',
+                'title' => trans('portal::app.admin.pages.index.datagrid.delete'),
+                'method' => 'DELETE',
+                'url' => function ($row) {
+                    return route('admin.portal.pages.delete', $row->id);
+                },
+            ]);
+        }
     }
 }

@@ -25,6 +25,8 @@ class PageCustomizeController extends Controller
      */
     public function index(int $id): View
     {
+        abort_unless(bouncer()->hasPermission('pages.customize'), 403);
+
         $page = $this->portalPageRepository->findOrFail($id);
 
         $channel = core()->getAllChannels()->firstWhere('code', request('channel'))
@@ -102,6 +104,8 @@ class PageCustomizeController extends Controller
      */
     public function store(int $id): JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.customize'), 403);
+
         $this->portalPageRepository->findOrFail($id);
 
         $this->validate(request(), [
@@ -142,11 +146,13 @@ class PageCustomizeController extends Controller
      */
     public function fields(int $id, int $sectionId): JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.customize'), 403);
+
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
         abort_if($section->portal_page_id !== $id, 404);
 
         $locale = core()->getRequestedLocaleCode();
-        $translation = $section->translate($locale);
+        $translation = $section->translate($locale, true);
         $type = $section->getTypeInstance();
 
         $options = $translation?->draft_options ?? $translation?->options ?? [];
@@ -162,6 +168,8 @@ class PageCustomizeController extends Controller
      */
     public function saveDraft(int $id, int $sectionId): JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.customize'), 403);
+
         $this->validate(request(), [
             'options' => ['required', 'array'],
         ]);
@@ -182,6 +190,8 @@ class PageCustomizeController extends Controller
      */
     public function status(int $id, int $sectionId): JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.customize'), 403);
+
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
         abort_if($section->portal_page_id !== $id, 404);
 
@@ -199,6 +209,8 @@ class PageCustomizeController extends Controller
      */
     public function duplicate(int $id, int $sectionId): JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.customize'), 403);
+
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
         abort_if($section->portal_page_id !== $id, 404);
 
@@ -215,6 +227,8 @@ class PageCustomizeController extends Controller
      */
     public function reorder(int $id): JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.customize'), 403);
+
         $this->validate(request(), [
             'sections' => ['required', 'array', 'min:1'],
             'sections.*' => ['required', 'integer'],
@@ -237,6 +251,8 @@ class PageCustomizeController extends Controller
      */
     public function uploadMedia(int $id, int $sectionId): JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.customize'), 403);
+
         $this->validate(request(), [
             'file' => ['required', 'mimes:bmp,jpeg,jpg,png,webp,mp4,webm,ogg', 'max:51200'],
         ]);
@@ -258,6 +274,8 @@ class PageCustomizeController extends Controller
      */
     public function destroy(int $id, int $sectionId): JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.customize'), 403);
+
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
         abort_if($section->portal_page_id !== $id, 404);
 
@@ -273,6 +291,8 @@ class PageCustomizeController extends Controller
      */
     public function publish(int $id): JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.customize'), 403);
+
         $this->portalPageSectionRepository->publish($id);
 
         return new JsonResponse([
@@ -287,6 +307,8 @@ class PageCustomizeController extends Controller
      */
     public function discard(int $id): JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.customize'), 403);
+
         $this->portalPageSectionRepository->discardDrafts($id);
 
         return new JsonResponse([

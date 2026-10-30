@@ -2,7 +2,7 @@
     'isActive' => true,
 ])
 
-<div {{ $attributes->merge(['class' => 'border-b border-zinc-200']) }}>
+<div {{ $attributes->merge(['class' => 'border-b border-zinc-200 dark:border-zinc-800']) }}>
     <v-accordion
         {{ $attributes->except('class') }}
         is-active="{{ $isActive }}"
@@ -30,7 +30,7 @@
         @isset($content)
             <template v-slot:content="{ isOpen }">
                 <div
-                    {{ $content->attributes->merge(['class' => 'z-10 rounded-lg bg-white p-1.5']) }}
+                    {{ $content->attributes->merge(['class' => 'z-10 rounded-lg bg-white dark:bg-zinc-900 p-1.5 text-zinc-600 dark:text-zinc-300']) }}
                     v-show="isOpen"
                 >
                     {{ $content }}
@@ -51,14 +51,14 @@
                 :toggle="toggle"
                 :isOpen="isOpen"
             >
-                @lang('shop::app.components.accordion.default-content')
+                @lang('portal::app.components.accordion.default-content')
             </slot>
 
             <slot
                 name="content"
                 :isOpen="isOpen"
             >
-                @lang('shop::app.components.accordion.default-content')
+                @lang('portal::app.components.accordion.default-content')
             </slot>
         </div>
     </script>

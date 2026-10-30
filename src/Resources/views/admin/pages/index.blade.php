@@ -15,6 +15,13 @@
 
         <div class="flex items-center gap-x-2.5">
             <a
+                href="{{ route('admin.appearance.sections.index', core()->getCurrentChannel()->theme ?? 'portal') }}"
+                class="secondary-button"
+            >
+                @lang('portal::app.admin.pages.index.customize-home-btn')
+            </a>
+
+            <a
                 href="{{ route('admin.portal.pages.create') }}"
                 class="primary-button"
             >

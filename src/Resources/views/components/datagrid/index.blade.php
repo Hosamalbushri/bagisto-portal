@@ -14,11 +14,11 @@
     >
         <div>
             <!-- Toolbar -->
-            <x-shop::datagrid.toolbar />
+            <x-portal::datagrid.toolbar />
 
             <!-- Table -->
             <div class="mt-8 flex max-md:mt-0">
-                <x-shop::datagrid.table
+                <x-portal::datagrid.table
                     :isMultiRow="$isMultiRow"
                     :shimmerColumns="$shimmerColumns"
                 >
@@ -61,7 +61,7 @@
                         >
                         </slot>
                     </template>
-                </x-shop::datagrid.table>
+                </x-portal::datagrid.table>
             </div>
         </div>
     </script>

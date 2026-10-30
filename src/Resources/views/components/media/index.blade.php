@@ -8,7 +8,7 @@
     width="{{ $width }}"
     height="{{ $height }}"
 >
-    <x-shop::media.images.lazy
+    <x-portal::media.images.lazy
         class="mb-4 h-[200px] w-[200px] rounded-xl max-sm:h-[100px] max-sm:w-[100px]"
     />
 </v-media>
@@ -62,7 +62,7 @@
                     </label>
 
                     <p class="font-medium max-md:hidden max-sm:text-xs">
-                        @lang("shop::app.components.media.index.add-image")
+                        @lang("portal::app.components.media.index.add-image")
                     </p>
 
                     <input
@@ -170,7 +170,7 @@
 
                 label: {
                     type: String, 
-                    default: '@lang("shop::app.components.media.index.add-attachments")'
+                    default: '@lang("portal::app.components.media.index.add-attachments")'
                 },
 
                 src: {
@@ -315,7 +315,7 @@
                 notifyInvalidType() {
                     this.$emitter.emit('add-flash', {
                         type: 'warning',
-                        message: "@lang('shop::app.components.media.index.invalid-file-type')",
+                        message: "@lang('portal::app.components.media.index.invalid-file-type')",
                     });
                 },
 

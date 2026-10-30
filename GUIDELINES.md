@@ -183,6 +183,17 @@ Bagisto utilizes Proxy models to allow downstream packages to override models wi
   ```
 - **Eloquent Collection Warning**: When merging keyed Eloquent collections, never use `merge()` as it resets keys via `array_values()`. Use `replace()` to preserve string keys (`slot_id`).
 
+### 4.5 Namespace Isolation & Routing Decoupling
+1. **Namespace Purity**:
+   - The package strictly owns the `portal` namespace (`portal::views`, `portal::lang`, `<x-portal::...>` components).
+   - Never hijack foreign namespaces like `shop::` or register views/components under third-party prefixes.
+2. **Coexistence & Routing Modes**:
+   - Configured via `config/portal.php` (`PORTAL_ROUTING_MODE`):
+     - `override_shop` (default): Portal serves as the primary storefront at `/`, cleanly providing compatibility route aliases.
+     - `prefix`: Portal runs alongside `Webkul\Shop` on a dedicated prefix (e.g., `/portal`) without route collision.
+3. **Paginator & Middleware Scoping**:
+   - Never globally override Laravel's `Paginator::defaultView` or modify the host application's `shop` middleware group. Always encapsulate middleware inside the dedicated `portal` group.
+
 ---
 
 ## 5. Instructions for AI Coding Agents

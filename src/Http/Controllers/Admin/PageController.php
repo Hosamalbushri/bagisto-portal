@@ -25,6 +25,8 @@ class PageController extends Controller
      */
     public function index(): View|JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.index'), 403);
+
         if (request()->ajax()) {
             return datagrid(PortalPageDataGrid::class)->process();
         }
@@ -37,6 +39,8 @@ class PageController extends Controller
      */
     public function create(): View
     {
+        abort_unless(bouncer()->hasPermission('pages.create'), 403);
+
         $channels = $this->channelRepository->all();
 
         return view('portal::admin.pages.create', compact('channels'));
@@ -47,6 +51,8 @@ class PageController extends Controller
      */
     public function store(): RedirectResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.create'), 403);
+
         $locale = core()->getRequestedLocaleCode();
 
         $this->validate(request(), [
@@ -79,6 +85,8 @@ class PageController extends Controller
      */
     public function edit(int $id): View
     {
+        abort_unless(bouncer()->hasPermission('pages.edit'), 403);
+
         $page = $this->portalPageRepository->findOrFail($id);
         $channels = $this->channelRepository->all();
 
@@ -90,6 +98,8 @@ class PageController extends Controller
      */
     public function update(int $id): RedirectResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.edit'), 403);
+
         $locale = core()->getRequestedLocaleCode();
 
         $this->validate(request(), [
@@ -122,6 +132,8 @@ class PageController extends Controller
      */
     public function delete(int $id): JsonResponse
     {
+        abort_unless(bouncer()->hasPermission('pages.delete'), 403);
+
         $this->portalPageRepository->delete($id);
 
         return new JsonResponse([
