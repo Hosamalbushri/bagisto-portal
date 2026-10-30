@@ -27,7 +27,37 @@ class NavigationCustomizeController extends Controller
      */
     public function index(Request $request): View
     {
-        abort_unless(bouncer()->hasPermission('portal_menus.navigation'), 403);
+        return $this->renderNavigation($request, $request->query('tab', 'all'));
+    }
+
+    /**
+     * Display Header Navigation Customizer.
+     */
+    public function header(Request $request): View
+    {
+        return $this->renderNavigation($request, 'header');
+    }
+
+    /**
+     * Display Footer Navigation Customizer.
+     */
+    public function footer(Request $request): View
+    {
+        return $this->renderNavigation($request, 'footer');
+    }
+
+    /**
+     * Render the navigation customizer view.
+     */
+    protected function renderNavigation(Request $request, string $activeTab = 'all'): View
+    {
+        abort_unless(
+            bouncer()->hasPermission('portal.customize.navigation')
+            || bouncer()->hasPermission('portal.customize.header')
+            || bouncer()->hasPermission('portal.customize.footer')
+            || bouncer()->hasPermission('portal_menus.navigation'),
+            403
+        );
 
         $channels = core()->getAllChannels();
 
@@ -68,13 +98,14 @@ class NavigationCustomizeController extends Controller
             ->unique('id');
 
         return view('portal::admin.navigation.index', [
-            'channels' => $channels,
+            'channels'       => $channels,
             'currentChannel' => $currentChannel,
-            'currentLocale' => $currentLocale,
-            'themeCode' => $themeCode,
-            'slots' => $scannedSlots,
-            'assignments' => $assignments,
-            'menus' => $menus,
+            'currentLocale'  => $currentLocale,
+            'themeCode'      => $themeCode,
+            'slots'          => $scannedSlots,
+            'assignments'    => $assignments,
+            'menus'          => $menus,
+            'activeTab'      => $activeTab,
         ]);
     }
 
@@ -83,13 +114,20 @@ class NavigationCustomizeController extends Controller
      */
     public function update(Request $request): RedirectResponse|JsonResponse
     {
-        abort_unless(bouncer()->hasPermission('portal_menus.navigation'), 403);
+        abort_unless(
+            bouncer()->hasPermission('portal.customize.navigation')
+            || bouncer()->hasPermission('portal.customize.header')
+            || bouncer()->hasPermission('portal.customize.footer')
+            || bouncer()->hasPermission('portal_menus.navigation'),
+            403
+        );
 
         $request->validate([
-            'channel' => 'nullable|string',
-            'locale' => 'nullable|string',
+            'channel'    => 'nullable|string',
+            'locale'     => 'nullable|string',
             'theme_code' => 'nullable|string',
-            'slots' => 'nullable|array',
+            'active_tab' => 'nullable|string',
+            'slots'      => 'nullable|array',
         ]);
 
         $channelCode = $request->input('channel') ?: $request->query('channel');
@@ -123,18 +161,25 @@ class NavigationCustomizeController extends Controller
 
         session()->flash('success', trans('portal::app.admin.navigation.update-success'));
 
+        $activeTab = $request->input('active_tab', 'all');
+        $redirectRoute = match ($activeTab) {
+            'header' => 'admin.portal.navigation.header',
+            'footer' => 'admin.portal.navigation.footer',
+            default  => 'admin.portal.navigation.index',
+        };
+
         $redirectParams = [
             'channel' => $currentChannel->code,
-            'locale' => $currentLocale->code,
+            'locale'  => $currentLocale->code,
         ];
 
         if ($request->ajax()) {
             return response()->json([
-                'message' => trans('portal::app.admin.navigation.update-success'),
-                'redirect' => route('admin.portal.navigation.index', $redirectParams),
+                'message'  => trans('portal::app.admin.navigation.update-success'),
+                'redirect' => route($redirectRoute, $redirectParams),
             ]);
         }
 
-        return redirect()->route('admin.portal.navigation.index', $redirectParams);
+        return redirect()->route($redirectRoute, $redirectParams);
     }
 }

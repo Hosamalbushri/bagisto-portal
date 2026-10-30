@@ -134,7 +134,7 @@ class PortalMenuDataGrid extends DataGrid
      */
     public function prepareActions()
     {
-        if (bouncer()->hasPermission('portal_menus.builder')) {
+        if (bouncer()->hasPermission('portal.menus.builder') || bouncer()->hasPermission('portal_menus.builder')) {
             $this->addAction([
                 'icon' => 'icon-menu',
                 'title' => trans('portal::app.admin.menus.index.datagrid.builder'),
@@ -145,7 +145,7 @@ class PortalMenuDataGrid extends DataGrid
             ]);
         }
 
-        if (bouncer()->hasPermission('portal_menus.edit')) {
+        if (bouncer()->hasPermission('portal.menus.edit') || bouncer()->hasPermission('portal_menus.edit')) {
             $this->addAction([
                 'icon' => 'icon-edit',
                 'title' => trans('portal::app.admin.menus.index.datagrid.edit'),
@@ -156,7 +156,7 @@ class PortalMenuDataGrid extends DataGrid
             ]);
         }
 
-        if (bouncer()->hasPermission('portal_menus.delete')) {
+        if (bouncer()->hasPermission('portal.menus.delete') || bouncer()->hasPermission('portal_menus.delete')) {
             $this->addAction([
                 'icon' => 'icon-delete',
                 'title' => trans('portal::app.admin.menus.index.datagrid.delete'),

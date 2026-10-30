@@ -45,6 +45,8 @@ Route::group(['middleware' => ['web', 'admin'], 'prefix' => config('app.admin_ur
 
     Route::prefix('portal/navigation')->group(function () {
         Route::get('', [NavigationCustomizeController::class, 'index'])->name('admin.portal.navigation.index');
+        Route::get('header', [NavigationCustomizeController::class, 'header'])->name('admin.portal.navigation.header');
+        Route::get('footer', [NavigationCustomizeController::class, 'footer'])->name('admin.portal.navigation.footer');
         Route::post('', [NavigationCustomizeController::class, 'update'])->name('admin.portal.navigation.update');
     });
 });

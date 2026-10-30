@@ -1,39 +1,52 @@
 <?php
 
 return [
+    /**
+     * Root: Storefront Portal.
+     */
     [
-        'key' => 'pages',
-        'name' => 'portal::app.admin.pages.acl.pages',
+        'key' => 'portal',
+        'name' => 'portal::app.admin.acl.portal',
         'route' => 'admin.portal.pages.index',
-        'sort' => 2,
+        'sort' => 3,
     ],
+
+    /**
+     * 1. Pages.
+     */
     [
-        'key' => 'pages.index',
-        'name' => 'portal::app.admin.pages.acl.index',
+        'key' => 'portal.pages',
+        'name' => 'portal::app.admin.acl.pages',
         'route' => 'admin.portal.pages.index',
         'sort' => 1,
     ],
     [
-        'key' => 'pages.create',
-        'name' => 'portal::app.admin.pages.acl.create',
+        'key' => 'portal.pages.index',
+        'name' => 'portal::app.admin.acl.pages-index',
+        'route' => 'admin.portal.pages.index',
+        'sort' => 1,
+    ],
+    [
+        'key' => 'portal.pages.create',
+        'name' => 'portal::app.admin.acl.pages-create',
         'route' => ['admin.portal.pages.create', 'admin.portal.pages.store'],
         'sort' => 2,
     ],
     [
-        'key' => 'pages.edit',
-        'name' => 'portal::app.admin.pages.acl.edit',
+        'key' => 'portal.pages.edit',
+        'name' => 'portal::app.admin.acl.pages-edit',
         'route' => ['admin.portal.pages.edit', 'admin.portal.pages.update', 'admin.portal.pages.mass_update'],
         'sort' => 3,
     ],
     [
-        'key' => 'pages.delete',
-        'name' => 'portal::app.admin.pages.acl.delete',
+        'key' => 'portal.pages.delete',
+        'name' => 'portal::app.admin.acl.pages-delete',
         'route' => ['admin.portal.pages.delete', 'admin.portal.pages.mass_delete'],
         'sort' => 4,
     ],
     [
-        'key' => 'pages.customize',
-        'name' => 'portal::app.admin.pages.acl.customize',
+        'key' => 'portal.pages.customize',
+        'name' => 'portal::app.admin.acl.pages-customize',
         'route' => [
             'admin.portal.pages.customize',
             'admin.portal.pages.sections.store',
@@ -49,46 +62,71 @@ return [
         ],
         'sort' => 5,
     ],
+
+    /**
+     * 2. Menus.
+     */
     [
-        'key' => 'portal_menus',
-        'name' => 'portal::app.admin.menus.acl.title',
+        'key' => 'portal.menus',
+        'name' => 'portal::app.admin.acl.menus',
         'route' => 'admin.portal.menus.index',
-        'sort' => 3,
+        'sort' => 2,
     ],
     [
-        'key' => 'portal_menus.index',
-        'name' => 'portal::app.admin.menus.acl.index',
+        'key' => 'portal.menus.index',
+        'name' => 'portal::app.admin.acl.menus-index',
         'route' => 'admin.portal.menus.index',
         'sort' => 1,
     ],
     [
-        'key' => 'portal_menus.create',
-        'name' => 'portal::app.admin.menus.acl.create',
+        'key' => 'portal.menus.create',
+        'name' => 'portal::app.admin.acl.menus-create',
         'route' => ['admin.portal.menus.create', 'admin.portal.menus.store'],
         'sort' => 2,
     ],
     [
-        'key' => 'portal_menus.builder',
-        'name' => 'portal::app.admin.menus.acl.builder',
+        'key' => 'portal.menus.builder',
+        'name' => 'portal::app.admin.acl.menus-builder',
         'route' => ['admin.portal.menus.builder', 'admin.portal.menus.items.save'],
         'sort' => 3,
     ],
     [
-        'key' => 'portal_menus.edit',
-        'name' => 'portal::app.admin.menus.acl.edit',
+        'key' => 'portal.menus.edit',
+        'name' => 'portal::app.admin.acl.menus-edit',
         'route' => ['admin.portal.menus.edit', 'admin.portal.menus.update'],
         'sort' => 4,
     ],
     [
-        'key' => 'portal_menus.delete',
-        'name' => 'portal::app.admin.menus.acl.delete',
+        'key' => 'portal.menus.delete',
+        'name' => 'portal::app.admin.acl.menus-delete',
         'route' => 'admin.portal.menus.delete',
         'sort' => 5,
     ],
+
+    /**
+     * 3. Customization.
+     */
     [
-        'key' => 'portal_menus.navigation',
-        'name' => 'portal::app.admin.navigation.acl.title',
-        'route' => ['admin.portal.navigation.index', 'admin.portal.navigation.update'],
-        'sort' => 6,
+        'key' => 'portal.customize',
+        'name' => 'portal::app.admin.acl.customize',
+        'route' => 'admin.portal.navigation.index',
+        'sort' => 3,
+    ],
+    [
+        'key' => 'portal.customize.navigation',
+        'name' => 'portal::app.admin.acl.customize-navigation',
+        'route' => [
+            'admin.portal.navigation.index',
+            'admin.portal.navigation.header',
+            'admin.portal.navigation.footer',
+            'admin.portal.navigation.update',
+        ],
+        'sort' => 1,
+    ],
+    [
+        'key' => 'portal.customize.themes',
+        'name' => 'portal::app.admin.acl.customize-themes',
+        'route' => 'admin.appearance.themes.index',
+        'sort' => 2,
     ],
 ];

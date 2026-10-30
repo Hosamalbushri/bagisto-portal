@@ -14,7 +14,7 @@
         </div>
 
         <div class="flex items-center gap-x-2.5">
-            @if (bouncer()->hasPermission('portal.navigation'))
+            @if (bouncer()->hasPermission('portal.customize.navigation') || bouncer()->hasPermission('portal.navigation') || bouncer()->hasPermission('portal_menus.navigation'))
                 <a
                     href="{{ route('admin.portal.navigation.index') }}"
                     class="secondary-button flex items-center gap-1.5"
@@ -24,7 +24,7 @@
                 </a>
             @endif
 
-            @if (bouncer()->hasPermission('portal.menus.create'))
+            @if (bouncer()->hasPermission('portal.menus.create') || bouncer()->hasPermission('portal_menus.create'))
                 <a
                     href="{{ route('admin.portal.menus.create') }}"
                     class="primary-button"

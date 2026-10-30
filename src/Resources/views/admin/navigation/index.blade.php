@@ -1,6 +1,16 @@
+@php
+    $activeTab = $activeTab ?? request('tab', 'all');
+@endphp
+
 <x-admin::layouts>
     <x-slot:title>
-        @lang('portal::app.admin.navigation.title')
+        @if ($activeTab === 'header')
+            @lang('portal::app.admin.navigation.header-title')
+        @elseif ($activeTab === 'footer')
+            @lang('portal::app.admin.navigation.footer-title')
+        @else
+            @lang('portal::app.admin.navigation.title')
+        @endif
     </x-slot>
 
     {!! view_render_event('bagisto.admin.portal.navigation.before') !!}
@@ -9,11 +19,24 @@
         <input type="hidden" name="channel" value="{{ $currentChannel->code }}" />
         <input type="hidden" name="locale" value="{{ $currentLocale->code }}" />
         <input type="hidden" name="theme_code" value="{{ $themeCode }}" />
+        <input type="hidden" name="active_tab" value="{{ $activeTab }}" />
+
         <!-- Page Header -->
         <div class="flex items-center justify-between gap-4 max-sm:flex-wrap">
-            <p class="text-xl font-bold text-gray-800 dark:text-white">
-                @lang('portal::app.admin.navigation.title')
-            </p>
+            <div>
+                <p class="text-xl font-bold text-gray-800 dark:text-white">
+                    @if ($activeTab === 'header')
+                        @lang('portal::app.admin.navigation.header-title')
+                    @elseif ($activeTab === 'footer')
+                        @lang('portal::app.admin.navigation.footer-title')
+                    @else
+                        @lang('portal::app.admin.navigation.title')
+                    @endif
+                </p>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    @lang('portal::app.admin.navigation.subtitle')
+                </p>
+            </div>
 
             <div class="flex items-center gap-x-2.5">
                 <a
@@ -30,6 +53,37 @@
                     @lang('portal::app.admin.navigation.save-btn')
                 </button>
             </div>
+        </div>
+
+        <!-- Customization Tabs Navigation -->
+        <div class="mt-4 flex items-center gap-2 border-b border-gray-200 pb-2 dark:border-gray-800">
+            <a
+                href="{{ route('admin.portal.navigation.index', ['channel' => $currentChannel->code, 'locale' => $currentLocale->code]) }}"
+                class="rounded-md px-3 py-1.5 text-sm font-semibold transition-all {{ $activeTab === 'all' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}"
+            >
+                @lang('portal::app.admin.navigation.tabs.all')
+            </a>
+
+            <a
+                href="{{ route('admin.portal.navigation.header', ['channel' => $currentChannel->code, 'locale' => $currentLocale->code]) }}"
+                class="rounded-md px-3 py-1.5 text-sm font-semibold transition-all {{ $activeTab === 'header' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}"
+            >
+                @lang('portal::app.admin.navigation.tabs.header')
+            </a>
+
+            <a
+                href="{{ route('admin.portal.navigation.footer', ['channel' => $currentChannel->code, 'locale' => $currentLocale->code]) }}"
+                class="rounded-md px-3 py-1.5 text-sm font-semibold transition-all {{ $activeTab === 'footer' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}"
+            >
+                @lang('portal::app.admin.navigation.tabs.footer')
+            </a>
+
+            <a
+                href="{{ route('admin.appearance.themes.index') }}"
+                class="rounded-md px-3 py-1.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+            >
+                @lang('portal::app.admin.navigation.tabs.themes')
+            </a>
         </div>
 
         <!-- Channel and Locale Switcher Row (Standard Bagisto Admin Pattern) -->
@@ -112,7 +166,7 @@
             <!-- Left Container: Slots -->
             <div class="flex flex-1 flex-col gap-2 max-xl:flex-auto">
                 <!-- Header Slots Section -->
-                <x-admin::accordion>
+                <x-admin::accordion :is-active="in_array($activeTab, ['all', 'header'])">
                     <x-slot:header class="p-3">
                         <div class="flex items-center gap-2">
                             <span class="icon-attribute text-xl text-blue-600"></span>
@@ -218,7 +272,7 @@
                 </x-admin::accordion>
 
                 <!-- Footer Slots Section -->
-                <x-admin::accordion>
+                <x-admin::accordion :is-active="in_array($activeTab, ['all', 'footer'])">
                     <x-slot:header class="p-3">
                         <div class="flex items-center gap-2">
                             <span class="icon-folder text-xl text-green-600"></span>
@@ -352,7 +406,7 @@
 
                 <!-- Other Slots Section -->
                 @if (! empty($slots['other']))
-                    <x-admin::accordion>
+                    <x-admin::accordion :is-active="$activeTab === 'all'">
                         <x-slot:header class="p-3">
                             <div class="flex items-center gap-2">
                                 <span class="icon-cms text-xl text-purple-600"></span>

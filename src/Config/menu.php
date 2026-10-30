@@ -1,48 +1,81 @@
 <?php
 
 return [
+    /**
+     * Root Level Item: Storefront Portal.
+     */
     [
-        'key' => 'pages',
-        'name' => 'portal::app.admin.pages.menu.pages',
+        'key' => 'portal',
+        'name' => 'portal::app.admin.menu.portal',
         'route' => 'admin.portal.pages.index',
-        'sort' => 2,
-        'icon' => 'icon-cms',
-        'icon-class' => 'cms-icon',
-    ],
-    [
-        'key' => 'pages.index',
-        'name' => 'portal::app.admin.pages.menu.all-pages',
-        'route' => 'admin.portal.pages.index',
-        'sort' => 1,
-        'icon' => '',
-    ],
-    [
-        'key' => 'pages.create',
-        'name' => 'portal::app.admin.pages.menu.create',
-        'route' => 'admin.portal.pages.create',
-        'sort' => 2,
-        'icon' => '',
-    ],
-    [
-        'key' => 'portal_menus',
-        'name' => 'portal::app.admin.menus.menu.title',
-        'route' => 'admin.portal.menus.index',
         'sort' => 3,
-        'icon' => 'icon-menu',
-        'icon-class' => 'menu-icon',
+        'icon' => 'icon-smart-screen',
+        'icon-class' => 'portal-icon',
     ],
+
+    /**
+     * 1. Pages.
+     */
     [
-        'key' => 'portal_menus.index',
-        'name' => 'portal::app.admin.menus.menu.all-menus',
-        'route' => 'admin.portal.menus.index',
+        'key' => 'portal.pages',
+        'name' => 'portal::app.admin.menu.pages',
+        'route' => 'admin.portal.pages.index',
         'sort' => 1,
         'icon' => '',
     ],
+
+    /**
+     * 2. Menus.
+     */
     [
-        'key' => 'portal_menus.navigation',
-        'name' => 'portal::app.admin.navigation.menu.title',
-        'route' => 'admin.portal.navigation.index',
+        'key' => 'portal.menus',
+        'name' => 'portal::app.admin.menu.menus',
+        'route' => 'admin.portal.menus.index',
         'sort' => 2,
+        'icon' => '',
+    ],
+
+    /**
+     * 3. Customization.
+     */
+    [
+        'key' => 'portal.customize',
+        'name' => 'portal::app.admin.menu.customize',
+        'route' => 'admin.portal.navigation.index',
+        'sort' => 3,
+        'icon' => '',
+    ],
+
+    /**
+     * 3.1 Header Customization.
+     */
+    [
+        'key' => 'portal.customize.header',
+        'name' => 'portal::app.admin.menu.customize-header',
+        'route' => 'admin.portal.navigation.header',
+        'sort' => 1,
+        'icon' => '',
+    ],
+
+    /**
+     * 3.2 Footer Customization.
+     */
+    [
+        'key' => 'portal.customize.footer',
+        'name' => 'portal::app.admin.menu.customize-footer',
+        'route' => 'admin.portal.navigation.footer',
+        'sort' => 2,
+        'icon' => '',
+    ],
+
+    /**
+     * 3.3 Themes Selection.
+     */
+    [
+        'key' => 'portal.customize.themes',
+        'name' => 'portal::app.admin.menu.customize-themes',
+        'route' => 'admin.appearance.themes.index',
+        'sort' => 3,
         'icon' => '',
     ],
 ];

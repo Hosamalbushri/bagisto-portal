@@ -14,19 +14,23 @@
         </div>
 
         <div class="flex items-center gap-x-2.5">
-            <a
-                href="{{ route('admin.appearance.sections.index', core()->getCurrentChannel()->theme ?? 'portal') }}"
-                class="secondary-button"
-            >
-                @lang('portal::app.admin.pages.index.customize-home-btn')
-            </a>
+            @if (bouncer()->hasPermission('appearance.sections') || bouncer()->hasPermission('portal.pages.customize') || bouncer()->hasPermission('pages.customize'))
+                <a
+                    href="{{ route('admin.appearance.sections.index', core()->getCurrentChannel()->theme ?? 'portal') }}"
+                    class="secondary-button"
+                >
+                    @lang('portal::app.admin.pages.index.customize-home-btn')
+                </a>
+            @endif
 
-            <a
-                href="{{ route('admin.portal.pages.create') }}"
-                class="primary-button"
-            >
-                @lang('portal::app.admin.pages.index.create-btn')
-            </a>
+            @if (bouncer()->hasPermission('portal.pages.create') || bouncer()->hasPermission('pages.create'))
+                <a
+                    href="{{ route('admin.portal.pages.create') }}"
+                    class="primary-button"
+                >
+                    @lang('portal::app.admin.pages.index.create-btn')
+                </a>
+            @endif
         </div>
     </div>
 

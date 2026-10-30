@@ -30,7 +30,7 @@ class MenuController extends Controller
      */
     public function index(): View|JsonResponse
     {
-        abort_unless(bouncer()->hasPermission('portal_menus.index'), 403);
+        abort_unless(bouncer()->hasPermission('portal.menus.index') || bouncer()->hasPermission('portal_menus.index'), 403);
 
         if (request()->ajax()) {
             return app(PortalMenuDataGrid::class)->toJson();
@@ -44,7 +44,7 @@ class MenuController extends Controller
      */
     public function create(): View
     {
-        abort_unless(bouncer()->hasPermission('portal_menus.create'), 403);
+        abort_unless(bouncer()->hasPermission('portal.menus.create') || bouncer()->hasPermission('portal_menus.create'), 403);
 
         $channels = core()->getAllChannels();
         $locales = core()->getAllLocales();
@@ -72,7 +72,7 @@ class MenuController extends Controller
      */
     public function store(Request $request): RedirectResponse|JsonResponse
     {
-        abort_unless(bouncer()->hasPermission('portal_menus.create'), 403);
+        abort_unless(bouncer()->hasPermission('portal.menus.create') || bouncer()->hasPermission('portal_menus.create'), 403);
 
         $channelId = $request->input('channel_id') ?: null;
         $localeCode = $request->input('locale', core()->getRequestedLocaleCode());
@@ -153,7 +153,7 @@ class MenuController extends Controller
      */
     public function edit(int $id): View
     {
-        abort_unless(bouncer()->hasPermission('portal_menus.edit'), 403);
+        abort_unless(bouncer()->hasPermission('portal.menus.edit') || bouncer()->hasPermission('portal_menus.edit'), 403);
 
         $menu = $this->portalMenuRepository->findOrFail($id);
 
@@ -213,7 +213,7 @@ class MenuController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse|RedirectResponse
     {
-        abort_unless(bouncer()->hasPermission('portal_menus.edit'), 403);
+        abort_unless(bouncer()->hasPermission('portal.menus.edit') || bouncer()->hasPermission('portal_menus.edit'), 403);
 
         $menu = $this->portalMenuRepository->findOrFail($id);
 
@@ -276,7 +276,7 @@ class MenuController extends Controller
      */
     public function saveItems(Request $request, int $id): JsonResponse
     {
-        abort_unless(bouncer()->hasPermission('portal_menus.builder'), 403);
+        abort_unless(bouncer()->hasPermission('portal.menus.builder') || bouncer()->hasPermission('portal_menus.builder'), 403);
 
         $menu = $this->portalMenuRepository->findOrFail($id);
 
@@ -295,7 +295,7 @@ class MenuController extends Controller
      */
     public function destroy(int $id): JsonResponse|RedirectResponse
     {
-        abort_unless(bouncer()->hasPermission('portal_menus.delete'), 403);
+        abort_unless(bouncer()->hasPermission('portal.menus.delete') || bouncer()->hasPermission('portal_menus.delete'), 403);
 
         $this->portalMenuRepository->delete($id);
 

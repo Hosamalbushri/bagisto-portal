@@ -87,11 +87,11 @@ class PortalPageDataGrid extends DataGrid
         ]);
 
         $this->addColumn([
-            'index' => 'channel_name',
-            'label' => trans('portal::app.admin.pages.index.datagrid.channel'),
-            'type' => 'string',
-            'filterable' => false,
-            'sortable' => true,
+            'index'      => 'channel_name',
+            'label'      => trans('portal::app.admin.pages.index.datagrid.channel'),
+            'type'       => 'string',
+            'filterable' => true,
+            'sortable'   => true,
         ]);
 
         $this->addColumn([
@@ -146,7 +146,7 @@ class PortalPageDataGrid extends DataGrid
             },
         ]);
 
-        if (bouncer()->hasPermission('pages.customize')) {
+        if (bouncer()->hasPermission('portal.pages.customize') || bouncer()->hasPermission('pages.customize')) {
             $this->addAction([
                 'icon' => 'icon-settings',
                 'title' => trans('portal::app.admin.pages.index.datagrid.customize'),
@@ -157,7 +157,7 @@ class PortalPageDataGrid extends DataGrid
             ]);
         }
 
-        if (bouncer()->hasPermission('pages.edit')) {
+        if (bouncer()->hasPermission('portal.pages.edit') || bouncer()->hasPermission('pages.edit')) {
             $this->addAction([
                 'icon' => 'icon-edit',
                 'title' => trans('portal::app.admin.pages.index.datagrid.edit'),
@@ -168,7 +168,7 @@ class PortalPageDataGrid extends DataGrid
             ]);
         }
 
-        if (bouncer()->hasPermission('pages.delete')) {
+        if (bouncer()->hasPermission('portal.pages.delete') || bouncer()->hasPermission('pages.delete')) {
             $this->addAction([
                 'icon' => 'icon-delete',
                 'title' => trans('portal::app.admin.pages.index.datagrid.delete'),
@@ -187,7 +187,7 @@ class PortalPageDataGrid extends DataGrid
      */
     public function prepareMassActions()
     {
-        if (bouncer()->hasPermission('pages.delete')) {
+        if (bouncer()->hasPermission('portal.pages.delete') || bouncer()->hasPermission('pages.delete')) {
             $this->addMassAction([
                 'title' => trans('portal::app.admin.pages.index.datagrid.delete'),
                 'method' => 'POST',
@@ -195,7 +195,7 @@ class PortalPageDataGrid extends DataGrid
             ]);
         }
 
-        if (bouncer()->hasPermission('pages.edit')) {
+        if (bouncer()->hasPermission('portal.pages.edit') || bouncer()->hasPermission('pages.edit')) {
             $this->addMassAction([
                 'title' => trans('portal::app.admin.pages.index.datagrid.update-status'),
                 'method' => 'POST',

@@ -25,7 +25,7 @@ class PageController extends Controller
      */
     public function index(): View|JsonResponse
     {
-        abort_unless(bouncer()->hasPermission('pages.index'), 403);
+        abort_unless(bouncer()->hasPermission('portal.pages.index') || bouncer()->hasPermission('pages.index'), 403);
 
         if (request()->ajax()) {
             return datagrid(PortalPageDataGrid::class)->process();
@@ -39,7 +39,7 @@ class PageController extends Controller
      */
     public function create(): View
     {
-        abort_unless(bouncer()->hasPermission('pages.create'), 403);
+        abort_unless(bouncer()->hasPermission('portal.pages.create') || bouncer()->hasPermission('pages.create'), 403);
 
         $channels = $this->channelRepository->all();
 
@@ -51,7 +51,7 @@ class PageController extends Controller
      */
     public function store(): JsonResponse|RedirectResponse
     {
-        abort_unless(bouncer()->hasPermission('pages.create'), 403);
+        abort_unless(bouncer()->hasPermission('portal.pages.create') || bouncer()->hasPermission('pages.create'), 403);
 
         $locale = request('locale', core()->getRequestedLocaleCode());
 
@@ -146,7 +146,7 @@ class PageController extends Controller
      */
     public function edit(int $id): View
     {
-        abort_unless(bouncer()->hasPermission('pages.edit'), 403);
+        abort_unless(bouncer()->hasPermission('portal.pages.edit') || bouncer()->hasPermission('pages.edit'), 403);
 
         $page = $this->portalPageRepository->findOrFail($id);
         $channels = $this->channelRepository->all();
@@ -159,7 +159,7 @@ class PageController extends Controller
      */
     public function update(int $id): JsonResponse|RedirectResponse
     {
-        abort_unless(bouncer()->hasPermission('pages.edit'), 403);
+        abort_unless(bouncer()->hasPermission('portal.pages.edit') || bouncer()->hasPermission('pages.edit'), 403);
 
         $locale = request('locale', core()->getRequestedLocaleCode());
 
@@ -252,7 +252,7 @@ class PageController extends Controller
      */
     public function delete(int $id): JsonResponse
     {
-        abort_unless(bouncer()->hasPermission('pages.delete'), 403);
+        abort_unless(bouncer()->hasPermission('portal.pages.delete') || bouncer()->hasPermission('pages.delete'), 403);
 
         $this->portalPageRepository->delete($id);
 
@@ -266,7 +266,7 @@ class PageController extends Controller
      */
     public function massUpdate(): JsonResponse
     {
-        abort_unless(bouncer()->hasPermission('pages.edit'), 403);
+        abort_unless(bouncer()->hasPermission('portal.pages.edit') || bouncer()->hasPermission('pages.edit'), 403);
 
         $indices = request('indices', []);
         $value = (int) request('value', 0);
@@ -297,7 +297,7 @@ class PageController extends Controller
      */
     public function massDelete(): JsonResponse
     {
-        abort_unless(bouncer()->hasPermission('pages.delete'), 403);
+        abort_unless(bouncer()->hasPermission('portal.pages.delete') || bouncer()->hasPermission('pages.delete'), 403);
 
         $indices = request('indices', []);
 
