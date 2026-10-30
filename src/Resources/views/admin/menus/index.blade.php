@@ -14,6 +14,16 @@
         </div>
 
         <div class="flex items-center gap-x-2.5">
+            @if (bouncer()->hasPermission('portal.navigation'))
+                <a
+                    href="{{ route('admin.portal.navigation.index') }}"
+                    class="secondary-button flex items-center gap-1.5"
+                >
+                    <span class="icon-attribute text-lg"></span>
+                    <span>@lang('portal::app.admin.navigation.title')</span>
+                </a>
+            @endif
+
             @if (bouncer()->hasPermission('portal.menus.create'))
                 <a
                     href="{{ route('admin.portal.menus.create') }}"

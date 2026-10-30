@@ -7,7 +7,8 @@
 ])
 
 @php
-    $hasChildren = $item->children && $item->children->where('status', 1)->isNotEmpty();
+    $children = $item->children ? $item->children->where('status', 1)->filter(fn ($c) => filled($c->getTitle())) : collect();
+    $hasChildren = $children->isNotEmpty();
     $active = $item->isActive();
     $title = $item->getTitle();
     $url = $item->getUrl();
@@ -24,7 +25,7 @@
             href="{{ $url }}"
             target="{{ $item->target ?: '_self' }}"
             @if ($item->target === '_blank') rel="noopener noreferrer" @endif
-            class="flex items-center gap-1.5 transition-colors duration-150 {{ $depth === 0 ? 'py-2 px-1 text-gray-700 hover:text-blue-600 text-sm font-medium' : 'px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 w-full' }} {{ $active ? $activeClass : '' }} {{ $itemClass }}"
+            class="flex items-center gap-1.5 transition-colors duration-150 {{ $depth === 0 ? 'py-2 px-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 text-sm font-medium' : 'px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 w-full' }} {{ $active ? $activeClass : '' }} {{ $itemClass }}"
         >
             @if (! empty($item->icon))
                 <i class="{{ $item->icon }} text-xs"></i>
@@ -56,9 +57,9 @@
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 translate-y-1"
             style="display: none;"
-            class="{{ $depth === 0 ? 'absolute start-0 top-full mt-1 min-w-[200px] bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50' : 'absolute start-full top-0 min-w-[200px] bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50' }} {{ $dropdownClass }}"
+            class="{{ $depth === 0 ? 'absolute start-0 top-full mt-1 min-w-[200px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-100 dark:border-gray-800 py-1 z-50' : 'absolute start-full top-0 min-w-[200px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-100 dark:border-gray-800 py-1 z-50' }} {{ $dropdownClass }}"
         >
-            @foreach ($item->children->where('status', 1) as $child)
+            @foreach ($children as $child)
                 <x-portal::menu.item
                     :item="$child"
                     :item-class="$itemClass"

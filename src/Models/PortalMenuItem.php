@@ -100,7 +100,8 @@ class PortalMenuItem extends TranslatableModel implements PortalMenuItemContract
     }
 
     /**
-     * Resolve the display title with fallback.
+     * Resolve the display title for the specified locale.
+     * Returns empty string if no translation exists for this locale.
      */
     public function getTitle(?string $locale = null): string
     {
@@ -113,12 +114,13 @@ class PortalMenuItem extends TranslatableModel implements PortalMenuItemContract
         }
 
         if ($this->type === 'page' && $this->page) {
-            return $this->page->translate($resolvedLocale)?->title
-                ?? $this->page->title
-                ?? '';
+            $pageTitle = $this->page->translate($resolvedLocale)?->title;
+            if (filled($pageTitle)) {
+                return $pageTitle;
+            }
         }
 
-        return $this->title ?? '';
+        return '';
     }
 
     /**

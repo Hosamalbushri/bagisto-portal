@@ -8,9 +8,22 @@
 <html
     lang="{{ app()->getLocale() }}"
     dir="{{ core()->getCurrentLocale()->direction }}"
+    class="{{ request()->cookie('dark_mode') ? 'dark' : '' }}"
 >
 <head>
     {!! view_render_event('bagisto.shop.layout.head.before') !!}
+
+    <script>
+        (function() {
+            var cookie = document.cookie.match(/(?:^|; )dark_mode=([^;]*)/);
+            var isDark = cookie ? cookie[1] === '1' : (localStorage.getItem('dark_mode') === '1');
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else if (cookie && cookie[1] === '0') {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
 
     <title>{{ $title ?? config('app.name') }}</title>
 

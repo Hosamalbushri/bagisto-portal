@@ -40,7 +40,7 @@
                                 {{ $locale->name }}
                             </a>
                         @endforeach
-                    </x-slot>
+                    </x-slot:content>
                 </x-admin::dropdown>
 
                 <a
@@ -61,7 +61,7 @@
 
         <!-- Main Container -->
         <div class="mt-3.5 flex gap-2.5 max-xl:flex-wrap">
-            <!-- Left Container: Menu Structure Builder (Family-Style) -->
+            <!-- Left Container: Menu Structure Builder -->
             <div class="box-shadow flex flex-1 flex-col gap-2 rounded bg-white dark:bg-gray-900 max-xl:flex-auto">
                 <v-menu-builder
                     :initial-items='@json($items)'
@@ -91,6 +91,7 @@
 
                             <x-admin::form.control-group.control
                                 type="text"
+                                id="name"
                                 name="name"
                                 rules="required"
                                 :value="old('name', $menu->name)"
@@ -109,6 +110,7 @@
 
                             <x-admin::form.control-group.control
                                 type="text"
+                                id="slug"
                                 name="slug"
                                 rules="required"
                                 :value="old('slug', $menu->slug)"
@@ -127,6 +129,7 @@
 
                             <x-admin::form.control-group.control
                                 type="select"
+                                id="channel_id"
                                 name="channel_id"
                                 :value="old('channel_id', $menu->channel_id)"
                                 :label="trans('portal::app.admin.menus.edit.channel')"
@@ -151,8 +154,11 @@
                                 @lang('portal::app.admin.menus.edit.status')
                             </x-admin::form.control-group.label>
 
+                            <input type="hidden" name="status" value="0" />
+
                             <x-admin::form.control-group.control
                                 type="switch"
+                                id="status"
                                 name="status"
                                 :value="1"
                                 :checked="(bool) old('status', $menu->status)"
@@ -167,6 +173,121 @@
     {!! view_render_event('bagisto.admin.portal.menus.edit.after') !!}
 
     @pushOnce('scripts')
+        <!-- Recursive Menu Item Template -->
+        <script type="text/x-template" id="v-menu-tree-item-template">
+            <div class="flex flex-col gap-2 rounded border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-2.5 transition-all">
+                <!-- Item Header Row -->
+                <div class="flex items-center justify-between gap-2.5">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <i class="icon-drag cursor-grab text-xl text-gray-400 hover:text-gray-800 dark:hover:text-white transition-all"></i>
+
+                        <span v-if="depth > 0" class="text-blue-500 font-bold text-sm ltr:mr-0.5 rtl:ml-0.5 select-none">
+                            └─
+                        </span>
+
+                        <i
+                            class="text-xl shrink-0"
+                            :class="item.type === 'page' ? 'icon-attribute text-purple-600' : 'icon-folder text-blue-600'"
+                        ></i>
+
+                        <span class="text-sm font-semibold text-gray-800 dark:text-white truncate">
+                            @{{ getItemLabel() }}
+                        </span>
+
+                        <span class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                            @{{ item.type }}
+                        </span>
+
+                        <span
+                            v-if="item.children && item.children.length > 0"
+                            class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-blue-600 dark:bg-blue-900/40 dark:text-blue-300"
+                        >
+                            @{{ item.children.length }} @lang('portal::app.admin.menus.builder.sub-item')
+                        </span>
+                    </div>
+
+                    <!-- Action Controls -->
+                    <div class="flex items-center gap-1 shrink-0">
+                        <!-- Move Up Button -->
+                        <i
+                            class="icon-sort-up text-xl p-1 rounded transition-all select-none"
+                            :class="index === 0 ? 'opacity-20 cursor-not-allowed text-gray-400' : 'cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300'"
+                            @click="moveUp"
+                            title="@lang('portal::app.admin.menus.builder.move-up')"
+                        ></i>
+
+                        <!-- Move Down Button -->
+                        <i
+                            class="icon-sort-down text-xl p-1 rounded transition-all select-none"
+                            :class="index === parentItems.length - 1 ? 'opacity-20 cursor-not-allowed text-gray-400' : 'cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300'"
+                            @click="moveDown"
+                            title="@lang('portal::app.admin.menus.builder.move-down')"
+                        ></i>
+
+                        <!-- Outdent Button (Make Parent) -->
+                        <i
+                            class="icon-arrow-left text-xl p-1 rounded transition-all rtl:rotate-180 select-none"
+                            :class="depth === 0 ? 'opacity-20 cursor-not-allowed text-gray-400' : 'cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300'"
+                            @click="outdent"
+                            title="@lang('portal::app.admin.menus.builder.outdent')"
+                        ></i>
+
+                        <!-- Indent Button (Make Child) -->
+                        <i
+                            class="icon-arrow-right text-xl p-1 rounded transition-all rtl:rotate-180 select-none"
+                            :class="index === 0 ? 'opacity-20 cursor-not-allowed text-gray-400' : 'cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300'"
+                            @click="indent"
+                            title="@lang('portal::app.admin.menus.builder.indent')"
+                        ></i>
+
+                        <!-- Edit Button -->
+                        <i
+                            class="icon-edit text-xl cursor-pointer p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-all"
+                            @click="$emit('edit', item)"
+                            title="@lang('portal::app.admin.menus.builder.edit')"
+                        ></i>
+
+                        <!-- Delete Button -->
+                        <i
+                            class="icon-delete text-xl cursor-pointer p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-red-600 transition-all"
+                            @click="$emit('delete', { item, parentItems, index })"
+                            title="@lang('portal::app.admin.menus.builder.remove-item')"
+                        ></i>
+                    </div>
+                </div>
+
+                <!-- Nested Children Draggable Container -->
+                <div v-if="item.children" class="mt-1 ps-4 border-s-2 border-blue-200 dark:border-blue-900 ms-3">
+                    <draggable
+                        :list="item.children"
+                        group="menu-hierarchy"
+                        handle=".icon-drag"
+                        item-key="_uid"
+                        ghost-class="draggable-ghost"
+                        :move="checkMove"
+                        @end="onDragEnd"
+                        v-bind="{animation: 200}"
+                        class="space-y-2 min-h-[10px]"
+                    >
+                        <template #item="{ element, index: childIndex }">
+                            <v-menu-tree-item
+                                :item="element"
+                                :index="childIndex"
+                                :parent-items="item.children"
+                                :parent-item="item"
+                                :depth="depth + 1"
+                                :current-locale-code="currentLocaleCode"
+                                @edit="$emit('edit', $event)"
+                                @delete="$emit('delete', $event)"
+                                @tree-change="$emit('tree-change')"
+                            />
+                        </template>
+                    </draggable>
+                </div>
+            </div>
+        </script>
+
+        <!-- Main Menu Builder Template -->
         <script type="text/x-template" id="v-menu-builder-template">
             <div>
                 <!-- Panel Header -->
@@ -203,7 +324,7 @@
 
                 <!-- Empty State -->
                 <div
-                    v-if="flatTree.length === 0"
+                    v-if="treeItems.length === 0"
                     class="p-12 text-center"
                 >
                     <span class="icon-menu text-5xl text-gray-300 dark:text-gray-600 mb-2 inline-block"></span>
@@ -215,87 +336,41 @@
                     </p>
                 </div>
 
-                <!-- Draggable Hierarchical Tree -->
-                <div v-else class="p-4 space-y-2">
+                <!-- Root Draggable List -->
+                <div v-else class="p-4">
                     <draggable
-                        ghost-class="draggable-ghost"
+                        :list="treeItems"
+                        group="menu-hierarchy"
                         handle=".icon-drag"
-                        v-bind="{animation: 200}"
-                        :list="flatTree"
                         item-key="_uid"
+                        ghost-class="draggable-ghost"
+                        :move="checkMove"
+                        @end="onDragEnd"
+                        v-bind="{animation: 200}"
+                        class="space-y-2 min-h-[50px]"
                     >
                         <template #item="{ element, index }">
-                            <div
-                                class="group flex items-center justify-between gap-3 rounded border border-gray-200 dark:border-gray-800 p-2.5 bg-white dark:bg-gray-950 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all"
-                                :style="isRtl ? { marginRight: (element.depth * 32) + 'px' } : { marginLeft: (element.depth * 32) + 'px' }"
-                            >
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <i class="icon-drag cursor-grab text-xl text-gray-400 group-hover:text-gray-800 dark:group-hover:text-white transition-all"></i>
-
-                                    <span v-if="element.depth > 0" class="text-blue-600 font-bold text-sm ltr:mr-1 rtl:ml-1">
-                                        └─
-                                    </span>
-
-                                    <i
-                                        class="text-xl"
-                                        :class="element.type === 'page' ? 'icon-attribute text-purple-600' : 'icon-folder text-blue-600'"
-                                    ></i>
-
-                                    <span class="text-sm font-semibold text-gray-800 dark:text-white truncate">
-                                        @{{ getItemLabel(element) }}
-                                    </span>
-
-                                    <span class="label-info text-xs">
-                                        @{{ element.type }}
-                                    </span>
-
-                                    <span v-if="element.depth > 0" class="label-pending text-xs">
-                                        @lang('portal::app.admin.menus.builder.sub-item')
-                                    </span>
-                                </div>
-
-                                <!-- Action Controls -->
-                                <div class="flex items-center gap-1 shrink-0">
-                                    <!-- Outdent -->
-                                    <i
-                                        class="icon-arrow-left text-xl cursor-pointer p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 rtl:rotate-180 text-gray-600 dark:text-gray-300 transition-all"
-                                        :class="{'opacity-30 cursor-not-allowed': element.depth === 0}"
-                                        @click="outdentItem(element)"
-                                        title="@lang('portal::app.admin.menus.builder.outdent')"
-                                    ></i>
-
-                                    <!-- Indent -->
-                                    <i
-                                        class="icon-arrow-right text-xl cursor-pointer p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 rtl:rotate-180 text-gray-600 dark:text-gray-300 transition-all"
-                                        :class="{'opacity-30 cursor-not-allowed': !canIndent(index)}"
-                                        @click="indentItem(index)"
-                                        title="@lang('portal::app.admin.menus.builder.indent')"
-                                    ></i>
-
-                                    <!-- Edit in Modal -->
-                                    <i
-                                        class="icon-edit text-xl cursor-pointer p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-all"
-                                        @click="openEditModal(element)"
-                                        title="@lang('portal::app.admin.menus.builder.edit')"
-                                    ></i>
-
-                                    <!-- Delete -->
-                                    <i
-                                        class="icon-delete text-xl cursor-pointer p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-red-600 transition-all"
-                                        @click="removeItem(element)"
-                                        title="@lang('portal::app.admin.menus.builder.remove-item')"
-                                    ></i>
-                                </div>
-                            </div>
+                            <v-menu-tree-item
+                                :item="element"
+                                :index="index"
+                                :parent-items="treeItems"
+                                :parent-item="null"
+                                :depth="0"
+                                :current-locale-code="currentLocaleCode"
+                                @edit="openEditModal"
+                                @delete="removeItem"
+                                @tree-change="onTreeChange"
+                            />
                         </template>
                     </draggable>
                 </div>
 
-                <!-- Hidden Input with Serialized Items Tree for Form Submission -->
+                <!-- Form Field with Serialized JSON Tree -->
                 <input
                     type="hidden"
                     name="items_json"
-                    :value="JSON.stringify(serializeTree())"
+                    id="portal_menu_items_json"
+                    :value="serializedJson"
                 />
 
                 <!-- Modal 1: Add Portal Pages -->
@@ -365,27 +440,30 @@
                     </x-slot>
 
                     <x-slot:content>
-                        <div class="mb-3">
-                            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-                                @lang('portal::app.admin.menus.builder.url')
-                            </label>
-                            <input
-                                type="text"
-                                v-model="newCustomLink.url"
-                                placeholder="https://... or /about"
-                                class="w-full rounded border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
-                            />
-                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                                    @lang('portal::app.admin.menus.builder.url')
+                                </label>
+                                <input
+                                    type="text"
+                                    v-model="newCustomLink.url"
+                                    placeholder="@lang('portal::app.admin.menus.builder.url-placeholder')"
+                                    class="w-full rounded border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+                                />
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-                                @lang('portal::app.admin.menus.builder.link-text') ({{ $currentLocale->name }})
-                            </label>
-                            <input
-                                type="text"
-                                v-model="newCustomLink.title"
-                                class="w-full rounded border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
-                            />
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                                    @lang('portal::app.admin.menus.builder.link-text')
+                                </label>
+                                <input
+                                    type="text"
+                                    v-model="newCustomLink.title"
+                                    placeholder="@lang('portal::app.admin.menus.builder.link-text-placeholder')"
+                                    class="w-full rounded border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+                                />
+                            </div>
                         </div>
                     </x-slot>
 
@@ -393,6 +471,7 @@
                         <button
                             type="button"
                             class="primary-button"
+                            :disabled="!newCustomLink.url || !newCustomLink.url.trim()"
                             @click="addCustomLink"
                         >
                             @lang('portal::app.admin.menus.builder.add-to-menu')
@@ -400,7 +479,7 @@
                     </x-slot>
                 </x-admin::modal>
 
-                <!-- Modal 3: Edit Item Details in Current Locale -->
+                <!-- Modal 3: Edit Item Details -->
                 <x-admin::modal ref="editItemModal">
                     <x-slot:header>
                         <p class="text-lg font-bold text-gray-800 dark:text-white">
@@ -412,7 +491,7 @@
                         <div v-if="activeItem" class="space-y-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-                                    @lang('portal::app.admin.menus.builder.link-text') ({{ $currentLocale->name }})
+                                    @lang('portal::app.admin.menus.builder.title-label', ['locale' => $currentLocale->name])
                                 </label>
                                 <input
                                     type="text"
@@ -450,7 +529,7 @@
                         <button
                             type="button"
                             class="primary-button"
-                            @click="$refs.editItemModal.close()"
+                            @click="$refs.editItemModal.close(); syncSerializedJson()"
                         >
                             @lang('portal::app.admin.menus.edit.save-btn')
                         </button>
@@ -460,6 +539,96 @@
         </script>
 
         <script type="module">
+            app.component('v-menu-tree-item', {
+                name: 'v-menu-tree-item',
+
+                template: '#v-menu-tree-item-template',
+
+                props: {
+                    item: { type: Object, required: true },
+                    index: { type: Number, required: true },
+                    parentItems: { type: Array, required: true },
+                    parentItem: { type: Object, default: null },
+                    depth: { type: Number, default: 0 },
+                    currentLocaleCode: { type: String, required: true },
+                },
+
+                emits: ['edit', 'delete', 'tree-change'],
+
+                methods: {
+                    getItemLabel() {
+                        const tr = this.item.translations && this.item.translations[this.currentLocaleCode];
+                        if (tr && tr.title) return tr.title;
+
+                        if (this.item.translations) {
+                            for (const code in this.item.translations) {
+                                if (this.item.translations[code]?.title) {
+                                    return this.item.translations[code].title;
+                                }
+                            }
+                        }
+
+                        if (this.item.type === 'page' && this.item.page) {
+                            const pageTr = (this.item.page.translations || []).find(t => t.locale === this.currentLocaleCode)
+                                || (this.item.page.translations || [])[0];
+                            if (pageTr?.title) return pageTr.title;
+                            if (this.item.page.title) return this.item.page.title;
+                        }
+
+                        return this.item.url || '#';
+                    },
+
+                    moveUp() {
+                        if (this.index === 0) return;
+                        const item = this.parentItems.splice(this.index, 1)[0];
+                        this.parentItems.splice(this.index - 1, 0, item);
+                        this.$emit('tree-change');
+                    },
+
+                    moveDown() {
+                        if (this.index === this.parentItems.length - 1) return;
+                        const item = this.parentItems.splice(this.index, 1)[0];
+                        this.parentItems.splice(this.index + 1, 0, item);
+                        this.$emit('tree-change');
+                    },
+
+                    indent() {
+                        if (this.index === 0) return;
+                        const prevSibling = this.parentItems[this.index - 1];
+                        if (!prevSibling.children) {
+                            prevSibling.children = [];
+                        }
+                        const item = this.parentItems.splice(this.index, 1)[0];
+                        prevSibling.children.push(item);
+                        this.$emit('tree-change');
+                    },
+
+                    outdent() {
+                        if (this.depth === 0 || !this.parentItem) return;
+                        this.$emit('delete', {
+                            item: this.item,
+                            parentItems: this.parentItems,
+                            index: this.index,
+                            reinsertAfter: this.parentItem
+                        });
+                        this.$emit('tree-change');
+                    },
+
+                    onDragEnd() {
+                        this.$emit('tree-change');
+                    },
+
+                    checkMove(evt) {
+                        if (!evt.dragged || !evt.to) return true;
+                        // Prevent dropping an element inside itself or its children
+                        if (evt.dragged === evt.to || evt.dragged.contains(evt.to)) {
+                            return false;
+                        }
+                        return true;
+                    },
+                },
+            });
+
             app.component('v-menu-builder', {
                 template: '#v-menu-builder-template',
 
@@ -473,6 +642,7 @@
                 data() {
                     return {
                         treeItems: [],
+                        serializedJson: '[]',
                         activeItem: null,
                         selectedPageIds: [],
                         newCustomLink: {
@@ -483,33 +653,59 @@
                     };
                 },
 
-                computed: {
-                    isRtl() {
-                        return document.documentElement.dir === 'rtl';
-                    },
-
-                    flatTree() {
-                        const result = [];
-                        const traverse = (items, depth = 0, parentUid = null) => {
-                            for (const item of items) {
-                                item.depth = depth;
-                                item.parentUid = parentUid;
-                                result.push(item);
-                                if (item.children && item.children.length > 0) {
-                                    traverse(item.children, depth + 1, item._uid);
-                                }
-                            }
-                        };
-                        traverse(this.treeItems, 0, null);
-                        return result;
+                watch: {
+                    treeItems: {
+                        deep: true,
+                        handler() {
+                            this.syncSerializedJson();
+                        },
                     },
                 },
 
                 created() {
                     this.treeItems = this.normalizeInitialItems(this.initialItems);
+                    this.syncSerializedJson();
+                },
+
+                mounted() {
+                    this.syncSerializedJson();
+
+                    const form = this.$el.closest('form');
+                    if (form) {
+                        form.addEventListener('submit', () => {
+                            this.syncSerializedJson();
+                        });
+                    }
                 },
 
                 methods: {
+                    syncSerializedJson() {
+                        const json = JSON.stringify(this.serializeItems(this.treeItems));
+                        this.serializedJson = json;
+
+                        const input = document.getElementById('portal_menu_items_json')
+                            || (this.$el ? this.$el.querySelector('input[name="items_json"]') : null);
+                        if (input) {
+                            input.value = json;
+                        }
+                    },
+
+                    onTreeChange() {
+                        this.syncSerializedJson();
+                    },
+
+                    onDragEnd() {
+                        this.syncSerializedJson();
+                    },
+
+                    checkMove(evt) {
+                        if (!evt.dragged || !evt.to) return true;
+                        // Prevent dropping an element inside itself or its children
+                        if (evt.dragged === evt.to || evt.dragged.contains(evt.to)) {
+                            return false;
+                        }
+                        return true;
+                    },
                     normalizeInitialItems(items) {
                         return (items || []).map(item => {
                             const translationsMap = {};
@@ -532,34 +728,10 @@
                                 target: item.target || '_self',
                                 status: item.status !== undefined ? Boolean(item.status) : true,
                                 page: item.page || null,
-                                depth: item.depth || 0,
                                 translations: translationsMap,
                                 children: this.normalizeInitialItems(item.children || []),
                             };
                         });
-                    },
-
-                    getItemLabel(item) {
-                        if (item.translations && item.translations[this.currentLocaleCode]?.title) {
-                            return item.translations[this.currentLocaleCode].title;
-                        }
-
-                        if (item.translations) {
-                            for (const code in item.translations) {
-                                if (item.translations[code]?.title) {
-                                    return item.translations[code].title;
-                                }
-                            }
-                        }
-
-                        if (item.type === 'page' && item.page) {
-                            const pageTr = (item.page.translations || []).find(t => t.locale === this.currentLocaleCode)
-                                || (item.page.translations || [])[0];
-                            if (pageTr?.title) return pageTr.title;
-                            if (item.page.title) return item.page.title;
-                        }
-
-                        return item.url || '#';
                     },
 
                     toggleSelectAllPages() {
@@ -590,7 +762,6 @@
                                 url: null,
                                 target: '_self',
                                 status: true,
-                                depth: 0,
                                 translations: translationsMap,
                                 children: [],
                             });
@@ -598,6 +769,7 @@
 
                         this.selectedPageIds = [];
                         this.$refs.addPagesModal.close();
+                        this.syncSerializedJson();
                     },
 
                     addCustomLink() {
@@ -619,7 +791,6 @@
                             url: this.newCustomLink.url.trim(),
                             target: '_self',
                             status: true,
-                            depth: 0,
                             translations: translationsMap,
                             children: [],
                         });
@@ -627,71 +798,7 @@
                         this.newCustomLink.url = '';
                         this.newCustomLink.title = '';
                         this.$refs.addCustomModal.close();
-                    },
-
-                    canIndent(index) {
-                        if (index === 0) return false;
-                        const item = this.flatTree[index];
-                        const prev = this.flatTree[index - 1];
-                        return prev && prev.depth >= item.depth;
-                    },
-
-                    indentItem(index) {
-                        if (!this.canIndent(index)) return;
-                        const item = this.flatTree[index];
-                        const prev = this.flatTree[index - 1];
-
-                        this.removeFromTree(item._uid);
-
-                        if (!prev.children) prev.children = [];
-                        prev.children.push(item);
-                    },
-
-                    outdentItem(item) {
-                        if (item.depth === 0) return;
-
-                        const parent = this.findInTree(this.treeItems, item.parentUid);
-                        if (!parent) return;
-
-                        this.removeFromTree(item._uid);
-
-                        if (parent.parentUid) {
-                            const grandParent = this.findInTree(this.treeItems, parent.parentUid);
-                            if (grandParent) {
-                                const idx = grandParent.children.findIndex(c => c._uid === parent._uid);
-                                grandParent.children.splice(idx + 1, 0, item);
-                            }
-                        } else {
-                            const idx = this.treeItems.findIndex(c => c._uid === parent._uid);
-                            this.treeItems.splice(idx + 1, 0, item);
-                        }
-                    },
-
-                    removeFromTree(uid) {
-                        const remove = (list) => {
-                            for (let i = 0; i < list.length; i++) {
-                                if (list[i]._uid === uid) {
-                                    list.splice(i, 1);
-                                    return true;
-                                }
-                                if (list[i].children && remove(list[i].children)) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        };
-                        remove(this.treeItems);
-                    },
-
-                    findInTree(list, uid) {
-                        for (const item of list) {
-                            if (item._uid === uid) return item;
-                            if (item.children) {
-                                const found = this.findInTree(item.children, uid);
-                                if (found) return found;
-                            }
-                        }
-                        return null;
+                        this.syncSerializedJson();
                     },
 
                     openEditModal(item) {
@@ -703,12 +810,34 @@
                         this.$refs.editItemModal.open();
                     },
 
-                    removeItem(item) {
-                        this.removeFromTree(item._uid);
+                    removeItem(payload) {
+                        const { item, parentItems, index, reinsertAfter } = payload;
+                        if (reinsertAfter) {
+                            // Find reinsertAfter in tree and insert item after it
+                            const removed = parentItems.splice(index, 1)[0];
+                            this.insertAfter(this.treeItems, reinsertAfter._uid, removed);
+                            this.syncSerializedJson();
+                            return;
+                        }
+                        parentItems.splice(index, 1);
+                        this.syncSerializedJson();
+                    },
+
+                    insertAfter(list, targetUid, itemToInsert) {
+                        for (let i = 0; i < list.length; i++) {
+                            if (list[i]._uid === targetUid) {
+                                list.splice(i + 1, 0, itemToInsert);
+                                return true;
+                            }
+                            if (list[i].children && this.insertAfter(list[i].children, targetUid, itemToInsert)) {
+                                return true;
+                            }
+                        }
+                        return false;
                     },
 
                     serializeItems(list) {
-                        return list.map((item, idx) => ({
+                        return (list || []).map((item, idx) => ({
                             id: item.id || null,
                             type: item.type,
                             portal_page_id: item.portal_page_id || null,
@@ -719,10 +848,6 @@
                             translations: item.translations,
                             children: item.children ? this.serializeItems(item.children) : [],
                         }));
-                    },
-
-                    serializeTree() {
-                        return this.serializeItems(this.treeItems);
                     },
                 },
             });

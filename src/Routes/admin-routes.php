@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Platform\Portal\Http\Controllers\Admin\MenuController;
+use Platform\Portal\Http\Controllers\Admin\NavigationCustomizeController;
 use Platform\Portal\Http\Controllers\Admin\PageController;
 use Platform\Portal\Http\Controllers\Admin\PageCustomizeController;
 
@@ -38,5 +39,10 @@ Route::group(['middleware' => ['web', 'admin'], 'prefix' => config('app.admin_ur
         Route::get('builder/{id}', [MenuController::class, 'builder'])->name('admin.portal.menus.builder');
         Route::post('builder/{id}/items', [MenuController::class, 'saveItems'])->name('admin.portal.menus.items.save');
         Route::delete('delete/{id}', [MenuController::class, 'destroy'])->name('admin.portal.menus.delete');
+    });
+
+    Route::prefix('portal/navigation')->group(function () {
+        Route::get('', [NavigationCustomizeController::class, 'index'])->name('admin.portal.navigation.index');
+        Route::post('', [NavigationCustomizeController::class, 'update'])->name('admin.portal.navigation.update');
     });
 });

@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Platform\Portal\DataGrids\PortalMenuDataGrid;
 use Platform\Portal\Http\Controllers\Controller;
@@ -82,7 +83,12 @@ class MenuController extends Controller
                 'nullable',
                 'string',
                 'max:255',
-                'unique:portal_menus,slug,NULL,id,channel_id,'.($channelId ?? 'NULL'),
+                Rule::unique('portal_menus', 'slug')
+                    ->where(function ($query) use ($channelId) {
+                        return $channelId
+                            ? $query->where('channel_id', $channelId)
+                            : $query->whereNull('channel_id');
+                    }),
             ],
             'channel_id' => ['nullable', 'integer', 'exists:channels,id'],
             'status' => ['nullable', 'boolean'],
@@ -109,8 +115,10 @@ class MenuController extends Controller
 
         // Save items if provided
         $items = $request->input('items');
-        if (! $items && $request->filled('items_json')) {
-            $items = json_decode($request->input('items_json'), true);
+
+        if (! $items && $request->has('items_json')) {
+            $rawItems = $request->input('items_json');
+            $items = is_string($rawItems) ? json_decode($rawItems, true) : $rawItems;
         }
 
         if (! empty($items) && is_array($items)) {
@@ -214,7 +222,18 @@ class MenuController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', 'unique:portal_menus,slug,'.$id.',id,channel_id,'.($channelId ?? 'NULL')],
+            'slug' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('portal_menus', 'slug')
+                    ->ignore($id)
+                    ->where(function ($query) use ($channelId) {
+                        return $channelId
+                            ? $query->where('channel_id', $channelId)
+                            : $query->whereNull('channel_id');
+                    }),
+            ],
             'channel_id' => ['nullable', 'integer', 'exists:channels,id'],
             'status' => ['nullable', 'boolean'],
         ]);
@@ -228,8 +247,10 @@ class MenuController extends Controller
 
         // Save items if provided
         $items = $request->input('items');
-        if (! $items && $request->filled('items_json')) {
-            $items = json_decode($request->input('items_json'), true);
+
+        if (! $items && $request->has('items_json')) {
+            $rawItems = $request->input('items_json');
+            $items = is_string($rawItems) ? json_decode($rawItems, true) : $rawItems;
         }
 
         if (is_array($items)) {

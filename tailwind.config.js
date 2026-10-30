@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+    darkMode: 'class',
+
     content: ["./src/Resources/**/*.blade.php", "./src/Resources/**/*.js"],
 
     theme: {

@@ -73,4 +73,10 @@ return [
         'route' => 'admin.portal.menus.delete',
         'sort' => 5,
     ],
+    [
+        'key' => 'portal.navigation',
+        'name' => 'portal::app.admin.navigation.acl.title',
+        'route' => 'admin.portal.navigation.index',
+        'sort' => 6,
+    ],
 ];

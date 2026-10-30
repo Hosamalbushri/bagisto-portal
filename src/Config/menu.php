@@ -31,4 +31,18 @@ return [
         'icon' => 'icon-menu',
         'icon-class' => 'menu-icon',
     ],
+    [
+        'key' => 'portal_menus.index',
+        'name' => 'portal::app.admin.menus.menu.all-menus',
+        'route' => 'admin.portal.menus.index',
+        'sort' => 1,
+        'icon' => '',
+    ],
+    [
+        'key' => 'portal_menus.navigation',
+        'name' => 'portal::app.admin.navigation.menu.title',
+        'route' => 'admin.portal.navigation.index',
+        'sort' => 2,
+        'icon' => '',
+    ],
 ];

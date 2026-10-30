@@ -91,14 +91,6 @@ class PortalMenuItemRepository extends Repository
                 );
             }
 
-            // Also support direct title for current locale
-            if (! empty($itemData['title']) && ! empty($localeCode)) {
-                $item->translations()->updateOrCreate(
-                    ['locale' => $localeCode],
-                    ['title' => $itemData['title']]
-                );
-            }
-
             // Recurse for nested children
             if (! empty($itemData['children']) && is_array($itemData['children'])) {
                 $this->processItems($menuId, $itemData['children'], $item->id, $persistedIds, $localeCode);
