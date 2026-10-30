@@ -1,16 +1,6 @@
-@php
-    $activeTab = $activeTab ?? request('tab', 'all');
-@endphp
-
 <x-admin::layouts>
     <x-slot:title>
-        @if ($activeTab === 'header')
-            @lang('portal::app.admin.navigation.header-title')
-        @elseif ($activeTab === 'footer')
-            @lang('portal::app.admin.navigation.footer-title')
-        @else
-            @lang('portal::app.admin.navigation.title')
-        @endif
+        @lang('portal::app.admin.navigation.title')
     </x-slot>
 
     {!! view_render_event('bagisto.admin.portal.navigation.before') !!}
@@ -19,24 +9,13 @@
         <input type="hidden" name="channel" value="{{ $currentChannel->code }}" />
         <input type="hidden" name="locale" value="{{ $currentLocale->code }}" />
         <input type="hidden" name="theme_code" value="{{ $themeCode }}" />
-        <input type="hidden" name="active_tab" value="{{ $activeTab }}" />
+        <input type="hidden" name="active_tab" value="{{ $activeTab ?? 'all' }}" />
 
         <!-- Page Header -->
         <div class="flex items-center justify-between gap-4 max-sm:flex-wrap">
-            <div>
-                <p class="text-xl font-bold text-gray-800 dark:text-white">
-                    @if ($activeTab === 'header')
-                        @lang('portal::app.admin.navigation.header-title')
-                    @elseif ($activeTab === 'footer')
-                        @lang('portal::app.admin.navigation.footer-title')
-                    @else
-                        @lang('portal::app.admin.navigation.title')
-                    @endif
-                </p>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    @lang('portal::app.admin.navigation.subtitle')
-                </p>
-            </div>
+            <p class="text-xl font-bold text-gray-800 dark:text-white">
+                @lang('portal::app.admin.navigation.title')
+            </p>
 
             <div class="flex items-center gap-x-2.5">
                 <a
@@ -53,37 +32,6 @@
                     @lang('portal::app.admin.navigation.save-btn')
                 </button>
             </div>
-        </div>
-
-        <!-- Customization Tabs Navigation -->
-        <div class="mt-4 flex items-center gap-2 border-b border-gray-200 pb-2 dark:border-gray-800">
-            <a
-                href="{{ route('admin.portal.navigation.index', ['channel' => $currentChannel->code, 'locale' => $currentLocale->code]) }}"
-                class="rounded-md px-3 py-1.5 text-sm font-semibold transition-all {{ $activeTab === 'all' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}"
-            >
-                @lang('portal::app.admin.navigation.tabs.all')
-            </a>
-
-            <a
-                href="{{ route('admin.portal.navigation.header', ['channel' => $currentChannel->code, 'locale' => $currentLocale->code]) }}"
-                class="rounded-md px-3 py-1.5 text-sm font-semibold transition-all {{ $activeTab === 'header' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}"
-            >
-                @lang('portal::app.admin.navigation.tabs.header')
-            </a>
-
-            <a
-                href="{{ route('admin.portal.navigation.footer', ['channel' => $currentChannel->code, 'locale' => $currentLocale->code]) }}"
-                class="rounded-md px-3 py-1.5 text-sm font-semibold transition-all {{ $activeTab === 'footer' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }}"
-            >
-                @lang('portal::app.admin.navigation.tabs.footer')
-            </a>
-
-            <a
-                href="{{ route('admin.appearance.themes.index') }}"
-                class="rounded-md px-3 py-1.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-            >
-                @lang('portal::app.admin.navigation.tabs.themes')
-            </a>
         </div>
 
         <!-- Channel and Locale Switcher Row (Standard Bagisto Admin Pattern) -->
@@ -165,8 +113,186 @@
         <div class="mt-3.5 flex gap-2.5 max-xl:flex-wrap">
             <!-- Left Container: Slots -->
             <div class="flex flex-1 flex-col gap-2 max-xl:flex-auto">
+                @if (in_array($activeTab ?? 'all', ['all', 'header']))
+                    <!-- Header Announcement Bar Accordion -->
+                    <x-admin::accordion :is-active="true">
+                        <x-slot:header class="p-3">
+                            <div class="flex items-center gap-2">
+                                <span class="icon-notification text-xl text-amber-500"></span>
+                                <p class="text-base font-semibold text-gray-800 dark:text-white">
+                                    @lang('portal::app.admin.navigation.announcement.title')
+                                </p>
+                            </div>
+                        </x-slot>
+
+                        <x-slot:content class="p-4 space-y-4">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                @lang('portal::app.admin.navigation.announcement.description')
+                            </p>
+
+                            <div class="flex items-center justify-between border-b pb-3 dark:border-gray-800">
+                                <x-admin::form.control-group.label class="!mb-0 text-xs">
+                                    @lang('portal::app.admin.navigation.announcement.status')
+                                </x-admin::form.control-group.label>
+
+                                <input type="hidden" name="header_settings[announcement][status]" value="0" />
+                                <x-admin::form.control-group.control
+                                    type="switch"
+                                    id="header_announcement_status"
+                                    name="header_settings[announcement][status]"
+                                    value="1"
+                                    :checked="(bool) data_get($headerSettings, 'announcement.status', false)"
+                                />
+                            </div>
+
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.navigation.announcement.text')
+                                    <span class="rounded border border-gray-200 bg-gray-100 px-1 py-0.5 text-[10px] font-semibold leading-normal text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300" v-pre>
+                                        {{ $currentLocale->name }}
+                                    </span>
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control
+                                    type="text"
+                                    id="header_announcement_text"
+                                    name="header_settings[announcement][text]"
+                                    :value="data_get($headerSettings, 'announcement.text', '')"
+                                    :placeholder="trans('portal::app.admin.navigation.announcement.text-placeholder')"
+                                />
+                            </x-admin::form.control-group>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <x-admin::form.control-group class="md:col-span-2 !mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.announcement.link')
+                                    </x-admin::form.control-group.label>
+
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        id="header_announcement_link"
+                                        name="header_settings[announcement][link]"
+                                        :value="data_get($headerSettings, 'announcement.link', '')"
+                                        :placeholder="trans('portal::app.admin.navigation.announcement.link-placeholder')"
+                                    />
+                                </x-admin::form.control-group>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <x-admin::form.control-group class="!mb-0">
+                                        <x-admin::form.control-group.label class="text-xs">
+                                            @lang('portal::app.admin.navigation.announcement.bg-color')
+                                        </x-admin::form.control-group.label>
+
+                                        <input
+                                            type="color"
+                                            class="h-10 w-full rounded border border-gray-200 p-1 dark:border-gray-800 dark:bg-gray-900 cursor-pointer"
+                                            name="header_settings[announcement][bg_color]"
+                                            value="{{ data_get($headerSettings, 'announcement.bg_color', '#2563eb') }}"
+                                        />
+                                    </x-admin::form.control-group>
+
+                                    <x-admin::form.control-group class="!mb-0">
+                                        <x-admin::form.control-group.label class="text-xs">
+                                            @lang('portal::app.admin.navigation.announcement.text-color')
+                                        </x-admin::form.control-group.label>
+
+                                        <input
+                                            type="color"
+                                            class="h-10 w-full rounded border border-gray-200 p-1 dark:border-gray-800 dark:bg-gray-900 cursor-pointer"
+                                            name="header_settings[announcement][text_color]"
+                                            value="{{ data_get($headerSettings, 'announcement.text_color', '#ffffff') }}"
+                                        />
+                                    </x-admin::form.control-group>
+                                </div>
+                            </div>
+                        </x-slot:content>
+                    </x-admin::accordion>
+
+                    <!-- Header Controls & Behavior Accordion -->
+                    <x-admin::accordion :is-active="true">
+                        <x-slot:header class="p-3">
+                            <div class="flex items-center gap-2">
+                                <span class="icon-settings text-xl text-gray-700 dark:text-gray-300"></span>
+                                <p class="text-base font-semibold text-gray-800 dark:text-white">
+                                    @lang('portal::app.admin.navigation.header-controls.title')
+                                </p>
+                            </div>
+                        </x-slot>
+
+                        <x-slot:content class="p-4 space-y-3">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                @lang('portal::app.admin.navigation.header-controls.description')
+                            </p>
+
+                            <div class="flex items-center justify-between border-b pb-3 dark:border-gray-800">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
+                                        @lang('portal::app.admin.navigation.header-controls.sticky')
+                                    </p>
+                                </div>
+                                <input type="hidden" name="header_settings[controls][sticky]" value="0" />
+                                <x-admin::form.control-group.control
+                                    type="switch"
+                                    id="header_controls_sticky"
+                                    name="header_settings[controls][sticky]"
+                                    value="1"
+                                    :checked="(bool) data_get($headerSettings, 'controls.sticky', true)"
+                                />
+                            </div>
+
+                            <div class="flex items-center justify-between border-b pb-3 dark:border-gray-800">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
+                                        @lang('portal::app.admin.navigation.header-controls.show-dark-mode')
+                                    </p>
+                                </div>
+                                <input type="hidden" name="header_settings[controls][show_dark_mode]" value="0" />
+                                <x-admin::form.control-group.control
+                                    type="switch"
+                                    id="header_controls_show_dark_mode"
+                                    name="header_settings[controls][show_dark_mode]"
+                                    value="1"
+                                    :checked="(bool) data_get($headerSettings, 'controls.show_dark_mode', true)"
+                                />
+                            </div>
+
+                            <div class="flex items-center justify-between border-b pb-3 dark:border-gray-800">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
+                                        @lang('portal::app.admin.navigation.header-controls.show-locales')
+                                    </p>
+                                </div>
+                                <input type="hidden" name="header_settings[controls][show_locales]" value="0" />
+                                <x-admin::form.control-group.control
+                                    type="switch"
+                                    id="header_controls_show_locales"
+                                    name="header_settings[controls][show_locales]"
+                                    value="1"
+                                    :checked="(bool) data_get($headerSettings, 'controls.show_locales', true)"
+                                />
+                            </div>
+
+                            <div class="flex items-center justify-between pb-1">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
+                                        @lang('portal::app.admin.navigation.header-controls.show-auth')
+                                    </p>
+                                </div>
+                                <input type="hidden" name="header_settings[controls][show_auth]" value="0" />
+                                <x-admin::form.control-group.control
+                                    type="switch"
+                                    id="header_controls_show_auth"
+                                    name="header_settings[controls][show_auth]"
+                                    value="1"
+                                    :checked="(bool) data_get($headerSettings, 'controls.show_auth', true)"
+                                />
+                            </div>
+                        </x-slot:content>
+                    </x-admin::accordion>
+                @endif
+
                 <!-- Header Slots Section -->
-                <x-admin::accordion :is-active="in_array($activeTab, ['all', 'header'])">
+                <x-admin::accordion :is-active="in_array($activeTab ?? 'all', ['all', 'header'])">
                     <x-slot:header class="p-3">
                         <div class="flex items-center gap-2">
                             <span class="icon-attribute text-xl text-blue-600"></span>
@@ -271,8 +397,253 @@
                     </x-slot>
                 </x-admin::accordion>
 
+                @if (in_array($activeTab ?? 'all', ['all', 'footer']))
+                    <!-- Footer Social Media Links Accordion -->
+                    <x-admin::accordion :is-active="true">
+                        <x-slot:header class="p-3">
+                            <div class="flex items-center gap-2">
+                                <span class="icon-promotion text-xl text-blue-500"></span>
+                                <p class="text-base font-semibold text-gray-800 dark:text-white">
+                                    @lang('portal::app.admin.navigation.social-links.title')
+                                </p>
+                            </div>
+                        </x-slot>
+
+                        <x-slot:content class="p-4 space-y-4">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                @lang('portal::app.admin.navigation.social-links.description')
+                            </p>
+
+                            <div class="flex items-center justify-between border-b pb-3 dark:border-gray-800">
+                                <x-admin::form.control-group.label class="!mb-0 text-xs">
+                                    @lang('portal::app.admin.navigation.social-links.status')
+                                </x-admin::form.control-group.label>
+
+                                <input type="hidden" name="footer_settings[social][status]" value="0" />
+                                <x-admin::form.control-group.control
+                                    type="switch"
+                                    id="footer_social_status"
+                                    name="footer_settings[social][status]"
+                                    value="1"
+                                    :checked="(bool) data_get($footerSettings, 'social.status', true)"
+                                />
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.social-links.twitter')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="footer_settings[social][platforms][twitter]"
+                                        :value="data_get($footerSettings, 'social.platforms.twitter', '')"
+                                        placeholder="https://x.com/username"
+                                    />
+                                </x-admin::form.control-group>
+
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.social-links.instagram')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="footer_settings[social][platforms][instagram]"
+                                        :value="data_get($footerSettings, 'social.platforms.instagram', '')"
+                                        placeholder="https://instagram.com/username"
+                                    />
+                                </x-admin::form.control-group>
+
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.social-links.facebook')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="footer_settings[social][platforms][facebook]"
+                                        :value="data_get($footerSettings, 'social.platforms.facebook', '')"
+                                        placeholder="https://facebook.com/username"
+                                    />
+                                </x-admin::form.control-group>
+
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.social-links.youtube')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="footer_settings[social][platforms][youtube]"
+                                        :value="data_get($footerSettings, 'social.platforms.youtube', '')"
+                                        placeholder="https://youtube.com/@channel"
+                                    />
+                                </x-admin::form.control-group>
+
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.social-links.linkedin')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="footer_settings[social][platforms][linkedin]"
+                                        :value="data_get($footerSettings, 'social.platforms.linkedin', '')"
+                                        placeholder="https://linkedin.com/company/name"
+                                    />
+                                </x-admin::form.control-group>
+
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.social-links.whatsapp')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="footer_settings[social][platforms][whatsapp]"
+                                        :value="data_get($footerSettings, 'social.platforms.whatsapp', '')"
+                                        placeholder="+966500000000"
+                                    />
+                                </x-admin::form.control-group>
+
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.social-links.telegram')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="footer_settings[social][platforms][telegram]"
+                                        :value="data_get($footerSettings, 'social.platforms.telegram', '')"
+                                        placeholder="https://t.me/channel"
+                                    />
+                                </x-admin::form.control-group>
+
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.social-links.tiktok')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="footer_settings[social][platforms][tiktok]"
+                                        :value="data_get($footerSettings, 'social.platforms.tiktok', '')"
+                                        placeholder="https://tiktok.com/@username"
+                                    />
+                                </x-admin::form.control-group>
+                            </div>
+                        </x-slot:content>
+                    </x-admin::accordion>
+
+                    <!-- Footer Brand & Contact Information Accordion -->
+                    <x-admin::accordion :is-active="true">
+                        <x-slot:header class="p-3">
+                            <div class="flex items-center gap-2">
+                                <span class="icon-mail text-xl text-green-600"></span>
+                                <p class="text-base font-semibold text-gray-800 dark:text-white">
+                                    @lang('portal::app.admin.navigation.contact-info.title')
+                                </p>
+                            </div>
+                        </x-slot>
+
+                        <x-slot:content class="p-4 space-y-4">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                @lang('portal::app.admin.navigation.contact-info.description')
+                            </p>
+
+                            <x-admin::form.control-group>
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.navigation.contact-info.bio')
+                                    <span class="rounded border border-gray-200 bg-gray-100 px-1 py-0.5 text-[10px] font-semibold leading-normal text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300" v-pre>
+                                        {{ $currentLocale->name }}
+                                    </span>
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control
+                                    type="textarea"
+                                    id="footer_contact_bio"
+                                    name="footer_settings[contact][bio]"
+                                    :value="data_get($footerSettings, 'contact.bio', '')"
+                                    :placeholder="trans('portal::app.admin.navigation.contact-info.bio-placeholder')"
+                                    rows="3"
+                                />
+                            </x-admin::form.control-group>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.contact-info.phone')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="footer_settings[contact][phone]"
+                                        :value="data_get($footerSettings, 'contact.phone', '')"
+                                        :placeholder="trans('portal::app.admin.navigation.contact-info.phone-placeholder')"
+                                    />
+                                </x-admin::form.control-group>
+
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.contact-info.email')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="footer_settings[contact][email]"
+                                        :value="data_get($footerSettings, 'contact.email', '')"
+                                        :placeholder="trans('portal::app.admin.navigation.contact-info.email-placeholder')"
+                                    />
+                                </x-admin::form.control-group>
+
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.contact-info.address')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="footer_settings[contact][address]"
+                                        :value="data_get($footerSettings, 'contact.address', '')"
+                                        :placeholder="trans('portal::app.admin.navigation.contact-info.address-placeholder')"
+                                    />
+                                </x-admin::form.control-group>
+                            </div>
+                        </x-slot:content>
+                    </x-admin::accordion>
+
+                    <!-- Footer Copyright Accordion -->
+                    <x-admin::accordion :is-active="true">
+                        <x-slot:header class="p-3">
+                            <div class="flex items-center gap-2">
+                                <span class="icon-checked text-xl text-purple-600"></span>
+                                <p class="text-base font-semibold text-gray-800 dark:text-white">
+                                    @lang('portal::app.admin.navigation.copyright.title')
+                                </p>
+                            </div>
+                        </x-slot>
+
+                        <x-slot:content class="p-4 space-y-3">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                @lang('portal::app.admin.navigation.copyright.description')
+                            </p>
+
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.navigation.copyright.text')
+                                    <span class="rounded border border-gray-200 bg-gray-100 px-1 py-0.5 text-[10px] font-semibold leading-normal text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300" v-pre>
+                                        {{ $currentLocale->name }}
+                                    </span>
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control
+                                    type="text"
+                                    id="footer_copyright_text"
+                                    name="footer_settings[copyright][text]"
+                                    :value="data_get($footerSettings, 'copyright.text', '')"
+                                    :placeholder="trans('portal::app.admin.navigation.copyright.text-placeholder')"
+                                />
+                                <p class="mt-1 text-xs text-gray-400">
+                                    @lang('portal::app.admin.navigation.copyright.hint')
+                                </p>
+                            </x-admin::form.control-group>
+                        </x-slot:content>
+                    </x-admin::accordion>
+                @endif
+
                 <!-- Footer Slots Section -->
-                <x-admin::accordion :is-active="in_array($activeTab, ['all', 'footer'])">
+                <x-admin::accordion :is-active="in_array($activeTab ?? 'all', ['all', 'footer'])">
                     <x-slot:header class="p-3">
                         <div class="flex items-center gap-2">
                             <span class="icon-folder text-xl text-green-600"></span>
@@ -406,7 +777,7 @@
 
                 <!-- Other Slots Section -->
                 @if (! empty($slots['other']))
-                    <x-admin::accordion :is-active="$activeTab === 'all'">
+                    <x-admin::accordion :is-active="($activeTab ?? 'all') === 'all'">
                         <x-slot:header class="p-3">
                             <div class="flex items-center gap-2">
                                 <span class="icon-cms text-xl text-purple-600"></span>

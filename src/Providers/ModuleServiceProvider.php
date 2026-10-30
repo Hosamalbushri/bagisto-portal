@@ -3,6 +3,7 @@
 namespace Platform\Portal\Providers;
 
 use Konekt\Concord\BaseModuleServiceProvider;
+use Platform\Portal\Models\PortalLayoutSetting;
 use Platform\Portal\Models\PortalMenu;
 use Platform\Portal\Models\PortalMenuItem;
 use Platform\Portal\Models\PortalMenuItemTranslation;
@@ -24,5 +25,6 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
         PortalMenuItem::class,
         PortalMenuItemTranslation::class,
         PortalMenuSlotAssignment::class,
+        PortalLayoutSetting::class,
     ];
 }

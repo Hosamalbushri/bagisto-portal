@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Platform\Portal\Contracts\PortalMenu;
+use Platform\Portal\Repositories\PortalLayoutSettingRepository;
 use Platform\Portal\Repositories\PortalMenuRepository;
 use Platform\Portal\Repositories\PortalMenuSlotAssignmentRepository;
 
@@ -81,5 +82,51 @@ if (! function_exists('portal_route')) {
         }
 
         return url('/');
+    }
+}
+
+if (! function_exists('portal_layout_setting')) {
+    /**
+     * Retrieve a specific portal layout setting value using dot notation.
+     */
+    function portal_layout_setting(
+        string $group,
+        string $key,
+        mixed $default = null,
+        ?int $channelId = null,
+        ?string $themeCode = null,
+        ?string $localeCode = null
+    ): mixed {
+        return app(PortalLayoutSettingRepository::class)->getSetting(
+            $group,
+            $key,
+            $default,
+            $channelId,
+            $themeCode,
+            $localeCode
+        );
+    }
+}
+
+if (! function_exists('portal_layout_settings')) {
+    /**
+     * Retrieve all portal layout settings for a group.
+     */
+    function portal_layout_settings(
+        string $group,
+        ?int $channelId = null,
+        ?string $themeCode = null,
+        ?string $localeCode = null
+    ): array {
+        $channelId = $channelId ?? core()->getCurrentChannel()?->id ?? 0;
+        $themeCode = $themeCode ?? core()->getCurrentChannel()?->theme ?? config('themes.shop-default', 'default');
+        $localeCode = $localeCode ?? app()->getLocale();
+
+        return app(PortalLayoutSettingRepository::class)->getSettings(
+            $group,
+            $channelId,
+            $themeCode,
+            $localeCode
+        );
     }
 }

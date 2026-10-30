@@ -8,15 +8,15 @@
 <html
     lang="{{ app()->getLocale() }}"
     dir="{{ core()->getCurrentLocale()->direction }}"
-    class="{{ request()->cookie('dark_mode') ? 'dark' : '' }}"
+    class="{{ request()->cookie('portal_dark_mode') ? 'dark' : '' }}"
 >
 <head>
     {!! view_render_event('bagisto.shop.layout.head.before') !!}
 
     <script>
         (function() {
-            var cookie = document.cookie.match(/(?:^|; )dark_mode=([^;]*)/);
-            var isDark = cookie ? cookie[1] === '1' : (localStorage.getItem('dark_mode') === '1');
+            var cookie = document.cookie.match(/(?:^|; )portal_dark_mode=([^;]*)/);
+            var isDark = cookie ? cookie[1] === '1' : (localStorage.getItem('portal_dark_mode') === '1');
             if (isDark) {
                 document.documentElement.classList.add('dark');
             } else if (cookie && cookie[1] === '0') {

@@ -9,7 +9,7 @@ return [
         'name' => 'portal::app.admin.menu.portal',
         'route' => 'admin.portal.pages.index',
         'sort' => 3,
-        'icon' => 'icon-smart-screen',
+        'icon' => 'icon-store',
         'icon-class' => 'portal-icon',
     ],
 

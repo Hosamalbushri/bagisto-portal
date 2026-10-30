@@ -87,11 +87,11 @@ class PortalPageDataGrid extends DataGrid
         ]);
 
         $this->addColumn([
-            'index'      => 'channel_name',
-            'label'      => trans('portal::app.admin.pages.index.datagrid.channel'),
-            'type'       => 'string',
+            'index' => 'channel_name',
+            'label' => trans('portal::app.admin.pages.index.datagrid.channel'),
+            'type' => 'string',
             'filterable' => true,
-            'sortable'   => true,
+            'sortable' => true,
         ]);
 
         $this->addColumn([

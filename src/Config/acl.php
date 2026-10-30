@@ -113,15 +113,35 @@ return [
         'sort' => 3,
     ],
     [
+        'key' => 'portal.customize.header',
+        'name' => 'portal::app.admin.acl.customize-header',
+        'route' => [
+            'admin.portal.navigation.header',
+            'admin.portal.navigation.header.update',
+        ],
+        'sort' => 1,
+    ],
+    [
+        'key' => 'portal.customize.footer',
+        'name' => 'portal::app.admin.acl.customize-footer',
+        'route' => [
+            'admin.portal.navigation.footer',
+            'admin.portal.navigation.footer.update',
+        ],
+        'sort' => 2,
+    ],
+    [
         'key' => 'portal.customize.navigation',
         'name' => 'portal::app.admin.acl.customize-navigation',
         'route' => [
             'admin.portal.navigation.index',
             'admin.portal.navigation.header',
+            'admin.portal.navigation.header.update',
             'admin.portal.navigation.footer',
+            'admin.portal.navigation.footer.update',
             'admin.portal.navigation.update',
         ],
-        'sort' => 1,
+        'sort' => 3,
     ],
     [
         'key' => 'portal.customize.themes',

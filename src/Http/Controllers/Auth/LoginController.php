@@ -76,9 +76,6 @@ class LoginController extends Controller
         if (PortalAuth::isEnabled()) {
             auth()->guard(PortalAuth::guard())->logout();
 
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
             session()->flash('success', trans('portal::app.auth.logout.success'));
         }
 

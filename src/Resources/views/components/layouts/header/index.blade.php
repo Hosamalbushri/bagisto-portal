@@ -1,6 +1,38 @@
+@php
+    $headerSettings = portal_layout_settings('header');
+    $isAnnouncementActive = (bool) data_get($headerSettings, 'announcement.status', false);
+    $announcementText = data_get($headerSettings, 'announcement.text');
+    $announcementLink = data_get($headerSettings, 'announcement.link');
+    $announcementBg = data_get($headerSettings, 'announcement.bg_color', '#2563eb');
+    $announcementTextCol = data_get($headerSettings, 'announcement.text_color', '#ffffff');
+
+    $isSticky = (bool) data_get($headerSettings, 'controls.sticky', true);
+    $showDarkMode = (bool) data_get($headerSettings, 'controls.show_dark_mode', true);
+    $showLocales = (bool) data_get($headerSettings, 'controls.show_locales', true);
+    $showAuth = (bool) data_get($headerSettings, 'controls.show_auth', true);
+@endphp
+
 {!! view_render_event('bagisto.shop.layout.header.before') !!}
 
-<header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/80 dark:border-gray-800 transition-colors duration-200">
+@if ($isAnnouncementActive && ! empty($announcementText))
+    <div
+        class="py-2 px-4 text-center text-xs sm:text-sm font-medium transition-colors"
+        style="background-color: {{ $announcementBg }}; color: {{ $announcementTextCol }};"
+    >
+        <div class="max-w-7xl mx-auto flex items-center justify-center gap-2">
+            @if ($announcementLink)
+                <a href="{{ $announcementLink }}" class="hover:underline flex items-center gap-1.5">
+                    <span>{{ $announcementText }}</span>
+                    <span class="icon-arrow-right text-xs"></span>
+                </a>
+            @else
+                <span>{{ $announcementText }}</span>
+            @endif
+        </div>
+    </div>
+@endif
+
+<header class="{{ $isSticky ? 'sticky top-0' : 'relative' }} z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/80 dark:border-gray-800 transition-colors duration-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         <!-- Left: Hamburger (Mobile) + Brand Logo + Desktop Nav -->
         <div class="flex items-center gap-3 sm:gap-6 min-w-0">
@@ -38,17 +70,19 @@
         <!-- Right: Actions (Theme Switcher + Locales + Optional Auth) -->
         <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
             <!-- Dark Mode Switcher (Standard Bagisto Admin Pattern) -->
-            <v-dark>
-                <div class="flex">
-                    <span
-                        class="{{ request()->cookie('dark_mode') ? 'icon-light' : 'icon-dark' }} cursor-pointer rounded-md p-1.5 text-xl transition-all hover:bg-gray-100 dark:hover:bg-gray-800 sm:text-2xl text-gray-700 dark:text-gray-300"
-                        title="{{ request()->cookie('dark_mode') ? trans('portal::app.home.theme.light-mode') : trans('portal::app.home.theme.dark-mode') }}"
-                    ></span>
-                </div>
-            </v-dark>
+            @if ($showDarkMode)
+                <v-dark>
+                    <div class="flex">
+                        <span
+                            class="{{ request()->cookie('portal_dark_mode') ? 'icon-light' : 'icon-dark' }} cursor-pointer rounded-md p-1.5 text-xl transition-all hover:bg-gray-100 dark:hover:bg-gray-800 sm:text-2xl text-gray-700 dark:text-gray-300"
+                            title="{{ request()->cookie('portal_dark_mode') ? trans('portal::app.home.theme.light-mode') : trans('portal::app.home.theme.dark-mode') }}"
+                        ></span>
+                    </div>
+                </v-dark>
+            @endif
 
             <!-- Locales Dropdown -->
-            @if (core()->getCurrentChannel()->locales->count() > 1)
+            @if ($showLocales && core()->getCurrentChannel()->locales->count() > 1)
                 <x-portal::dropdown position="bottom-right">
                     <x-slot:toggle>
                         <button
@@ -74,7 +108,7 @@
             @endif
 
             <!-- Optional Storefront Authentication (Plug-and-Play) -->
-            @if (\Platform\Portal\Helpers\PortalAuth::isEnabled())
+            @if ($showAuth && \Platform\Portal\Helpers\PortalAuth::isEnabled())
                 @php($portalGuard = \Platform\Portal\Helpers\PortalAuth::guard())
 
                 @if (auth()->guard($portalGuard)->check())
@@ -145,8 +179,8 @@
             <v-dark>
                 <div class="flex">
                     <span
-                        class="{{ request()->cookie('dark_mode') ? 'icon-light' : 'icon-dark' }} cursor-pointer rounded-md p-1.5 text-xl transition-all hover:bg-gray-200 dark:hover:bg-gray-700 sm:text-2xl text-gray-700 dark:text-gray-300"
-                        title="{{ request()->cookie('dark_mode') ? trans('portal::app.home.theme.light-mode') : trans('portal::app.home.theme.dark-mode') }}"
+                        class="{{ request()->cookie('portal_dark_mode') ? 'icon-light' : 'icon-dark' }} cursor-pointer rounded-md p-1.5 text-xl transition-all hover:bg-gray-200 dark:hover:bg-gray-700 sm:text-2xl text-gray-700 dark:text-gray-300"
+                        title="{{ request()->cookie('portal_dark_mode') ? trans('portal::app.home.theme.light-mode') : trans('portal::app.home.theme.dark-mode') }}"
                     ></span>
                 </div>
             </v-dark>
@@ -238,7 +272,7 @@
 
             data() {
                 return {
-                    isDarkMode: {{ request()->cookie('dark_mode') ?? 0 }},
+                    isDarkMode: {{ request()->cookie('portal_dark_mode') ?? 0 }},
 
                     logo: "{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}",
 
@@ -262,7 +296,7 @@
 
                     expiryDate.setMonth(expiryDate.getMonth() + 1);
 
-                    document.cookie = 'dark_mode=' + this.isDarkMode + '; path=/; expires=' + expiryDate.toGMTString();
+                    document.cookie = 'portal_dark_mode=' + this.isDarkMode + '; path=/; expires=' + expiryDate.toGMTString();
 
                     document.documentElement.classList.toggle('dark', this.isDarkMode === 1);
 
@@ -286,7 +320,7 @@
                     for (const cookie of cookies) {
                         const [name, value] = cookie.trim().split('=');
 
-                        if (name === 'dark_mode') {
+                        if (name === 'portal_dark_mode') {
                             return value;
                         }
                     }
