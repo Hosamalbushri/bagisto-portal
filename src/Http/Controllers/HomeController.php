@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Platform\Portal\Http\Requests\ContactRequest;
 use Platform\Portal\Mail\ContactUs;
+use Platform\Portal\Repositories\PortalPageRepository;
+use Platform\Portal\Repositories\PortalPageSectionRepository;
 use Webkul\Core\Http\Middleware\SecureHeaders;
 use Webkul\Theme\Repositories\SectionRepository;
 use Webkul\Theme\ThemeCatalog;
@@ -17,7 +19,9 @@ class HomeController extends Controller
      * Create a new controller instance.
      */
     public function __construct(
-        protected SectionRepository $sectionRepository
+        protected SectionRepository $sectionRepository,
+        protected PortalPageRepository $portalPageRepository,
+        protected PortalPageSectionRepository $portalPageSectionRepository
     ) {}
 
     /**
@@ -26,6 +30,17 @@ class HomeController extends Controller
     public function index(): View
     {
         $channel = core()->getCurrentChannel();
+
+        $homePortalPage = $this->portalPageRepository->findHomePage($channel->id);
+
+        if ($homePortalPage && $homePortalPage->status) {
+            $sections = $this->portalPageSectionRepository->getRenderableSections($homePortalPage->id);
+
+            return view('portal::page.show', [
+                'page' => $homePortalPage,
+                'sections' => $sections,
+            ]);
+        }
 
         $sections = $this->sectionRepository->getRenderable(
             $channel->id,

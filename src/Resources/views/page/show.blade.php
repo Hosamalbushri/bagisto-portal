@@ -1,29 +1,32 @@
 @php
     $channel = core()->getCurrentChannel();
+    $metaTitle = $page->meta_title ?: ($page->title ?: ($page->is_home_page ? ($channel->home_seo['meta_title'] ?? config('app.name')) : config('app.name')));
+    $metaDesc = $page->meta_description ?? ($page->is_home_page ? ($channel->home_seo['meta_description'] ?? '') : '');
+    $metaKeywords = $page->meta_keywords ?? ($page->is_home_page ? ($channel->home_seo['meta_keywords'] ?? '') : '');
 @endphp
 
 <!-- SEO Meta Content -->
 @push ('meta')
     <meta
         name="title"
-        content="{{ $page->meta_title ?: $page->title }}"
+        content="{{ $metaTitle }}"
     />
 
     <meta
         name="description"
-        content="{{ $page->meta_description ?? '' }}"
+        content="{{ $metaDesc }}"
     />
 
     <meta
         name="keywords"
-        content="{{ $page->meta_keywords ?? '' }}"
+        content="{{ $metaKeywords }}"
     />
 @endpush
 
 <x-portal::layouts>
     <!-- Page Title -->
     <x-slot:title>
-        {{ $page->meta_title ?: $page->title }}
+        {{ $metaTitle }}
     </x-slot>
 
     <!-- Loop over the storefront sections -->

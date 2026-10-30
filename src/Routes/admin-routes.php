@@ -14,6 +14,8 @@ Route::group(['middleware' => ['web', 'admin'], 'prefix' => config('app.admin_ur
         Route::get('edit/{id}', [PageController::class, 'edit'])->name('admin.portal.pages.edit');
         Route::put('edit/{id}', [PageController::class, 'update'])->name('admin.portal.pages.update');
         Route::delete('delete/{id}', [PageController::class, 'delete'])->name('admin.portal.pages.delete');
+        Route::post('mass-update', [PageController::class, 'massUpdate'])->name('admin.portal.pages.mass_update');
+        Route::post('mass-delete', [PageController::class, 'massDelete'])->name('admin.portal.pages.mass_delete');
 
         // Customizer & Appearance Sections Editor routes
         Route::get('customize/{id}', [PageCustomizeController::class, 'index'])->name('admin.portal.pages.customize');

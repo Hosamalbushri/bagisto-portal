@@ -29,6 +29,7 @@ class PortalPageDataGrid extends DataGrid
                 'portal_pages.id',
                 'portal_pages.slug',
                 'portal_pages.status',
+                'portal_pages.is_home_page',
                 'portal_pages.created_at',
                 'portal_page_translations.title',
                 DB::raw('COALESCE(channel_translations.name, channels.code) as channel_name')
@@ -46,6 +47,7 @@ class PortalPageDataGrid extends DataGrid
         $this->addFilter('id', 'portal_pages.id');
         $this->addFilter('slug', 'portal_pages.slug');
         $this->addFilter('status', 'portal_pages.status');
+        $this->addFilter('is_home_page', 'portal_pages.is_home_page');
         $this->addFilter('channel_name', 'channel_translations.name');
 
         return $queryBuilder;
@@ -93,6 +95,21 @@ class PortalPageDataGrid extends DataGrid
         ]);
 
         $this->addColumn([
+            'index' => 'is_home_page',
+            'label' => trans('portal::app.admin.pages.index.datagrid.home-page'),
+            'type' => 'boolean',
+            'sortable' => true,
+            'filterable' => true,
+            'closure' => function ($row) {
+                if ($row->is_home_page) {
+                    return '<span class="badge badge-md badge-info">'.trans('portal::app.admin.pages.index.datagrid.default-home').'</span>';
+                }
+
+                return '-';
+            },
+        ]);
+
+        $this->addColumn([
             'index' => 'status',
             'label' => trans('portal::app.admin.pages.index.datagrid.status'),
             'type' => 'boolean',
@@ -121,6 +138,10 @@ class PortalPageDataGrid extends DataGrid
             'method' => 'GET',
             'target' => '_blank',
             'url' => function ($row) {
+                if ($row->is_home_page) {
+                    return portal_route('portal.home', 'shop.home.index');
+                }
+
                 return route('portal.page.show', $row->slug);
             },
         ]);
@@ -155,6 +176,40 @@ class PortalPageDataGrid extends DataGrid
                 'url' => function ($row) {
                     return route('admin.portal.pages.delete', $row->id);
                 },
+            ]);
+        }
+    }
+
+    /**
+     * Prepare mass actions.
+     *
+     * @return void
+     */
+    public function prepareMassActions()
+    {
+        if (bouncer()->hasPermission('pages.delete')) {
+            $this->addMassAction([
+                'title' => trans('portal::app.admin.pages.index.datagrid.delete'),
+                'method' => 'POST',
+                'url' => route('admin.portal.pages.mass_delete'),
+            ]);
+        }
+
+        if (bouncer()->hasPermission('pages.edit')) {
+            $this->addMassAction([
+                'title' => trans('portal::app.admin.pages.index.datagrid.update-status'),
+                'method' => 'POST',
+                'url' => route('admin.portal.pages.mass_update'),
+                'options' => [
+                    [
+                        'label' => trans('portal::app.admin.pages.index.datagrid.published'),
+                        'value' => 1,
+                    ],
+                    [
+                        'label' => trans('portal::app.admin.pages.index.datagrid.disabled'),
+                        'value' => 0,
+                    ],
+                ],
             ]);
         }
     }

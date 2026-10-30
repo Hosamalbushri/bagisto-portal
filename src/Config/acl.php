@@ -22,13 +22,13 @@ return [
     [
         'key' => 'pages.edit',
         'name' => 'portal::app.admin.pages.acl.edit',
-        'route' => ['admin.portal.pages.edit', 'admin.portal.pages.update'],
+        'route' => ['admin.portal.pages.edit', 'admin.portal.pages.update', 'admin.portal.pages.mass_update'],
         'sort' => 3,
     ],
     [
         'key' => 'pages.delete',
         'name' => 'portal::app.admin.pages.acl.delete',
-        'route' => 'admin.portal.pages.delete',
+        'route' => ['admin.portal.pages.delete', 'admin.portal.pages.mass_delete'],
         'sort' => 4,
     ],
     [

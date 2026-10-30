@@ -81,9 +81,9 @@ class PortalServiceProvider extends ServiceProvider
 
         $this->app->booted(function () use ($router) {
             $router->pushMiddlewareToGroup('portal', CheckStorefrontStatus::class);
-        });
 
-        Route::middleware(['web'])->group(__DIR__.'/../Routes/web.php');
+            Route::middleware(['web'])->group(__DIR__.'/../Routes/web.php');
+        });
 
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 

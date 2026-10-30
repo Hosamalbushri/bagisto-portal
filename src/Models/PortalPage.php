@@ -34,6 +34,7 @@ class PortalPage extends TranslatableModel implements PortalPageContract
         'template',
         'theme_code',
         'status',
+        'is_home_page',
         'sort_order',
         'channel_id',
     ];
@@ -71,6 +72,7 @@ class PortalPage extends TranslatableModel implements PortalPageContract
      */
     protected $casts = [
         'status' => 'boolean',
+        'is_home_page' => 'boolean',
         'sort_order' => 'integer',
     ];
 
