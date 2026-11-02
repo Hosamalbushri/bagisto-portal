@@ -3,6 +3,7 @@
 namespace Platform\Portal\Repositories;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Platform\Portal\Contracts\PortalMenuSlotAssignment;
 use Webkul\Core\Eloquent\Repository;
 
@@ -58,45 +59,51 @@ class PortalMenuSlotAssignmentRepository extends Repository
 
     /**
      * Find single assignment for slot, with locale fallback.
+     * Cached with versioning for high concurrency.
      */
     public function findForSlot(string $slotId, int $channelId, string $themeCode = 'default', ?string $localeCode = null): ?PortalMenuSlotAssignment
     {
-        if ($localeCode) {
-            $assignment = $this->findOneWhere([
-                'slot_id' => $slotId,
-                'channel_id' => $channelId,
-                'theme_code' => $themeCode,
-                'locale_code' => $localeCode,
-            ]);
+        $version = Cache::get(PortalMenuRepository::CACHE_VERSION_KEY, 1);
+        $cacheKey = "portal_slot_v{$version}_{$slotId}_{$channelId}_{$themeCode}_".($localeCode ?? 'none');
 
-            if ($assignment) {
-                return $assignment;
+        return Cache::remember($cacheKey, 86400, function () use ($slotId, $channelId, $themeCode, $localeCode) {
+            if ($localeCode) {
+                $assignment = $this->findOneWhere([
+                    'slot_id' => $slotId,
+                    'channel_id' => $channelId,
+                    'theme_code' => $themeCode,
+                    'locale_code' => $localeCode,
+                ]);
+
+                if ($assignment) {
+                    return $assignment;
+                }
             }
-        }
 
-        $fallback = $this->findOneWhere([
-            'slot_id' => $slotId,
-            'channel_id' => $channelId,
-            'theme_code' => $themeCode,
-            'locale_code' => null,
-        ]);
-
-        if ($fallback) {
-            return $fallback;
-        }
-
-        $defaultLocaleCode = core()->getCurrentChannel()?->default_locale?->code;
-
-        if ($defaultLocaleCode && $defaultLocaleCode !== $localeCode) {
-            return $this->findOneWhere([
+            $fallback = $this->findOneWhere([
                 'slot_id' => $slotId,
                 'channel_id' => $channelId,
                 'theme_code' => $themeCode,
-                'locale_code' => $defaultLocaleCode,
+                'locale_code' => null,
             ]);
-        }
 
-        return null;
+            if ($fallback) {
+                return $fallback;
+            }
+
+            $defaultLocaleCode = core()->getCurrentChannel()?->default_locale?->code;
+
+            if ($defaultLocaleCode && $defaultLocaleCode !== $localeCode) {
+                return $this->findOneWhere([
+                    'slot_id' => $slotId,
+                    'channel_id' => $channelId,
+                    'theme_code' => $themeCode,
+                    'locale_code' => $defaultLocaleCode,
+                ]);
+            }
+
+            return null;
+        });
     }
 
     /**
@@ -127,5 +134,7 @@ class PortalMenuSlotAssignmentRepository extends Repository
                 ]
             );
         }
+
+        PortalMenuRepository::clearCache();
     }
 }

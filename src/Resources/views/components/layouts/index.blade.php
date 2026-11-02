@@ -54,7 +54,7 @@
     {!! view_render_event('bagisto.shop.layout.head.after') !!}
 </head>
 
-<body class="antialiased min-h-screen flex flex-col justify-between transition-colors duration-200" style="background-color: var(--bg-app); color: var(--text-primary);">
+<body class="antialiased min-h-screen flex flex-col justify-between overflow-x-hidden transition-colors duration-200" style="background-color: var(--bg-app); color: var(--text-primary);">
     {!! view_render_event('bagisto.shop.layout.body.before') !!}
 
     <div id="app" class="flex min-h-screen flex-col justify-between">

@@ -7,6 +7,11 @@ use Webkul\Core\Repositories\CoreConfigRepository;
 class PortalAuth
 {
     /**
+     * In-memory cache for current request lifecycle.
+     */
+    protected static array $memo = [];
+
+    /**
      * Check if authentication is enabled for the portal.
      *
      * Evaluates channel-based admin configuration if saved in DB, or portal.php / env.
@@ -14,27 +19,34 @@ class PortalAuth
      */
     public static function isEnabled(): bool
     {
+        $channelCode = core()->getCurrentChannel()?->code ?? 'default';
+        $memoKey = "enabled_{$channelCode}";
+
+        if (array_key_exists($memoKey, self::$memo)) {
+            return self::$memo[$memoKey];
+        }
+
         // 1. Check if configured in DB for current channel
         $savedRecord = self::getSavedConfig('portal.auth.settings.enabled');
 
         if ($savedRecord !== null) {
             if (! (bool) $savedRecord->value) {
-                return false;
+                return self::$memo[$memoKey] = false;
             }
 
             $guard = self::guard();
 
-            return (bool) config()->has("auth.guards.{$guard}");
+            return self::$memo[$memoKey] = (bool) config()->has("auth.guards.{$guard}");
         }
 
         // 2. Fall back to portal.php / env
         if (config('portal.auth.enabled')) {
             $guard = self::guard();
 
-            return (bool) config()->has("auth.guards.{$guard}");
+            return self::$memo[$memoKey] = (bool) config()->has("auth.guards.{$guard}");
         }
 
-        return false;
+        return self::$memo[$memoKey] = false;
     }
 
     /**
@@ -42,25 +54,32 @@ class PortalAuth
      */
     public static function guard(): string
     {
+        $channelCode = core()->getCurrentChannel()?->code ?? 'default';
+        $memoKey = "guard_{$channelCode}";
+
+        if (array_key_exists($memoKey, self::$memo)) {
+            return self::$memo[$memoKey];
+        }
+
         // 1. Check if configured in DB
         $savedRecord = self::getSavedConfig('portal.auth.settings.guard');
 
         if ($savedRecord && ! empty($savedRecord->value) && config()->has("auth.guards.{$savedRecord->value}")) {
-            return $savedRecord->value;
+            return self::$memo[$memoKey] = $savedRecord->value;
         }
 
         // 2. Check portal.php / env
         $configGuard = config('portal.auth.guard');
 
         if (! empty($configGuard) && config()->has("auth.guards.{$configGuard}")) {
-            return $configGuard;
+            return self::$memo[$memoKey] = $configGuard;
         }
 
         if (config()->has('auth.guards.customer')) {
-            return 'customer';
+            return self::$memo[$memoKey] = 'customer';
         }
 
-        return config('auth.defaults.guard', 'web');
+        return self::$memo[$memoKey] = config('auth.defaults.guard', 'web');
     }
 
     /**

@@ -79,9 +79,7 @@ class PortalServiceProvider extends ServiceProvider
         $router->aliasMiddleware('cache.response', CacheResponse::class);
         $router->aliasMiddleware('portal.storefront', CheckStorefrontStatus::class);
 
-        $this->app->booted(function () use ($router) {
-            $router->pushMiddlewareToGroup('portal', CheckStorefrontStatus::class);
-
+        $this->app->booted(function () {
             Route::middleware(['web'])->group(__DIR__.'/../Routes/web.php');
         });
 
@@ -94,7 +92,7 @@ class PortalServiceProvider extends ServiceProvider
         Blade::anonymousComponentPath(__DIR__.'/../Resources/views/components', 'portal');
 
         Blade::directive('portalMenuSlot', function ($expression) {
-            return "<?php echo Blade::render('<x-portal::menu-slot id=\"' . {$expression} . '\" />'); ?>";
+            return "<?php echo \$__env->make('portal::components.menu-slot.index', ['id' => {$expression}], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
         });
 
         $portalMenu = require dirname(__DIR__).'/Config/menu.php';

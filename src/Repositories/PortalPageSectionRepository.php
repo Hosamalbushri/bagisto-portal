@@ -19,13 +19,14 @@ class PortalPageSectionRepository extends Repository
     }
 
     /**
-     * Get active published sections for page.
+     * Get active published sections for page with translations eager loaded (prevents N+1 query issue).
      */
     public function getRenderableSections(int $pageId): Collection
     {
         return $this->model
             ->where('portal_page_id', $pageId)
             ->where('status', 1)
+            ->with('translations')
             ->orderBy('sort_order', 'asc')
             ->get();
     }

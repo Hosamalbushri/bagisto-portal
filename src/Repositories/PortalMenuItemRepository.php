@@ -32,6 +32,8 @@ class PortalMenuItemRepository extends Repository
                 ->whereNotIn('id', $persistedIds)
                 ->delete();
 
+            PortalMenuRepository::clearCache();
+
             return $persistedIds;
         });
     }
@@ -49,7 +51,7 @@ class PortalMenuItemRepository extends Repository
                 'parent_id' => $parentId,
                 'type' => $itemData['type'] ?? 'custom',
                 'portal_page_id' => ! empty($itemData['portal_page_id']) ? (int) $itemData['portal_page_id'] : null,
-                'url' => $itemData['url'] ?? null,
+                'url' => $this->sanitizeUrl($itemData['url'] ?? null),
                 'target' => $itemData['target'] ?? '_self',
                 'icon' => $itemData['icon'] ?? null,
                 'sort_order' => $index,
@@ -96,5 +98,31 @@ class PortalMenuItemRepository extends Repository
                 $this->processItems($menuId, $itemData['children'], $item->id, $persistedIds, $localeCode);
             }
         }
+    }
+
+    /**
+     * Sanitize custom menu item URL to prevent XSS.
+     */
+    public function sanitizeUrl(?string $url): ?string
+    {
+        if ($url === null) {
+            return null;
+        }
+
+        $trimmed = trim($url);
+
+        if ($trimmed === '') {
+            return '';
+        }
+
+        // Remove all control characters, null bytes, and invisible whitespace
+        $cleaned = preg_replace('/[\x00-\x20]+/', '', $trimmed);
+
+        // Strict allowlist: exclusively allow URLs starting with /, #, http://, https://, mailto:, or tel:
+        if (! preg_match('/^(\/|#|https?:\/\/|mailto:|tel:)/i', $cleaned)) {
+            return '#';
+        }
+
+        return $trimmed;
     }
 }

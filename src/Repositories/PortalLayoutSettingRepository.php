@@ -2,11 +2,17 @@
 
 namespace Platform\Portal\Repositories;
 
+use Illuminate\Support\Facades\Cache;
 use Platform\Portal\Contracts\PortalLayoutSetting;
 use Webkul\Core\Eloquent\Repository;
 
 class PortalLayoutSettingRepository extends Repository
 {
+    /**
+     * Cache version key for atomic invalidation.
+     */
+    public const CACHE_VERSION_KEY = 'portal_layout_settings_version';
+
     /**
      * Cache store for runtime lookups.
      *
@@ -23,7 +29,24 @@ class PortalLayoutSettingRepository extends Repository
     }
 
     /**
+     * Invalidate persistent layout cache.
+     */
+    public static function clearCache(): void
+    {
+        try {
+            if (! Cache::has(self::CACHE_VERSION_KEY)) {
+                Cache::forever(self::CACHE_VERSION_KEY, 1);
+            }
+
+            Cache::increment(self::CACHE_VERSION_KEY);
+        } catch (\Throwable) {
+            Cache::put(self::CACHE_VERSION_KEY, time(), 86400 * 30);
+        }
+    }
+
+    /**
      * Get layout settings for a group, channel, theme, and locale.
+     * Cached with versioning for optimal response time.
      */
     public function getSettings(
         string $group,
@@ -37,34 +60,39 @@ class PortalLayoutSettingRepository extends Repository
             return $this->runtimeCache[$cacheKey];
         }
 
-        // 1. Fetch channel-wide settings without specific locale (fallback)
-        $defaultRecord = $this->findOneWhere([
-            'group' => $group,
-            'channel_id' => $channelId,
-            'theme_code' => $themeCode,
-            'locale_code' => null,
-        ]);
+        $version = Cache::get(self::CACHE_VERSION_KEY, 1);
+        $persistentKey = "portal_layout_v{$version}_{$group}_{$channelId}_{$themeCode}_".($localeCode ?? 'none');
 
-        $defaultSettings = $defaultRecord?->settings ?? [];
+        $result = Cache::remember($persistentKey, 86400, function () use ($group, $channelId, $themeCode, $localeCode) {
+            // 1. Fetch channel-wide settings without specific locale (fallback)
+            $defaultRecord = $this->findOneWhere([
+                'group' => $group,
+                'channel_id' => $channelId,
+                'theme_code' => $themeCode,
+                'locale_code' => null,
+            ]);
 
-        if (! $localeCode) {
-            return $this->runtimeCache[$cacheKey] = $defaultSettings;
-        }
+            $defaultSettings = $defaultRecord?->settings ?? [];
 
-        // 2. Fetch specific locale settings
-        $localeRecord = $this->findOneWhere([
-            'group' => $group,
-            'channel_id' => $channelId,
-            'theme_code' => $themeCode,
-            'locale_code' => $localeCode,
-        ]);
+            if (! $localeCode) {
+                return $defaultSettings;
+            }
 
-        $localeSettings = $localeRecord?->settings ?? [];
+            // 2. Fetch specific locale settings
+            $localeRecord = $this->findOneWhere([
+                'group' => $group,
+                'channel_id' => $channelId,
+                'theme_code' => $themeCode,
+                'locale_code' => $localeCode,
+            ]);
 
-        // 3. Specific locale settings override default settings recursively
-        $merged = array_replace_recursive($defaultSettings, $localeSettings);
+            $localeSettings = $localeRecord?->settings ?? [];
 
-        return $this->runtimeCache[$cacheKey] = $merged;
+            // 3. Specific locale settings override default settings recursively
+            return array_replace_recursive($defaultSettings, $localeSettings);
+        });
+
+        return $this->runtimeCache[$cacheKey] = $result;
     }
 
     /**
@@ -106,7 +134,8 @@ class PortalLayoutSettingRepository extends Repository
             'settings' => $settings,
         ]);
 
-        // Invalidate runtime cache
+        // Invalidate both persistent cache and runtime cache
+        self::clearCache();
         $this->runtimeCache = [];
 
         return $record;

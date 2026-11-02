@@ -56,6 +56,16 @@ class PageController extends Controller
      */
     public function preview(string $slug): View
     {
+        abort_unless(
+            bouncer()->hasPermission('portal.pages.edit') ||
+            bouncer()->hasPermission('pages.edit') ||
+            bouncer()->hasPermission('portal.pages.customize') ||
+            bouncer()->hasPermission('pages.customize') ||
+            request()->hasValidSignature(),
+            403,
+            'Unauthorized preview access.'
+        );
+
         request()->attributes->set(SecureHeaders::FRAMABLE, true);
 
         $channel = core()->getAllChannels()->firstWhere('code', request('channel'))

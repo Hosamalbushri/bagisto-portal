@@ -6,10 +6,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Platform\Portal\DataGrids\PortalMenuDataGrid;
 use Platform\Portal\Http\Controllers\Controller;
+use Platform\Portal\Http\Requests\Admin\MenuRequest;
 use Platform\Portal\Repositories\PortalMenuItemRepository;
 use Platform\Portal\Repositories\PortalMenuRepository;
 use Platform\Portal\Repositories\PortalPageRepository;
@@ -70,29 +70,12 @@ class MenuController extends Controller
     /**
      * Store a newly created menu.
      */
-    public function store(Request $request): RedirectResponse|JsonResponse
+    public function store(MenuRequest $request): RedirectResponse|JsonResponse
     {
         abort_unless(bouncer()->hasPermission('portal.menus.create') || bouncer()->hasPermission('portal_menus.create'), 403);
 
         $channelId = $request->input('channel_id') ?: null;
         $localeCode = $request->input('locale', core()->getRequestedLocaleCode());
-
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::unique('portal_menus', 'slug')
-                    ->where(function ($query) use ($channelId) {
-                        return $channelId
-                            ? $query->where('channel_id', $channelId)
-                            : $query->whereNull('channel_id');
-                    }),
-            ],
-            'channel_id' => ['nullable', 'integer', 'exists:channels,id'],
-            'status' => ['nullable', 'boolean'],
-        ]);
 
         $slug = $request->input('slug') ?: Str::slug($request->input('name'));
 
@@ -211,7 +194,7 @@ class MenuController extends Controller
     /**
      * Update menu general details and items.
      */
-    public function update(Request $request, int $id): JsonResponse|RedirectResponse
+    public function update(MenuRequest $request, int $id): JsonResponse|RedirectResponse
     {
         abort_unless(bouncer()->hasPermission('portal.menus.edit') || bouncer()->hasPermission('portal_menus.edit'), 403);
 
@@ -219,24 +202,6 @@ class MenuController extends Controller
 
         $channelId = $request->input('channel_id') ?: null;
         $localeCode = $request->input('locale', core()->getRequestedLocaleCode());
-
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'slug' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('portal_menus', 'slug')
-                    ->ignore($id)
-                    ->where(function ($query) use ($channelId) {
-                        return $channelId
-                            ? $query->where('channel_id', $channelId)
-                            : $query->whereNull('channel_id');
-                    }),
-            ],
-            'channel_id' => ['nullable', 'integer', 'exists:channels,id'],
-            'status' => ['nullable', 'boolean'],
-        ]);
 
         $menu->update([
             'name' => $request->input('name'),

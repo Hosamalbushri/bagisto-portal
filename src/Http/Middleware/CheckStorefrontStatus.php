@@ -14,14 +14,14 @@ class CheckStorefrontStatus
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        // Allow visual customizer preview in admin iframe
-        if (
-            $request->attributes->get(SecureHeaders::FRAMABLE)
-            || $request->routeIs('shop.appearance.preview')
+        // Allow visual customizer preview in admin iframe only for authenticated admins or signed preview URLs
+        $isAdmin = auth()->guard('admin')->check();
+        $isFramedPreview = (bool) $request->attributes->get(SecureHeaders::FRAMABLE);
+        $isPreviewRoute = $request->routeIs('shop.appearance.preview')
             || $request->routeIs('portal.appearance.preview')
-            || $request->routeIs('portal.page.preview')
-            || $request->boolean('preview')
-        ) {
+            || $request->routeIs('portal.page.preview');
+
+        if (($isFramedPreview || $isPreviewRoute || $request->boolean('preview')) && ($isAdmin || $request->hasValidSignature())) {
             return $next($request);
         }
 

@@ -3,6 +3,7 @@
 namespace Platform\Portal\Http\Controllers\Admin;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 use Platform\Portal\Http\Controllers\Controller;
 use Platform\Portal\Repositories\PortalPageRepository;
@@ -61,7 +62,7 @@ class PageCustomizeController extends Controller
             ]),
         ])->values()->all();
 
-        $previewUrl = route('portal.page.preview', [
+        $previewUrl = URL::temporarySignedRoute('portal.page.preview', now()->addHours(4), [
             'slug' => $page->slug,
             'channel' => $channel->code,
             'locale' => $locale,
@@ -149,7 +150,7 @@ class PageCustomizeController extends Controller
         abort_unless(bouncer()->hasPermission('portal.pages.customize') || bouncer()->hasPermission('pages.customize'), 403);
 
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
-        abort_if($section->portal_page_id !== $id, 404);
+        abort_if((int) $section->portal_page_id !== (int) $id, 404);
 
         $locale = core()->getRequestedLocaleCode();
         $translation = $section->translate($locale, true);
@@ -175,7 +176,7 @@ class PageCustomizeController extends Controller
         ]);
 
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
-        abort_if($section->portal_page_id !== $id, 404);
+        abort_if((int) $section->portal_page_id !== (int) $id, 404);
 
         $locale = core()->getRequestedLocaleCode();
         $section = $this->portalPageSectionRepository->saveDraft($sectionId, $locale, request()->input('options'));
@@ -193,7 +194,7 @@ class PageCustomizeController extends Controller
         abort_unless(bouncer()->hasPermission('portal.pages.customize') || bouncer()->hasPermission('pages.customize'), 403);
 
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
-        abort_if($section->portal_page_id !== $id, 404);
+        abort_if((int) $section->portal_page_id !== (int) $id, 404);
 
         $status = request()->boolean('status');
         $section = $this->portalPageSectionRepository->saveStatusDraft($sectionId, $status);
@@ -212,7 +213,7 @@ class PageCustomizeController extends Controller
         abort_unless(bouncer()->hasPermission('portal.pages.customize') || bouncer()->hasPermission('pages.customize'), 403);
 
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
-        abort_if($section->portal_page_id !== $id, 404);
+        abort_if((int) $section->portal_page_id !== (int) $id, 404);
 
         $duplicate = $this->portalPageSectionRepository->duplicate($sectionId);
 
@@ -254,11 +255,11 @@ class PageCustomizeController extends Controller
         abort_unless(bouncer()->hasPermission('portal.pages.customize') || bouncer()->hasPermission('pages.customize'), 403);
 
         $this->validate(request(), [
-            'file' => ['required', 'mimes:bmp,jpeg,jpg,png,webp,mp4,webm,ogg', 'max:51200'],
+            'file' => ['required', 'file', 'mimes:bmp,jpeg,jpg,png,webp,mp4,webm,ogg', 'max:51200'],
         ]);
 
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
-        abort_if($section->portal_page_id !== $id, 404);
+        abort_if((int) $section->portal_page_id !== (int) $id, 404);
 
         $file = request()->file('file');
         $path = $file->store('portal/sections/'.$sectionId, 'public');
@@ -277,7 +278,7 @@ class PageCustomizeController extends Controller
         abort_unless(bouncer()->hasPermission('portal.pages.customize') || bouncer()->hasPermission('pages.customize'), 403);
 
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);
-        abort_if($section->portal_page_id !== $id, 404);
+        abort_if((int) $section->portal_page_id !== (int) $id, 404);
 
         $this->portalPageSectionRepository->delete($sectionId);
 

@@ -23,7 +23,7 @@
     />
 @endpush
 
-<x-portal::layouts>
+<x-portal::layouts :has-feature="false">
     <!-- Page Title -->
     <x-slot:title>
         {{ $metaTitle }}

@@ -51,7 +51,7 @@ Route::get('contact-us', [HomeController::class, 'contactUs'])
 
 Route::post('contact-us/send-mail', [HomeController::class, 'sendContactUsMail'])
     ->name($overrideShop ? 'shop.home.contact_us.send_mail' : 'portal.contact_us.send_mail')
-    ->middleware('cache.response');
+    ->middleware('throttle:5,1');
 
 /**
  * Search-engine discovery.
@@ -81,7 +81,8 @@ Route::get('login', [LoginController::class, 'showLoginForm'])
     ->name('portal.auth.login');
 
 Route::post('login', [LoginController::class, 'login'])
-    ->name('portal.auth.login.store');
+    ->name('portal.auth.login.store')
+    ->middleware('throttle:5,1');
 
 Route::any('logout', [LoginController::class, 'logout'])
     ->name('portal.auth.logout');
@@ -90,4 +91,5 @@ Route::get('register', [RegisterController::class, 'showRegistrationForm'])
     ->name('portal.auth.register');
 
 Route::post('register', [RegisterController::class, 'register'])
-    ->name('portal.auth.register.store');
+    ->name('portal.auth.register.store')
+    ->middleware('throttle:5,1');

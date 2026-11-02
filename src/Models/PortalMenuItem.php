@@ -103,7 +103,21 @@ class PortalMenuItem extends TranslatableModel implements PortalMenuItemContract
             return Route::has($this->url) ? route($this->url) : url($this->url);
         }
 
-        return $this->url ?? '#';
+        $rawUrl = $this->url ?? '#';
+
+        if ($rawUrl === '#' || $rawUrl === '') {
+            return '#';
+        }
+
+        // Remove all control characters, null bytes, and invisible whitespace
+        $cleaned = preg_replace('/[\x00-\x20]+/', '', $rawUrl);
+
+        // Strict allowlist: exclusively allow URLs starting with /, #, http://, https://, mailto:, or tel:
+        if (! preg_match('/^(\/|#|https?:\/\/|mailto:|tel:)/i', $cleaned)) {
+            return '#';
+        }
+
+        return $rawUrl;
     }
 
     /**

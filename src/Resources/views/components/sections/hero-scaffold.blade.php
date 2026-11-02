@@ -82,16 +82,16 @@
             @endif
 
             <!-- Action CTAs -->
-            <div class="flex flex-wrap items-center justify-center gap-4 mb-12">
+            <div class="flex flex-wrap items-center justify-center gap-4 mb-12 w-full max-w-md sm:max-w-none">
                 @if ($primaryCtaText)
-                    <a href="{{ $primaryCtaUrl }}" class="btn-primary !px-7 !py-3.5 text-base flex items-center gap-2 group">
+                    <a href="{{ $primaryCtaUrl }}" class="btn-primary !px-7 !py-3.5 text-base flex items-center justify-center gap-2 group w-full sm:w-auto">
                         <span>{{ $primaryCtaText }}</span>
                         <span class="icon-arrow-right rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" aria-hidden="true"></span>
                     </a>
                 @endif
 
                 @if ($secondaryCtaText)
-                    <a href="{{ $secondaryCtaUrl }}" class="btn-outline !px-7 !py-3.5 text-base">
+                    <a href="{{ $secondaryCtaUrl }}" class="btn-outline !px-7 !py-3.5 text-base flex items-center justify-center w-full sm:w-auto">
                         <span>{{ $secondaryCtaText }}</span>
                     </a>
                 @endif

@@ -4,6 +4,7 @@ namespace Platform\Portal\DataGrids;
 
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Webkul\DataGrid\DataGrid;
 
 class PortalPageDataGrid extends DataGrid
@@ -142,7 +143,15 @@ class PortalPageDataGrid extends DataGrid
                     return portal_route('portal.home', 'shop.home.index');
                 }
 
-                return route('portal.page.show', $row->slug);
+                if ($row->status) {
+                    return route('portal.page.show', $row->slug);
+                }
+
+                return URL::temporarySignedRoute(
+                    'portal.page.preview',
+                    now()->addHours(2),
+                    ['slug' => $row->slug]
+                );
             },
         ]);
 
