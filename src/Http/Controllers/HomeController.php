@@ -55,7 +55,12 @@ class HomeController extends Controller
      */
     public function preview(): View
     {
-        abort_unless(bouncer()->hasPermission('appearance.sections'), 403);
+        abort_unless(
+            bouncer()->hasPermission('appearance.sections')
+            || bouncer()->hasPermission('portal.pages.customize')
+            || request()->hasValidSignature(),
+            403
+        );
 
         $channel = core()->getAllChannels()->firstWhere('code', request('channel'))
             ?? core()->getCurrentChannel();

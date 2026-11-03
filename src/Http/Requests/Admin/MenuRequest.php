@@ -40,6 +40,12 @@ class MenuRequest extends FormRequest
             'channel_id' => ['nullable', 'integer', 'exists:channels,id'],
             'status' => ['nullable', 'boolean'],
             'items' => ['nullable', 'array'],
+            'items.*.title' => ['required_with:items', 'string', 'max:255'],
+            'items.*.type' => ['nullable', 'string', 'in:custom,page,route'],
+            'items.*.target' => ['nullable', 'string', 'in:_self,_blank'],
+            'items.*.url' => ['nullable', 'string', 'max:1000'],
+            'items.*.icon' => ['nullable', 'string', 'max:100'],
+            'items.*.portal_page_id' => ['nullable', 'integer'],
         ];
     }
 }
