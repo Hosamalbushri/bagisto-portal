@@ -10,6 +10,8 @@ use Platform\Portal\Models\PortalMenuItemTranslation;
 use Platform\Portal\Models\PortalMenuSlotAssignment;
 use Platform\Portal\Models\PortalPage;
 use Platform\Portal\Models\PortalPageSection;
+use Platform\Portal\Models\PortalPageSectionTranslation;
+use Platform\Portal\Models\PortalPageTranslation;
 
 class ModuleServiceProvider extends BaseModuleServiceProvider
 {
@@ -20,7 +22,9 @@ class ModuleServiceProvider extends BaseModuleServiceProvider
      */
     protected $models = [
         PortalPage::class,
+        PortalPageTranslation::class,
         PortalPageSection::class,
+        PortalPageSectionTranslation::class,
         PortalMenu::class,
         PortalMenuItem::class,
         PortalMenuItemTranslation::class,

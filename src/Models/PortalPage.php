@@ -89,7 +89,7 @@ class PortalPage extends TranslatableModel implements PortalPageContract
      */
     public function sections(): HasMany
     {
-        return $this->hasMany(PortalPageSection::class, 'portal_page_id')
+        return $this->hasMany(PortalPageSectionProxy::modelClass(), 'portal_page_id')
             ->orderBy('sort_order');
     }
 }

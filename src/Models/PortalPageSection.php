@@ -82,7 +82,7 @@ class PortalPageSection extends TranslatableModel implements PortalPageSectionCo
      */
     public function page(): BelongsTo
     {
-        return $this->belongsTo(PortalPage::class, 'portal_page_id');
+        return $this->belongsTo(PortalPageProxy::modelClass(), 'portal_page_id');
     }
 
     /**
