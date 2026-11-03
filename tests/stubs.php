@@ -126,7 +126,17 @@ namespace Webkul\Core\Eloquent {
             public function makeModel()
             {
                 $class = $this->model();
-                $this->model = class_exists($class) ? new $class : null;
+
+                if (app()->bound($class)) {
+                    $this->model = app($class);
+                } elseif (interface_exists($class)) {
+                    $modelClass = str_replace('\\Contracts\\', '\\Models\\', $class);
+                    $this->model = class_exists($modelClass) ? new $modelClass : null;
+                } elseif (class_exists($class)) {
+                    $this->model = new $class;
+                } else {
+                    $this->model = null;
+                }
 
                 return $this->model;
             }

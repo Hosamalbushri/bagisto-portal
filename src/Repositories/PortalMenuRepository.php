@@ -4,7 +4,6 @@ namespace Platform\Portal\Repositories;
 
 use Illuminate\Support\Facades\Cache;
 use Platform\Portal\Contracts\PortalMenu as PortalMenuContract;
-use Platform\Portal\Models\PortalMenu;
 use Webkul\Core\Eloquent\Repository;
 
 class PortalMenuRepository extends Repository
@@ -19,7 +18,7 @@ class PortalMenuRepository extends Repository
      */
     public function model(): string
     {
-        return PortalMenu::class;
+        return PortalMenuContract::class;
     }
 
     /**

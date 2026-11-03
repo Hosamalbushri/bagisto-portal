@@ -3,7 +3,7 @@
 namespace Platform\Portal\Repositories;
 
 use Illuminate\Support\Facades\DB;
-use Platform\Portal\Models\PortalMenuItem;
+use Platform\Portal\Contracts\PortalMenuItem as PortalMenuItemContract;
 use Webkul\Core\Eloquent\Repository;
 
 class PortalMenuItemRepository extends Repository
@@ -13,7 +13,7 @@ class PortalMenuItemRepository extends Repository
      */
     public function model(): string
     {
-        return PortalMenuItem::class;
+        return PortalMenuItemContract::class;
     }
 
     /**

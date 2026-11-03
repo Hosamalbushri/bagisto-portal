@@ -3,7 +3,7 @@
 namespace Platform\Portal\Repositories;
 
 use Illuminate\Support\Facades\Cache;
-use Platform\Portal\Contracts\PortalLayoutSetting;
+use Platform\Portal\Contracts\PortalLayoutSetting as PortalLayoutSettingContract;
 use Webkul\Core\Eloquent\Repository;
 
 class PortalLayoutSettingRepository extends Repository
@@ -25,7 +25,7 @@ class PortalLayoutSettingRepository extends Repository
      */
     public function model(): string
     {
-        return PortalLayoutSetting::class;
+        return PortalLayoutSettingContract::class;
     }
 
     /**

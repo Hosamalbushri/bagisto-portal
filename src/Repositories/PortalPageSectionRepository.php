@@ -5,7 +5,6 @@ namespace Platform\Portal\Repositories;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Platform\Portal\Contracts\PortalPageSection as PortalPageSectionContract;
-use Platform\Portal\Models\PortalPageSection;
 use Webkul\Core\Eloquent\Repository;
 
 class PortalPageSectionRepository extends Repository
@@ -15,7 +14,7 @@ class PortalPageSectionRepository extends Repository
      */
     public function model(): string
     {
-        return PortalPageSection::class;
+        return PortalPageSectionContract::class;
     }
 
     /**

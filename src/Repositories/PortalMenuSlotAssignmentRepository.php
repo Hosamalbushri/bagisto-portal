@@ -4,7 +4,7 @@ namespace Platform\Portal\Repositories;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Platform\Portal\Contracts\PortalMenuSlotAssignment;
+use Platform\Portal\Contracts\PortalMenuSlotAssignment as PortalMenuSlotAssignmentContract;
 use Webkul\Core\Eloquent\Repository;
 
 class PortalMenuSlotAssignmentRepository extends Repository
@@ -14,7 +14,7 @@ class PortalMenuSlotAssignmentRepository extends Repository
      */
     public function model(): string
     {
-        return PortalMenuSlotAssignment::class;
+        return PortalMenuSlotAssignmentContract::class;
     }
 
     /**

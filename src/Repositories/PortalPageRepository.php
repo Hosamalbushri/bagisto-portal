@@ -3,7 +3,6 @@
 namespace Platform\Portal\Repositories;
 
 use Platform\Portal\Contracts\PortalPage as PortalPageContract;
-use Platform\Portal\Models\PortalPage;
 use Webkul\Core\Eloquent\Repository;
 
 class PortalPageRepository extends Repository
@@ -13,7 +12,7 @@ class PortalPageRepository extends Repository
      */
     public function model(): string
     {
-        return PortalPage::class;
+        return PortalPageContract::class;
     }
 
     /**
