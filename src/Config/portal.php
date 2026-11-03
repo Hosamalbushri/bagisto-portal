@@ -19,7 +19,7 @@ return [
      */
     'auth' => [
         'enabled' => env('PORTAL_AUTH_ENABLED', false),
-        'guard' => env('PORTAL_AUTH_GUARD', 'customer'),
+        'guard' => env('PORTAL_AUTH_GUARD', 'web'),
     ],
 
     /*

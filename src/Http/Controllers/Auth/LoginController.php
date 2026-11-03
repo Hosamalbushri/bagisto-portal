@@ -47,10 +47,6 @@ class LoginController extends Controller
         $guard = PortalAuth::guard();
         $credentials = $request->only('email', 'password');
 
-        if ($guard === 'customer' && $channel = core()->getCurrentChannel()) {
-            $credentials['channel_id'] = $channel->id;
-        }
-
         if (auth()->guard($guard)->attempt($credentials, $request->boolean('remember'))) {
             RateLimiter::clear($throttleKey);
 
@@ -76,7 +72,7 @@ class LoginController extends Controller
         if (PortalAuth::isEnabled()) {
             auth()->guard(PortalAuth::guard())->logout();
 
-            $request->session()->invalidate();
+            // Refresh CSRF token while preserving admin panel session if active in the same browser
             $request->session()->regenerateToken();
 
             session()->flash('success', trans('portal::app.auth.logout.success'));

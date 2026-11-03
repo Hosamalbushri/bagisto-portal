@@ -75,15 +75,15 @@ return [
                 'info' => 'portal::app.admin.configuration.portal.auth.settings.guard-info',
                 'type' => 'select',
                 'channel_based' => true,
-                'default' => 'customer',
+                'default' => 'web',
                 'options' => [
                     [
-                        'title' => 'Customer (Webkul Customer)',
-                        'value' => 'customer',
+                        'title' => 'Web (Standard User)',
+                        'value' => 'web',
                     ],
                     [
-                        'title' => 'Web (Standard Laravel User)',
-                        'value' => 'web',
+                        'title' => 'Customer (Shop Customer)',
+                        'value' => 'customer',
                     ],
                 ],
             ],

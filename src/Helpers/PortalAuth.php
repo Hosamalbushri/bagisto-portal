@@ -69,14 +69,10 @@ class PortalAuth
         }
 
         // 2. Check portal.php / env
-        $configGuard = config('portal.auth.guard');
+        $configGuard = config('portal.auth.guard', 'web');
 
         if (! empty($configGuard) && config()->has("auth.guards.{$configGuard}")) {
             return self::$memo[$memoKey] = $configGuard;
-        }
-
-        if (config()->has('auth.guards.customer')) {
-            return self::$memo[$memoKey] = 'customer';
         }
 
         return self::$memo[$memoKey] = config('auth.defaults.guard', 'web');

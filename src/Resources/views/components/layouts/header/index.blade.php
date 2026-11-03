@@ -169,7 +169,7 @@
                                 class="flex items-center gap-1.5 h-9 px-3 text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] rounded-full transition-all shadow-2xs focus:outline-none"
                             >
                                 <span class="icon-avatar text-base"></span>
-                                <span class="truncate max-w-[100px]">{{ auth()->guard($portalGuard)->user()->name }}</span>
+                                <span class="truncate max-w-[100px]">{{ auth()->guard($portalGuard)->user()->name ?? auth()->guard($portalGuard)->user()->first_name ?? 'User' }}</span>
                                 <span class="icon-arrow-down text-xs opacity-70"></span>
                             </button>
                         </x-slot>
@@ -261,7 +261,7 @@
             @if (auth()->guard($portalGuard)->check())
                 <div class="px-4 py-3 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-between">
                     <span class="text-sm font-semibold text-[var(--text-primary)]">
-                        {{ auth()->guard($portalGuard)->user()->name }}
+                        {{ auth()->guard($portalGuard)->user()->name ?? auth()->guard($portalGuard)->user()->first_name ?? 'User' }}
                     </span>
 
                     <form method="POST" action="{{ route('portal.auth.logout') }}">
