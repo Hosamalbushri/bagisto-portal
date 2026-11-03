@@ -5,6 +5,7 @@ use Platform\Portal\Http\Controllers\Admin\MenuController;
 use Platform\Portal\Http\Controllers\Admin\NavigationCustomizeController;
 use Platform\Portal\Http\Controllers\Admin\PageController;
 use Platform\Portal\Http\Controllers\Admin\PageCustomizeController;
+use Platform\Portal\Http\Controllers\Admin\ThemeController;
 
 Route::group(['middleware' => ['web', 'admin'], 'prefix' => config('app.admin_url')], function () {
     Route::prefix('portal/pages')->group(function () {
@@ -50,5 +51,14 @@ Route::group(['middleware' => ['web', 'admin'], 'prefix' => config('app.admin_ur
         Route::get('footer', [NavigationCustomizeController::class, 'footer'])->name('admin.portal.navigation.footer');
         Route::post('footer', [NavigationCustomizeController::class, 'updateFooter'])->name('admin.portal.navigation.footer.update');
         Route::post('', [NavigationCustomizeController::class, 'update'])->name('admin.portal.navigation.update');
+    });
+
+    Route::prefix('portal/themes')->group(function () {
+        Route::get('', [ThemeController::class, 'index'])->name('admin.portal.themes.index');
+        Route::get('customize/{code}', [ThemeController::class, 'customize'])->name('admin.portal.themes.customize');
+        Route::post('activate', [ThemeController::class, 'activate'])->name('admin.portal.themes.activate');
+        Route::get('tokens', [ThemeController::class, 'getTokens'])->name('admin.portal.themes.tokens.get');
+        Route::post('tokens', [ThemeController::class, 'customizeTokens'])->name('admin.portal.themes.tokens');
+        Route::post('tokens/reset', [ThemeController::class, 'resetTokens'])->name('admin.portal.themes.tokens.reset');
     });
 });

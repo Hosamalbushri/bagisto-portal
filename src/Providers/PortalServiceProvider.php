@@ -53,19 +53,14 @@ class PortalServiceProvider extends ServiceProvider
         $discoveredThemes = $this->app->make(ThemeManager::class)->toConfigArray();
 
         $this->app['config']->set(
+            'themes.portal',
+            array_merge($portalThemes, $discoveredThemes)
+        );
+
+        $this->app['config']->set(
             'themes.shop',
             array_merge($this->app['config']->get('themes.shop', []), $portalThemes, $discoveredThemes)
         );
-
-        // Clean container extension: enhance ThemeCatalog with local theme configs without touching Bagisto core
-        if (class_exists(ThemeCatalog::class)) {
-            $this->app->extend(ThemeCatalog::class, function ($catalog, $app) {
-                return new ExtendedThemeCatalog(
-                    $app[ChannelRepository::class],
-                    $app[SectionRepository::class]
-                );
-            });
-        }
 
         // Clean container extension: enhance ThemeCatalog with local theme configs without touching Bagisto core
         if (class_exists(ThemeCatalog::class)) {
@@ -118,6 +113,32 @@ class PortalServiceProvider extends ServiceProvider
 
         $this->app->booted(function () {
             Route::middleware(['web'])->group(__DIR__.'/../Routes/web.php');
+
+            // Seamlessly resolve missing core Bagisto named routes (e.g. admin header's "visit-shop" link)
+            if (method_exists($this->app['url'], 'resolveMissingNamedRoutesUsing')) {
+                $existingResolver = null;
+                try {
+                    $prop = new \ReflectionProperty($this->app['url'], 'missingNamedRouteResolver');
+                    $existingResolver = $prop->getValue($this->app['url']);
+                } catch (\Throwable) {
+                    // Ignore reflection issues
+                }
+
+                $this->app['url']->resolveMissingNamedRoutesUsing(function ($name, $parameters, $absolute) use ($existingResolver) {
+                    $resolved = match ($name) {
+                        'shop.home.index' => Route::has('portal.home') ? route('portal.home', $parameters, $absolute) : url('/'),
+                        'shop.cms.page' => Route::has('portal.page.show') ? route('portal.page.show', $parameters, $absolute) : url('/pages/'.(is_array($parameters) ? ($parameters['slug'] ?? reset($parameters)) : $parameters)),
+                        'shop.appearance.preview' => Route::has('portal.appearance.preview') ? route('portal.appearance.preview', $parameters, $absolute) : url('/appearance-preview'),
+                        default => null,
+                    };
+
+                    if ($resolved !== null) {
+                        return $resolved;
+                    }
+
+                    return is_callable($existingResolver) ? $existingResolver($name, $parameters, $absolute) : null;
+                });
+            }
         });
 
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');

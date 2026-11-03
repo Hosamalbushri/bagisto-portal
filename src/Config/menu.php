@@ -74,7 +74,7 @@ return [
     [
         'key' => 'portal.customize.themes',
         'name' => 'portal::app.admin.menu.customize-themes',
-        'route' => 'admin.appearance.themes.index',
+        'route' => 'admin.portal.themes.index',
         'sort' => 3,
         'icon' => '',
     ],

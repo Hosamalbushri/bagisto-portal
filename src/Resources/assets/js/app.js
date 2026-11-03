@@ -145,14 +145,14 @@ window.app = createApp({
  */
 import Axios from "./plugins/axios";
 import Emitter from "./plugins/emitter";
-import Shop from "./plugins/shop";
+import Portal from "./plugins/portal";
 import VeeValidate from "./plugins/vee-validate";
 import Flatpickr from "./plugins/flatpickr";
 
 [
     Axios,
     Emitter,
-    Shop,
+    Portal,
     VeeValidate,
     Flatpickr,
 ].forEach((plugin) => app.use(plugin));

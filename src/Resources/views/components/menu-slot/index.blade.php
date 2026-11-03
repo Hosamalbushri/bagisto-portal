@@ -9,7 +9,7 @@
 
 @php
     $channelId = core()->getCurrentChannel()?->id;
-    $themeCode = core()->getCurrentChannel()?->theme ?? config('themes.shop-default', 'default');
+    $themeCode = function_exists('portal_active_theme') ? portal_active_theme($channelId) : 'portal';
 
     $assignment = app(\Platform\Portal\Repositories\PortalMenuSlotAssignmentRepository::class)->findForSlot(
         $id,

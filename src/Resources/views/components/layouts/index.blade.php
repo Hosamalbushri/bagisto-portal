@@ -11,7 +11,7 @@
     class="{{ request()->cookie('portal_dark_mode') ? 'dark' : '' }}"
 >
 <head>
-    {!! view_render_event('bagisto.shop.layout.head.before') !!}
+    {!! view_render_event('bagisto.portal.layout.head.before') !!}
 
     <script>
         (function() {
@@ -40,7 +40,7 @@
     <link
         rel="icon"
         sizes="16x16"
-        href="{{ core()->getCurrentChannel()->favicon_url ?? bagisto_asset('images/favicon.ico') }}"
+        href="{{ core()->getCurrentChannel()->favicon_url ?? portal_asset('images/favicon.ico', asset('favicon.ico')) }}"
     />
 
     @bagistoVite(['src/Resources/assets/css/app.css', 'src/Resources/assets/js/app.js'])
@@ -57,11 +57,11 @@
 
     @stack('styles')
 
-    {!! view_render_event('bagisto.shop.layout.head.after') !!}
+    {!! view_render_event('bagisto.portal.layout.head.after') !!}
 </head>
 
 <body class="antialiased min-h-screen flex flex-col justify-between overflow-x-hidden transition-colors duration-200" style="background-color: var(--bg-app); color: var(--text-primary);">
-    {!! view_render_event('bagisto.shop.layout.body.before') !!}
+    {!! view_render_event('bagisto.portal.layout.body.before') !!}
 
     <div id="app" class="flex min-h-screen flex-col justify-between">
         <x-portal::flash-group />
@@ -72,13 +72,13 @@
             <x-portal::layouts.header />
         @endif
 
-        {!! view_render_event('bagisto.shop.layout.content.before') !!}
+        {!! view_render_event('bagisto.portal.layout.content.before') !!}
 
         <main id="main" class="flex-1">
             {{ $slot }}
         </main>
 
-        {!! view_render_event('bagisto.shop.layout.content.after') !!}
+        {!! view_render_event('bagisto.portal.layout.content.after') !!}
 
         @if ($hasFeature)
             <x-portal::layouts.services />
@@ -89,11 +89,11 @@
         @endif
     </div>
 
-    {!! view_render_event('bagisto.shop.layout.body.after') !!}
+    {!! view_render_event('bagisto.portal.layout.body.after') !!}
 
     @stack('scripts')
 
-    {!! view_render_event('bagisto.shop.layout.vue-app-mount.before') !!}
+    {!! view_render_event('bagisto.portal.layout.vue-app-mount.before') !!}
     <script>
         function mountApp() {
             const vueApp = window.app || (typeof app !== "undefined" ? app : null);
@@ -108,7 +108,7 @@
             mountApp();
         }
     </script>
-    {!! view_render_event('bagisto.shop.layout.vue-app-mount.after') !!}
+    {!! view_render_event('bagisto.portal.layout.vue-app-mount.after') !!}
 </body>
 </html>
 

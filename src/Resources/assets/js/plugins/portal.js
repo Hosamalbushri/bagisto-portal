@@ -1,22 +1,22 @@
 export default {
     install(app) {
-        app.config.globalProperties.$shop = {
+        const portalHelper = {
             /**
              * Base url.
              *
              * @returns {string}
              */
             baseUrl: () => {
-                return document.querySelector('meta[name="base-url"]').content ?? "http://localhost";
+                return document.querySelector('meta[name="base-url"]')?.content ?? window.location.origin;
             },
 
             /**
-             * Load the dynamic scripts.
+             * Load dynamic scripts asynchronously.
              *
              * @param {string} src
              * @param {callback} onScriptLoaded
              *
-             * @returns {void}.
+             * @returns {void}
              */
             loadDynamicScript: (src, onScriptLoaded) => {
                 let dynamicScript = document.createElement('script');
@@ -29,17 +29,18 @@ export default {
             },
 
             /**
-             * Format the given price with currency symbol.
+             * Format the given price or numeric value with currency symbol.
              *
              * @param {number} price - The price to be formatted.
              * @returns {string} - The formatted price as a string.
              */
             formatPrice(price) {
-                let locale = document.querySelector('meta[http-equiv="content-language"]').content;
+                let locale = document.querySelector('meta[http-equiv="content-language"]')?.content ?? 'en';
 
                 locale = locale === 'ar' ? 'ar-SA' : locale.replace(/([a-z]{2})_([A-Z]{2})/g, '$1-$2');
 
-                const currency = JSON.parse(document.querySelector('meta[name="currency"]').content);
+                const currencyMeta = document.querySelector('meta[name="currency"]')?.content;
+                const currency = currencyMeta ? JSON.parse(currencyMeta) : { symbol: '$', code: 'USD', decimal: 2 };
 
                 const symbol = currency.symbol !== '' ? currency.symbol : currency.code;
 
@@ -96,5 +97,9 @@ export default {
                 }
             },
         };
+
+        app.config.globalProperties.$portal = portalHelper;
+        app.config.globalProperties.$shop = portalHelper;
     },
 };
+

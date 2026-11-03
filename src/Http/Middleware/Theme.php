@@ -17,15 +17,14 @@ class Theme
 
         $channel = core()->getCurrentChannel();
 
-        if (
-            $channel
-            && $channelThemeCode = $channel->theme
-        ) {
-            $themes->exists($channelThemeCode)
-                ? $themes->set($channelThemeCode)
-                : $themes->set(config('themes.shop-default', 'default'));
+        $themeCode = function_exists('portal_active_theme')
+            ? portal_active_theme($channel?->id)
+            : 'portal';
+
+        if ($themes->exists($themeCode)) {
+            $themes->set($themeCode);
         } else {
-            $themes->set(config('themes.shop-default', 'default'));
+            $themes->set('portal');
         }
 
         // Prepend active theme view paths to the portal namespace for automatic view inheritance & overrides
@@ -40,7 +39,11 @@ class Theme
 
             if (! $hasBuiltAssets) {
                 $parent = method_exists($activeTheme, 'getParent') ? $activeTheme->getParent() : null;
-                while ($parent) {
+                $visited = array_filter([$activeTheme->code ?? null]);
+
+                while ($parent && ! in_array($parent->code, $visited, true)) {
+                    $visited[] = $parent->code;
+
                     if (! empty($parent->vite['build_directory']) && file_exists(public_path($parent->vite['build_directory'].'/manifest.json'))) {
                         $activeTheme->vite = $parent->vite;
                         break;
@@ -50,7 +53,7 @@ class Theme
 
                 // Fallback to portal package viter if still unresolved
                 if (! file_exists(public_path(($activeTheme->vite['build_directory'] ?? '').'/manifest.json'))) {
-                    $portalVite = config('bagisto-vite.viters.portal') ?? config('themes.shop.portal.vite');
+                    $portalVite = config('bagisto-vite.viters.portal') ?? config('portal.vite');
                     if (! empty($portalVite) && file_exists(public_path($portalVite['build_directory'].'/manifest.json'))) {
                         $activeTheme->vite = $portalVite;
                     }

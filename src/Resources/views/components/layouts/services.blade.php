@@ -1,4 +1,4 @@
-{!! view_render_event('bagisto.shop.layout.features.before') !!}
+{!! view_render_event('bagisto.portal.layout.features.before') !!}
 
 @inject('sectionRepository', 'Webkul\Theme\Repositories\SectionRepository')
 
@@ -8,7 +8,7 @@
     $sections = $sectionRepository->findAllOfType(
         \Webkul\Theme\Enums\SectionTypeEnum::SERVICES_CONTENT->value,
         $channel->id,
-        $channel->theme ?? config('themes.shop-default', 'default'),
+        function_exists('portal_active_theme') ? portal_active_theme($channel->id) : 'portal',
         app()->getLocale()
     );
 @endphp
@@ -48,5 +48,5 @@
     </div>
 @endforeach
 
-{!! view_render_event('bagisto.shop.layout.features.after') !!}
+{!! view_render_event('bagisto.portal.layout.features.after') !!}
 

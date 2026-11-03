@@ -24,7 +24,7 @@ if (! function_exists('portal_menu_slot')) {
     function portal_menu_slot(string $slotId, ?int $channelId = null, ?string $themeCode = null): ?PortalMenu
     {
         $channelId = $channelId ?: core()->getCurrentChannel()?->id;
-        $themeCode = $themeCode ?: (core()->getCurrentChannel()?->theme ?? config('themes.shop-default', 'default'));
+        $themeCode = $themeCode ?: portal_active_theme($channelId);
 
         $assignment = app(PortalMenuSlotAssignmentRepository::class)->findForSlot(
             $slotId,
@@ -48,10 +48,6 @@ if (! function_exists('portal_home_url')) {
     {
         if (Route::has('portal.home')) {
             return route('portal.home');
-        }
-
-        if (Route::has('shop.home.index')) {
-            return route('shop.home.index');
         }
 
         return url('/');
@@ -88,7 +84,7 @@ if (! function_exists('portal_sanitize_url')) {
 
 if (! function_exists('portal_route')) {
     /**
-     * Resolve a portal route with fallback if operating in override mode.
+     * Resolve a portal route safely.
      */
     function portal_route(string $name, mixed $parameters = [], bool $absolute = true): string
     {
@@ -96,21 +92,7 @@ if (! function_exists('portal_route')) {
             return route($name, $parameters, $absolute);
         }
 
-        $shopFallback = match ($name) {
-            'portal.home' => 'shop.home.index',
-            'portal.contact_us' => 'shop.home.contact_us',
-            'portal.contact_us.send_mail' => 'shop.home.contact_us.send_mail',
-            'portal.appearance.preview' => 'shop.appearance.preview',
-            'portal.sitemap.index' => 'shop.sitemap.index',
-            'portal.robots' => 'shop.robots',
-            default => null,
-        };
-
-        if ($shopFallback && Route::has($shopFallback)) {
-            return route($shopFallback, $parameters, $absolute);
-        }
-
-        return url('/');
+        return url($name);
     }
 }
 
@@ -148,7 +130,7 @@ if (! function_exists('portal_layout_settings')) {
         ?string $localeCode = null
     ): array {
         $channelId = $channelId ?? core()->getCurrentChannel()?->id ?? 0;
-        $themeCode = $themeCode ?? core()->getCurrentChannel()?->theme ?? config('themes.shop-default', 'default');
+        $themeCode = $themeCode ?? portal_active_theme($channelId);
         $localeCode = $localeCode ?? app()->getLocale();
 
         return app(PortalLayoutSettingRepository::class)->getSettings(
@@ -165,8 +147,49 @@ if (! function_exists('portal_theme_css')) {
      * Retrieve the active theme's custom CSS design tokens or overrides.
      * Injects live CSS into <head> for instant zero-build style and color updates.
      */
-    function portal_theme_css(?string $themeCode = null): ?string
+    function portal_theme_css(?string $themeCode = null, ?int $channelId = null): ?string
     {
-        return app(ThemeManager::class)->resolveThemeCss($themeCode);
+        return app(ThemeManager::class)->resolveThemeCss($themeCode, $channelId);
+    }
+}
+
+if (! function_exists('portal_active_theme')) {
+    /**
+     * Retrieve the active portal theme code for a channel.
+     */
+    function portal_active_theme(?int $channelId = null): string
+    {
+        $channel = ($channelId && method_exists(core(), 'getAllChannels'))
+            ? core()->getAllChannels()->firstWhere('id', $channelId)
+            : core()->getCurrentChannel();
+        $channelId = $channel?->id ?? 1;
+
+        $customPortalTheme = app(PortalLayoutSettingRepository::class)->getSetting(
+            'theme',
+            'active_theme',
+            null,
+            $channelId,
+            'portal'
+        );
+
+        if ($customPortalTheme && app(ThemeManager::class)->find($customPortalTheme)) {
+            return $customPortalTheme;
+        }
+
+        return 'portal';
+    }
+}
+
+if (! function_exists('portal_asset')) {
+    /**
+     * Resolve a theme asset safely without triggering a 404 abort if missing in current theme manifest.
+     */
+    function portal_asset(string $url, ?string $fallback = null): ?string
+    {
+        try {
+            return bagisto_asset($url);
+        } catch (Throwable) {
+            return $fallback;
+        }
     }
 }

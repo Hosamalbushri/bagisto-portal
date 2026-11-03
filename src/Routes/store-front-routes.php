@@ -9,8 +9,6 @@ use Platform\Portal\Http\Controllers\LocaleController;
 use Platform\Portal\Http\Controllers\PageController;
 use Platform\Portal\Http\Controllers\SitemapController;
 
-$overrideShop = config('portal.routing.mode', 'override_shop') === 'override_shop';
-
 /**
  * Dynamic Modular and CMS pages.
  */
@@ -21,17 +19,15 @@ Route::get('pages/{slug}', [PageController::class, 'view'])
 Route::get('pages/{slug}/preview', [PageController::class, 'preview'])
     ->name('portal.page.preview');
 
-if ($overrideShop) {
-    Route::get('page/{slug}', [PageController::class, 'view'])
-        ->name('shop.cms.page')
-        ->middleware('cache.response');
-}
+Route::get('page/{slug}', [PageController::class, 'view'])
+    ->name('portal.page.legacy')
+    ->middleware('cache.response');
 
 /**
- * Store front home.
+ * Portal storefront home.
  */
 Route::get('/', [HomeController::class, 'index'])
-    ->name($overrideShop ? 'shop.home.index' : 'portal.home')
+    ->name('portal.home')
     ->middleware('cache.response');
 
 /**
@@ -40,27 +36,27 @@ Route::get('/', [HomeController::class, 'index'])
  * The path must stay one segment deep: storefront markup emits relative asset urls.
  */
 Route::get('appearance-preview', [HomeController::class, 'preview'])
-    ->name($overrideShop ? 'shop.appearance.preview' : 'portal.appearance.preview');
+    ->name('portal.appearance.preview');
 
 /**
  * Contact Us.
  */
 Route::get('contact-us', [HomeController::class, 'contactUs'])
-    ->name($overrideShop ? 'shop.home.contact_us' : 'portal.contact_us')
+    ->name('portal.contact_us')
     ->middleware('cache.response');
 
 Route::post('contact-us/send-mail', [HomeController::class, 'sendContactUsMail'])
-    ->name($overrideShop ? 'shop.home.contact_us.send_mail' : 'portal.contact_us.send_mail')
+    ->name('portal.contact_us.send_mail')
     ->middleware('throttle:5,1');
 
 /**
  * Search-engine discovery.
  */
 Route::get('sitemap.xml', [SitemapController::class, 'index'])
-    ->name($overrideShop ? 'shop.sitemap.index' : 'portal.sitemap.index');
+    ->name('portal.sitemap.index');
 
 Route::get('robots.txt', [SitemapController::class, 'robots'])
-    ->name($overrideShop ? 'shop.robots' : 'portal.robots');
+    ->name('portal.robots');
 
 /**
  * Locale switch.

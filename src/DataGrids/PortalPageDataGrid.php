@@ -140,7 +140,7 @@ class PortalPageDataGrid extends DataGrid
             'target' => '_blank',
             'url' => function ($row) {
                 if ($row->is_home_page) {
-                    return portal_route('portal.home', 'shop.home.index');
+                    return route('portal.home');
                 }
 
                 if ($row->status) {

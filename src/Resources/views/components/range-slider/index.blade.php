@@ -116,10 +116,10 @@
                         switch (this.defaultType) {
                             case 'price':
                                 return {
-                                    formattedAllowedMinRange: this.$shop.formatPrice(this.allowedMinRange),
-                                    formattedAllowedMaxRange: this.$shop.formatPrice(this.allowedMaxRange),
-                                    formattedMinRange: this.$shop.formatPrice(this.minRange),
-                                    formattedMaxRange: this.$shop.formatPrice(this.maxRange),
+                                    formattedAllowedMinRange: (this.$portal || this.$shop).formatPrice(this.allowedMinRange),
+                                    formattedAllowedMaxRange: (this.$portal || this.$shop).formatPrice(this.allowedMaxRange),
+                                    formattedMinRange: (this.$portal || this.$shop).formatPrice(this.minRange),
+                                    formattedMaxRange: (this.$portal || this.$shop).formatPrice(this.maxRange),
                                 };
 
                             case 'float':

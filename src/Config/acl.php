@@ -146,7 +146,14 @@ return [
     [
         'key' => 'portal.customize.themes',
         'name' => 'portal::app.admin.acl.customize-themes',
-        'route' => 'admin.appearance.themes.index',
+        'route' => [
+            'admin.portal.themes.index',
+            'admin.portal.themes.customize',
+            'admin.portal.themes.activate',
+            'admin.portal.themes.tokens.get',
+            'admin.portal.themes.tokens',
+            'admin.portal.themes.tokens.reset',
+        ],
         'sort' => 2,
     ],
 ];

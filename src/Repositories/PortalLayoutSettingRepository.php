@@ -51,7 +51,7 @@ class PortalLayoutSettingRepository extends Repository
     public function getSettings(
         string $group,
         int $channelId,
-        string $themeCode = 'default',
+        string $themeCode = 'portal',
         ?string $localeCode = null
     ): array {
         $cacheKey = "{$group}_{$channelId}_{$themeCode}_{$localeCode}";
@@ -107,12 +107,29 @@ class PortalLayoutSettingRepository extends Repository
         ?string $localeCode = null
     ): mixed {
         $channelId = $channelId ?? core()->getCurrentChannel()?->id ?? 0;
-        $themeCode = $themeCode ?? core()->getCurrentChannel()?->theme ?? config('themes.shop-default', 'default');
+        $themeCode = $themeCode ?? ($group === 'theme' ? 'portal' : (function_exists('portal_active_theme') ? portal_active_theme($channelId) : 'portal'));
         $localeCode = $localeCode ?? app()->getLocale();
 
         $settings = $this->getSettings($group, $channelId, $themeCode, $localeCode);
 
         return data_get($settings, $key, $default);
+    }
+
+    /**
+     * Save a single layout setting value using dot notation.
+     */
+    public function saveSetting(
+        string $group,
+        string $key,
+        mixed $value,
+        int $channelId,
+        string $themeCode = 'portal',
+        ?string $localeCode = null
+    ): mixed {
+        $settings = $this->getSettings($group, $channelId, $themeCode, $localeCode);
+        data_set($settings, $key, $value);
+
+        return $this->saveSettings($group, $settings, $channelId, $themeCode, $localeCode);
     }
 
     /**
@@ -122,7 +139,7 @@ class PortalLayoutSettingRepository extends Repository
         string $group,
         array $settings,
         int $channelId,
-        string $themeCode = 'default',
+        string $themeCode = 'portal',
         ?string $localeCode = null
     ): mixed {
         $record = $this->model->updateOrCreate([

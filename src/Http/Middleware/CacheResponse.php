@@ -4,6 +4,7 @@ namespace Platform\Portal\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Spatie\ResponseCache\Middlewares\CacheResponse as SpatieCacheResponse;
 use Spatie\ResponseCache\ResponseCache;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -14,9 +15,9 @@ class CacheResponse
      */
     public function handle(Request $request, Closure $next, ...$args): mixed
     {
-        // 1. Delegate to Bagisto's Shop FPC middleware if active
-        if (class_exists(\Webkul\Shop\Http\Middleware\CacheResponse::class) && app()->bound(ResponseCache::class)) {
-            return app(\Webkul\Shop\Http\Middleware\CacheResponse::class)->handle($request, $next, ...$args);
+        // 1. Delegate to Spatie ResponseCache if bound and active
+        if (class_exists(SpatieCacheResponse::class) && app()->bound(ResponseCache::class)) {
+            return app(SpatieCacheResponse::class)->handle($request, $next, ...$args);
         }
 
         /** @var Response $response */

@@ -28,9 +28,6 @@ return [
 
             'image_cache' => [
                 'templates' => [],
-                'product_images' => [],
-                'category_images' => [],
-                'swatch_images' => [],
                 'placeholders' => [],
             ],
         ],
@@ -62,9 +59,6 @@ return [
 
             'image_cache' => [
                 'templates' => [],
-                'product_images' => [],
-                'category_images' => [],
-                'swatch_images' => [],
                 'placeholders' => [],
             ],
         ],

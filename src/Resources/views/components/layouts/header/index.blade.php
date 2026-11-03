@@ -16,7 +16,7 @@
     $channelName = core()->getCurrentChannel()->name ?? config('app.name');
 @endphp
 
-{!! view_render_event('bagisto.shop.layout.header.before') !!}
+{!! view_render_event('bagisto.portal.layout.header.before') !!}
 
 @if ($isAnnouncementActive && ! empty($announcementText))
     <div
@@ -355,7 +355,7 @@
     </x-slot>
 </x-portal::drawer>
 
-{!! view_render_event('bagisto.shop.layout.header.after') !!}
+{!! view_render_event('bagisto.portal.layout.header.after') !!}
 
 @pushOnce('scripts')
     <script
@@ -384,9 +384,9 @@
                 return {
                     isDarkMode: {{ request()->cookie('portal_dark_mode') ?? 0 }},
 
-                    logo: "{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}",
+                    logo: "{{ core()->getCurrentChannel()->logo_url ?? portal_asset('images/logo.svg', '') }}",
 
-                    dark_logo: "{{ bagisto_asset('images/dark-logo.svg') }}",
+                    dark_logo: "{{ portal_asset('images/dark-logo.svg', core()->getCurrentChannel()->logo_url ?? '') }}",
                 };
             },
 

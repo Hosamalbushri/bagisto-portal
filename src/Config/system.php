@@ -78,11 +78,11 @@ return [
                 'default' => 'web',
                 'options' => [
                     [
-                        'title' => 'Web (Standard User)',
+                        'title' => 'Standard User (web)',
                         'value' => 'web',
                     ],
                     [
-                        'title' => 'Customer (Shop Customer)',
+                        'title' => 'Portal Member (customer)',
                         'value' => 'customer',
                     ],
                 ],

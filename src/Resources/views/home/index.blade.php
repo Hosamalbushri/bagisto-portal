@@ -25,7 +25,7 @@
 
             <div class="mt-8">
                 <a
-                    href="{{ route('admin.appearance.themes.index') }}"
+                    href="{{ route('admin.portal.themes.index') }}"
                     class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-xl shadow-sm text-white bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] transition-all"
                 >
                     @lang('portal::app.home.customize-appearance') &rarr;

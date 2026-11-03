@@ -3,6 +3,7 @@
 namespace Platform\Portal\Services;
 
 use Illuminate\Support\Facades\File;
+use Platform\Portal\Repositories\PortalLayoutSettingRepository;
 use Platform\Portal\Themes\ThemeManifest;
 use Webkul\Core\Models\Channel;
 
@@ -29,10 +30,15 @@ class ThemeManager
         $discovered = [];
 
         // 1. Built-in themes from package config
-        $builtinConfig = config('themes.shop', []);
-        foreach ($builtinConfig as $code => $conf) {
-            if (is_array($conf)) {
-                $discovered[$code] = ThemeManifest::fromArray($code, $conf);
+        $portalThemesFile = dirname(__DIR__).'/Config/themes.php';
+        if (file_exists($portalThemesFile)) {
+            $builtinConfig = require $portalThemesFile;
+            if (is_array($builtinConfig)) {
+                foreach ($builtinConfig as $code => $conf) {
+                    if (is_array($conf)) {
+                        $discovered[$code] = ThemeManifest::fromArray($code, $conf);
+                    }
+                }
             }
         }
 
@@ -81,6 +87,16 @@ class ThemeManager
     }
 
     /**
+     * Get all discovered theme manifests.
+     *
+     * @return array<string, ThemeManifest>
+     */
+    public function all(bool $forceRefresh = false): array
+    {
+        return $this->discoverThemes($forceRefresh);
+    }
+
+    /**
      * Find a theme manifest by its code.
      */
     public function find(?string $code): ?ThemeManifest
@@ -118,26 +134,48 @@ class ThemeManager
     /**
      * Resolve the active theme's custom CSS design tokens or overrides.
      */
-    public function resolveThemeCss(?string $themeCode = null): ?string
+    public function resolveThemeCss(?string $themeCode = null, ?int $channelId = null): ?string
     {
-        $themeCode = $themeCode ?: (core()->getCurrentChannel()?->theme ?? config('themes.shop-default', 'default'));
+        $channel = ($channelId && method_exists(core(), 'getAllChannels'))
+            ? core()->getAllChannels()->firstWhere('id', $channelId)
+            : core()->getCurrentChannel();
+        $channelId = $channel?->id ?? 1;
+        $themeCode = $themeCode ?: (function_exists('portal_active_theme') ? portal_active_theme($channelId) : 'portal');
 
-        if (in_array($themeCode, ['portal', 'default'], true)) {
-            return null;
+        $css = null;
+
+        if (! in_array($themeCode, ['portal', 'default'], true)) {
+            $manifest = $this->find($themeCode);
+            if ($manifest) {
+                $css = $manifest->getCssContents();
+            } else {
+                $directPath = resource_path("themes/{$themeCode}/assets/css/app.css");
+                if (file_exists($directPath)) {
+                    $css = file_get_contents($directPath);
+                }
+            }
         }
 
-        $manifest = $this->find($themeCode);
-        if ($manifest) {
-            return $manifest->getCssContents();
+        // Merge customized live tokens if stored in layout settings
+        try {
+            if (class_exists(PortalLayoutSettingRepository::class)) {
+                $customTokens = app(PortalLayoutSettingRepository::class)->getSettings('theme_tokens', $channelId, $themeCode);
+                if (! empty($customTokens)) {
+                    $tokenRules = ":root {\n";
+                    foreach ($customTokens as $token => $value) {
+                        if (filled($value)) {
+                            $tokenRules .= "  {$token}: {$value};\n";
+                        }
+                    }
+                    $tokenRules .= "}\n";
+                    $css = $tokenRules.($css ?? '');
+                }
+            }
+        } catch (\Throwable) {
+            // Graceful fallback if table is unavailable
         }
 
-        // Direct in-app fallback if theme.php manifest is not created yet
-        $directPath = resource_path("themes/{$themeCode}/assets/css/app.css");
-        if (file_exists($directPath)) {
-            return file_get_contents($directPath);
-        }
-
-        return null;
+        return $css;
     }
 
     /**
@@ -157,6 +195,20 @@ class ThemeManager
                 $channel->theme = $themeCode;
                 $channel->save();
             }
+        }
+
+        // Persist in portal settings for independent theme management
+        try {
+            if (class_exists(PortalLayoutSettingRepository::class)) {
+                app(PortalLayoutSettingRepository::class)->saveSetting(
+                    'theme',
+                    'active_theme',
+                    $themeCode,
+                    $channelId
+                );
+            }
+        } catch (\Throwable) {
+            // Graceful fallback
         }
 
         $this->clearCache();

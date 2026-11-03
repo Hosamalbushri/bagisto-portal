@@ -49,6 +49,8 @@ namespace {
 
                         public $viewsPath = null;
 
+                        public $parent = null;
+
                         public function __construct($code)
                         {
                             $this->code = $code;
@@ -68,9 +70,11 @@ namespace {
         {
             return new class
             {
+                public static bool $allowsAll = false;
+
                 public function hasPermission($permission)
                 {
-                    return false;
+                    return self::$allowsAll || (auth()->guard('admin')->check() ?? false);
                 }
             };
         }
@@ -86,12 +90,18 @@ namespace Webkul\Core {
                 return (object) [
                     'id' => 1,
                     'code' => 'default',
+                    'name' => 'Default Store',
                     'theme' => 'default',
                     'locales' => collect([(object) ['code' => 'en']]),
                     'currencies' => collect([(object) ['code' => 'USD']]),
                     'default_locale' => (object) ['code' => 'en'],
                     'base_currency' => (object) ['code' => 'USD'],
                 ];
+            }
+
+            public function getAllChannels()
+            {
+                return collect([$this->getCurrentChannel()]);
             }
 
             public function getCurrentLocale()

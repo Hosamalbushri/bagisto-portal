@@ -3,8 +3,11 @@
 namespace Platform\Portal\Tests\Unit\Themes;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
+use Platform\Portal\Http\Controllers\Admin\ThemeController;
 use Platform\Portal\Http\Middleware\Theme as PortalThemeMiddleware;
+use Platform\Portal\Repositories\PortalLayoutSettingRepository;
 use Platform\Portal\Services\ThemeManager;
 use Tests\TestCase;
 
@@ -117,6 +120,27 @@ class ThemeSystemTest extends TestCase
     }
 
     /**
+     * Test portal theme does not inherit from itself and resolves view paths without recursion.
+     */
+    public function test_portal_theme_does_not_have_circular_parent(): void
+    {
+        $manifest = app(ThemeManager::class)->find('portal');
+
+        $this->assertNotNull($manifest);
+        $this->assertNull($manifest->parent);
+
+        $config = $manifest->toArray();
+        $this->assertArrayNotHasKey('parent', $config);
+
+        themes()->set('portal');
+        $theme = themes()->current();
+        $this->assertNotSame($theme, $theme->parent ?? null);
+
+        $paths = $theme->getViewPaths();
+        $this->assertIsArray($paths);
+    }
+
+    /**
      * Test theme config contains portal and corporate definitions.
      */
     public function test_theme_config_structure(): void
@@ -147,5 +171,91 @@ class ThemeSystemTest extends TestCase
         $this->assertStringContainsString('--brand-primary: #123456', $css);
 
         File::deleteDirectory(resource_path('themes/custom_demo'));
+    }
+
+    /**
+     * Test portal_active_theme helper resolves appropriately.
+     */
+    public function test_portal_active_theme_helper(): void
+    {
+        $theme = portal_active_theme();
+        $this->assertIsString($theme);
+        $this->assertNotEmpty($theme);
+    }
+
+    /**
+     * Test portal_theme_css merges custom layout tokens dynamically.
+     */
+    public function test_portal_theme_css_merges_custom_layout_tokens(): void
+    {
+        $layoutRepo = app(PortalLayoutSettingRepository::class);
+        $layoutRepo->saveSettings(
+            'theme_tokens',
+            ['--brand-primary' => '#ff00aa'],
+            1,
+            'portal'
+        );
+
+        $css = portal_theme_css('portal', 1);
+
+        $this->assertNotNull($css);
+        $this->assertStringContainsString('--brand-primary: #ff00aa', $css);
+
+        // Reset
+        $layoutRepo->saveSettings('theme_tokens', [], 1, 'portal');
+    }
+
+    /**
+     * Test ThemeManager activate theme dispatches events and updates setting.
+     */
+    public function test_theme_manager_activate_theme(): void
+    {
+        $activatingFired = false;
+        $activatedFired = false;
+
+        Event::listen('portal.theme.activating', function () use (&$activatingFired) {
+            $activatingFired = true;
+        });
+
+        Event::listen('portal.theme.activated', function () use (&$activatedFired) {
+            $activatedFired = true;
+        });
+
+        app(ThemeManager::class)->activateTheme(1, 'corporate');
+
+        $this->assertTrue($activatingFired);
+        $this->assertTrue($activatedFired);
+        $this->assertEquals('corporate', portal_active_theme(1));
+
+        // Restore to default
+        app(ThemeManager::class)->activateTheme(1, 'portal');
+    }
+
+    /**
+     * Test ThemeController customize redirect leads to Home Page section editor.
+     */
+    public function test_theme_controller_customize_redirects_to_home_page(): void
+    {
+        $adminClass = '\Webkul\User\Models\Admin';
+        if (class_exists($adminClass)) {
+            $admin = $adminClass::first();
+            if ($admin) {
+                auth()->guard('admin')->setUser($admin);
+            }
+        }
+
+        if (property_exists(bouncer(), 'allowsAll')) {
+            bouncer()::$allowsAll = true;
+        }
+
+        $controller = app(ThemeController::class);
+        $response = $controller->customize('portal');
+
+        $this->assertTrue($response->isRedirection());
+        $this->assertStringContainsString('portal/pages/customize', $response->getTargetUrl());
+
+        if (property_exists(bouncer(), 'allowsAll')) {
+            bouncer()::$allowsAll = false;
+        }
     }
 }

@@ -26,7 +26,7 @@
     }
 @endphp
 
-{!! view_render_event('bagisto.shop.layout.footer.before') !!}
+{!! view_render_event('bagisto.portal.layout.footer.before') !!}
 
 <footer class="relative border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] mt-20 transition-colors duration-200 overflow-hidden">
     <!-- Top Accent Highlight Gradient Line -->
@@ -195,4 +195,4 @@
     </div>
 </footer>
 
-{!! view_render_event('bagisto.shop.layout.footer.after') !!}
+{!! view_render_event('bagisto.portal.layout.footer.after') !!}

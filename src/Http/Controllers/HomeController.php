@@ -42,9 +42,13 @@ class HomeController extends Controller
             ]);
         }
 
+        $activeTheme = function_exists('portal_active_theme')
+            ? portal_active_theme($channel->id)
+            : 'portal';
+
         $sections = $this->sectionRepository->getRenderable(
             $channel->id,
-            $channel->theme ?? config('themes.shop-default', 'default')
+            $activeTheme
         );
 
         return view('portal::home.index', compact('sections'));
@@ -128,24 +132,20 @@ class HomeController extends Controller
     protected function previewedTheme(?string $channelTheme): string
     {
         $requested = request('theme');
+        $themeManager = app(ThemeManager::class);
 
         if (filled($requested)) {
             abort_unless(
                 is_string($requested)
-                && app(ThemeCatalog::class)->isInstalled($requested),
+                && ($themeManager->isInstalled($requested) || app(ThemeCatalog::class)->isInstalled($requested)),
                 404
             );
 
             return $requested;
         }
 
-        if (
-            $channelTheme
-            && app(ThemeCatalog::class)->isInstalled($channelTheme)
-        ) {
-            return $channelTheme;
-        }
-
-        return config('themes.shop-default', 'default');
+        return function_exists('portal_active_theme')
+            ? portal_active_theme()
+            : 'portal';
     }
 }

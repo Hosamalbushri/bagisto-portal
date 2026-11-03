@@ -18,7 +18,7 @@ class ThemeManifest implements Arrayable
         public readonly ?string $assetsPath = null,
         public readonly ?string $viewsPath = null,
         public readonly ?string $viewsNamespace = 'portal',
-        public readonly ?string $parent = 'portal',
+        public readonly ?string $parent = null,
         public readonly array $vite = [],
         public readonly array $customize = [],
         public readonly bool $isPackage = false
@@ -29,6 +29,11 @@ class ThemeManifest implements Arrayable
      */
     public static function fromArray(string $code, array $data, bool $isPackage = false): self
     {
+        $parent = $data['parent'] ?? ($code === 'portal' ? null : 'portal');
+        if ($parent === $code) {
+            $parent = null;
+        }
+
         return new self(
             code: $code,
             name: $data['name'] ?? ucfirst($code),
@@ -38,7 +43,7 @@ class ThemeManifest implements Arrayable
             assetsPath: $data['assets_path'] ?? "public/themes/portal/{$code}",
             viewsPath: $data['views_path'] ?? ($isPackage ? "packages/{$code}/src/Resources/views" : "resources/themes/{$code}/views"),
             viewsNamespace: $data['views_namespace'] ?? 'portal',
-            parent: $data['parent'] ?? 'portal',
+            parent: $parent,
             vite: $data['vite'] ?? [],
             customize: $data['customize'] ?? [],
             isPackage: $isPackage
@@ -111,11 +116,36 @@ class ThemeManifest implements Arrayable
     }
 
     /**
-     * Convert manifest to Bagisto-compatible themes.shop config array.
+     * Whether this theme offers a custom CSS design token stylesheet.
+     */
+    public function hasCss(): bool
+    {
+        return $this->getCssPath() !== null;
+    }
+
+    /**
+     * Resolve public screenshot URL for admin preview.
+     */
+    public function screenshotUrl(): ?string
+    {
+        $extensions = ['png', 'webp', 'svg', 'jpg'];
+
+        foreach ($extensions as $ext) {
+            $pubRel = "themes/portal/{$this->code}/screenshot.{$ext}";
+            if (file_exists(public_path($pubRel))) {
+                return asset($pubRel);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Convert manifest to theme configuration array.
      */
     public function toArray(): array
     {
-        return [
+        $data = [
             'name' => $this->name,
             'author' => $this->author,
             'version' => $this->version,
@@ -123,9 +153,14 @@ class ThemeManifest implements Arrayable
             'assets_path' => $this->assetsPath,
             'views_path' => $this->viewsPath,
             'views_namespace' => $this->viewsNamespace,
-            'parent' => $this->parent,
             'vite' => $this->vite,
             'customize' => $this->customize,
         ];
+
+        if (! empty($this->parent)) {
+            $data['parent'] = $this->parent;
+        }
+
+        return $data;
     }
 }
