@@ -57,6 +57,34 @@ if (! function_exists('portal_home_url')) {
     }
 }
 
+if (! function_exists('portal_sanitize_url')) {
+    /**
+     * Sanitize a URL to prevent XSS (allowing only http, https, relative paths, anchor hashes, mailto, and tel).
+     */
+    function portal_sanitize_url(?string $url): string
+    {
+        if ($url === null) {
+            return '#';
+        }
+
+        $trimmed = trim($url);
+
+        if ($trimmed === '' || $trimmed === '#') {
+            return '#';
+        }
+
+        // Remove control characters, null bytes, and invisible whitespace
+        $cleaned = preg_replace('/[\x00-\x20]+/', '', $trimmed);
+
+        // Strict allowlist: exclusively allow URLs starting with /, #, http://, https://, mailto:, or tel:
+        if (! preg_match('/^(\/|#|https?:\/\/|mailto:|tel:)/i', $cleaned)) {
+            return '#';
+        }
+
+        return $trimmed;
+    }
+}
+
 if (! function_exists('portal_route')) {
     /**
      * Resolve a portal route with fallback if operating in override mode.

@@ -56,7 +56,15 @@ class PageController extends Controller
         $locale = request('locale', core()->getRequestedLocaleCode());
 
         $this->validate(request(), [
-            'slug' => ['required', 'alpha_dash'],
+            'slug' => [
+                'required',
+                'alpha_dash',
+                function ($attribute, $value, $fail) {
+                    if (strtolower($value) === 'home') {
+                        $fail(trans('portal::app.admin.pages.url-key-home-reserved'));
+                    }
+                },
+            ],
             'channel_id' => ['required', 'exists:channels,id'],
         ]);
 
@@ -164,7 +172,15 @@ class PageController extends Controller
         $locale = request('locale', core()->getRequestedLocaleCode());
 
         $this->validate(request(), [
-            'slug' => ['required', 'alpha_dash'],
+            'slug' => [
+                'required',
+                'alpha_dash',
+                function ($attribute, $value, $fail) {
+                    if (strtolower($value) === 'home') {
+                        $fail(trans('portal::app.admin.pages.url-key-home-reserved'));
+                    }
+                },
+            ],
             'channel_id' => ['required', 'exists:channels,id'],
         ]);
 
@@ -268,6 +284,12 @@ class PageController extends Controller
     {
         abort_unless(bouncer()->hasPermission('portal.pages.edit') || bouncer()->hasPermission('pages.edit'), 403);
 
+        $this->validate(request(), [
+            'indices' => ['required', 'array', 'min:1'],
+            'indices.*' => ['integer'],
+            'value' => ['required', 'in:0,1'],
+        ]);
+
         $indices = request('indices', []);
         $value = (int) request('value', 0);
 
@@ -298,6 +320,11 @@ class PageController extends Controller
     public function massDelete(): JsonResponse
     {
         abort_unless(bouncer()->hasPermission('portal.pages.delete') || bouncer()->hasPermission('pages.delete'), 403);
+
+        $this->validate(request(), [
+            'indices' => ['required', 'array', 'min:1'],
+            'indices.*' => ['integer'],
+        ]);
 
         $indices = request('indices', []);
 

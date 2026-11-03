@@ -3,6 +3,7 @@
 namespace Platform\Portal\Http\Controllers\Auth;
 
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -39,10 +40,8 @@ class RegisterController extends Controller
 
         // Check if user already exists
         if ($guard === 'customer' && class_exists('Webkul\Customer\Models\Customer')) {
-            $exists = Customer::query()
-                ->where('email', $request->input('email'))
-                ->where('channel_id', $channel?->id)
-                ->exists();
+            $emailQuery = Customer::query()->where('email', $request->input('email'));
+            $exists = $emailQuery->exists();
 
             if ($exists) {
                 session()->flash('error', trans('portal::app.auth.register.email-taken'));
@@ -77,10 +76,16 @@ class RegisterController extends Controller
                 'token' => Str::random(64),
             ];
 
-            if (class_exists('Webkul\Customer\Repositories\CustomerRepository')) {
-                $user = app('Webkul\Customer\Repositories\CustomerRepository')->create($data);
-            } else {
-                $user = Customer::create($data);
+            try {
+                if (class_exists('Webkul\Customer\Repositories\CustomerRepository')) {
+                    $user = app('Webkul\Customer\Repositories\CustomerRepository')->create($data);
+                } else {
+                    $user = Customer::create($data);
+                }
+            } catch (QueryException $e) {
+                session()->flash('error', trans('portal::app.auth.register.email-taken'));
+
+                return redirect()->back()->withInput($request->except('password', 'password_confirmation'));
             }
         } else {
             $provider = auth()->guard($guard)->getProvider();
@@ -94,11 +99,17 @@ class RegisterController extends Controller
                 return redirect()->back()->withInput($request->except('password', 'password_confirmation'));
             }
 
-            $user = $modelClass::create([
-                'name' => $request->input('name'),
-                'email' => $request->input('email'),
-                'password' => bcrypt($request->input('password')),
-            ]);
+            try {
+                $user = $modelClass::create([
+                    'name' => $request->input('name'),
+                    'email' => $request->input('email'),
+                    'password' => bcrypt($request->input('password')),
+                ]);
+            } catch (QueryException $e) {
+                session()->flash('error', trans('portal::app.auth.register.email-taken'));
+
+                return redirect()->back()->withInput($request->except('password', 'password_confirmation'));
+            }
         }
 
         auth()->guard($guard)->login($user);

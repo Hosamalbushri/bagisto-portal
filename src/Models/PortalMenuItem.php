@@ -91,6 +91,14 @@ class PortalMenuItem extends TranslatableModel implements PortalMenuItemContract
     }
 
     /**
+     * Mutator to sanitize URLs upon assignment.
+     */
+    public function setUrlAttribute(?string $value): void
+    {
+        $this->attributes['url'] = $value !== null ? portal_sanitize_url($value) : null;
+    }
+
+    /**
      * Resolve the target URL dynamically.
      */
     public function getUrl(): string
@@ -103,21 +111,7 @@ class PortalMenuItem extends TranslatableModel implements PortalMenuItemContract
             return Route::has($this->url) ? route($this->url) : url($this->url);
         }
 
-        $rawUrl = $this->url ?? '#';
-
-        if ($rawUrl === '#' || $rawUrl === '') {
-            return '#';
-        }
-
-        // Remove all control characters, null bytes, and invisible whitespace
-        $cleaned = preg_replace('/[\x00-\x20]+/', '', $rawUrl);
-
-        // Strict allowlist: exclusively allow URLs starting with /, #, http://, https://, mailto:, or tel:
-        if (! preg_match('/^(\/|#|https?:\/\/|mailto:|tel:)/i', $cleaned)) {
-            return '#';
-        }
-
-        return $rawUrl;
+        return portal_sanitize_url($this->url);
     }
 
     /**

@@ -175,12 +175,15 @@
                         </x-slot>
 
                         <x-slot:content class="!p-1.5 min-w-[140px] shadow-[var(--shadow-card)] rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
-                            <a
-                                href="{{ route('portal.auth.logout') }}"
-                                class="flex items-center px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
-                            >
-                                @lang('portal::app.auth.logout.title')
-                            </a>
+                            <form method="POST" action="{{ route('portal.auth.logout') }}">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="w-full flex items-center px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer text-start"
+                                >
+                                    @lang('portal::app.auth.logout.title')
+                                </button>
+                            </form>
                         </x-slot>
                     </x-portal::dropdown>
                 @else
@@ -261,12 +264,15 @@
                         {{ auth()->guard($portalGuard)->user()->name }}
                     </span>
 
-                    <a
-                        href="{{ route('portal.auth.logout') }}"
-                        class="text-xs font-semibold text-red-600 dark:text-red-400"
-                    >
-                        @lang('portal::app.auth.logout.title')
-                    </a>
+                    <form method="POST" action="{{ route('portal.auth.logout') }}">
+                        @csrf
+                        <button
+                            type="submit"
+                            class="text-xs font-semibold text-red-600 dark:text-red-400 cursor-pointer"
+                        >
+                            @lang('portal::app.auth.logout.title')
+                        </button>
+                    </form>
                 </div>
             @else
                 <div class="grid grid-cols-2 gap-2">

@@ -236,9 +236,21 @@ class PageCustomizeController extends Controller
         ]);
 
         $sectionIds = request()->input('sections');
-        $this->portalPageSectionRepository->saveOrderDraft($sectionIds);
 
-        $sections = $this->portalPageSectionRepository->findWhereIn('id', $sectionIds);
+        // IDOR protection: only allow reordering sections that belong exclusively to this page ($id)
+        $validSectionIds = $this->portalPageSectionRepository->getModel()
+            ->where('portal_page_id', $id)
+            ->whereIn('id', $sectionIds)
+            ->pluck('id')
+            ->toArray();
+
+        $orderedIds = array_values(array_intersect($sectionIds, $validSectionIds));
+
+        if (! empty($orderedIds)) {
+            $this->portalPageSectionRepository->saveOrderDraft($orderedIds);
+        }
+
+        $sections = $this->portalPageSectionRepository->findWhereIn('id', $orderedIds);
 
         return new JsonResponse([
             'pending' => $sections->mapWithKeys(fn ($section) => [
@@ -254,8 +266,13 @@ class PageCustomizeController extends Controller
     {
         abort_unless(bouncer()->hasPermission('portal.pages.customize') || bouncer()->hasPermission('pages.customize'), 403);
 
+        $uploadedFile = request()->file('file');
+        $extension = strtolower($uploadedFile?->getClientOriginalExtension() ?? '');
+        $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'bmp']);
+        $maxKilobytes = $isImage ? 10240 : 51200; // 10MB for images, 50MB for video/audio
+
         $this->validate(request(), [
-            'file' => ['required', 'file', 'mimes:bmp,jpeg,jpg,png,webp,mp4,webm,ogg', 'max:51200'],
+            'file' => ['required', 'file', 'mimes:bmp,jpeg,jpg,png,webp,mp4,webm,ogg', "max:$maxKilobytes"],
         ]);
 
         $section = $this->portalPageSectionRepository->findOrFail($sectionId);

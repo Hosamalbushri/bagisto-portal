@@ -1,11 +1,17 @@
 @props(['options' => []])
 
 @php
-    $slides = array_values($options['slides'] ?? []);
+    $slides = array_map(function ($slide) {
+        if (! empty($slide['button_url'])) {
+            $slide['button_url'] = portal_sanitize_url($slide['button_url']);
+        }
+
+        return $slide;
+    }, array_values($options['slides'] ?? []));
 @endphp
 
 @if (! empty($slides))
-    <v-hero-slider :slides='@json($slides)'>
+    <v-hero-slider :slides='@json($slides, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP)'>
         {{-- SSR first slide fallback to prevent layout shift before Vue mount --}}
         @php $firstSlide = $slides[0]; @endphp
         <div class="relative overflow-hidden border-b border-[var(--border-subtle)] bg-[var(--bg-app)] text-[var(--text-primary)] min-h-[500px] max-md:min-h-[380px] flex items-center justify-center py-20 px-4 transition-colors duration-200">
@@ -35,7 +41,7 @@
                 @if (! empty($firstSlide['button_text']))
                     <div class="mt-8 flex justify-center">
                         <a
-                            href="{{ $firstSlide['button_url'] ?? '#' }}"
+                            href="{{ portal_sanitize_url($firstSlide['button_url'] ?? '#') }}"
                             class="btn-primary !px-11 !py-3.5 text-base shadow-md hover:shadow-[var(--shadow-glow)]"
                         >
                             {{ $firstSlide['button_text'] }}

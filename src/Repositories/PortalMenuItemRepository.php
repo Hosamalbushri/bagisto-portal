@@ -105,24 +105,6 @@ class PortalMenuItemRepository extends Repository
      */
     public function sanitizeUrl(?string $url): ?string
     {
-        if ($url === null) {
-            return null;
-        }
-
-        $trimmed = trim($url);
-
-        if ($trimmed === '') {
-            return '';
-        }
-
-        // Remove all control characters, null bytes, and invisible whitespace
-        $cleaned = preg_replace('/[\x00-\x20]+/', '', $trimmed);
-
-        // Strict allowlist: exclusively allow URLs starting with /, #, http://, https://, mailto:, or tel:
-        if (! preg_match('/^(\/|#|https?:\/\/|mailto:|tel:)/i', $cleaned)) {
-            return '#';
-        }
-
-        return $trimmed;
+        return $url !== null ? portal_sanitize_url($url) : null;
     }
 }

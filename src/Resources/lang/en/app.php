@@ -129,6 +129,7 @@ return [
             'mass-update-success' => 'Selected pages status updated successfully.',
             'mass-delete-success' => 'Selected pages deleted successfully.',
             'home-page-must-be-active' => 'Cannot set this page as storefront home page while it is disabled. Please enable the page status first.',
+            'url-key-home-reserved' => 'The "home" URL key is reserved for the storefront homepage and cannot be used.',
             'menu' => [
                 'pages' => 'Pages',
                 'all-pages' => 'All Pages',

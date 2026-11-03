@@ -84,14 +84,14 @@
             <!-- Action CTAs -->
             <div class="flex flex-wrap items-center justify-center gap-4 mb-12 w-full max-w-md sm:max-w-none">
                 @if ($primaryCtaText)
-                    <a href="{{ $primaryCtaUrl }}" class="btn-primary !px-7 !py-3.5 text-base flex items-center justify-center gap-2 group w-full sm:w-auto">
+                    <a href="{{ portal_sanitize_url($primaryCtaUrl) }}" class="btn-primary !px-7 !py-3.5 text-base flex items-center justify-center gap-2 group w-full sm:w-auto">
                         <span>{{ $primaryCtaText }}</span>
                         <span class="icon-arrow-right rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" aria-hidden="true"></span>
                     </a>
                 @endif
 
                 @if ($secondaryCtaText)
-                    <a href="{{ $secondaryCtaUrl }}" class="btn-outline !px-7 !py-3.5 text-base flex items-center justify-center w-full sm:w-auto">
+                    <a href="{{ portal_sanitize_url($secondaryCtaUrl) }}" class="btn-outline !px-7 !py-3.5 text-base flex items-center justify-center w-full sm:w-auto">
                         <span>{{ $secondaryCtaText }}</span>
                     </a>
                 @endif
@@ -99,14 +99,33 @@
 
             <!-- Structural Architecture Metrics Strip -->
             @if (! empty($metrics))
+                @php
+                    $allowedStatusColors = [
+                        'bg-[var(--brand-primary)]' => 'bg-[var(--brand-primary)]',
+                        'bg-[var(--brand-accent)]' => 'bg-[var(--brand-accent)]',
+                        'bg-emerald-500' => 'bg-emerald-500',
+                        'bg-blue-500' => 'bg-blue-500',
+                        'bg-amber-500' => 'bg-amber-500',
+                        'bg-red-500' => 'bg-red-500',
+                        'primary' => 'bg-[var(--brand-primary)]',
+                        'accent' => 'bg-[var(--brand-accent)]',
+                        'emerald' => 'bg-emerald-500',
+                        'green' => 'bg-emerald-500',
+                        'blue' => 'bg-blue-500',
+                        'red' => 'bg-red-500',
+                    ];
+                @endphp
                 <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8 border-t border-[var(--border-subtle)]">
                     @foreach ($metrics as $metric)
+                        @php
+                            $statusColor = $allowedStatusColors[$metric['status_color'] ?? ''] ?? 'bg-[var(--brand-primary)]';
+                        @endphp
                         <div class="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs transition-all hover:border-[var(--brand-primary)]/40 hover:-translate-y-0.5 text-center" data-spotlight>
                             <div class="flex items-center justify-between mb-1.5">
                                 <span class="text-[10px] font-mono tracking-wider uppercase text-[var(--text-muted)]">
                                     {{ $metric['code'] ?? '// METRIC' }}
                                 </span>
-                                <span class="w-2 h-2 rounded-full {{ $metric['status_color'] ?? 'bg-[var(--brand-primary)]' }}"></span>
+                                <span class="w-2 h-2 rounded-full {{ $statusColor }}"></span>
                             </div>
                             <div class="text-2xl lg:text-3xl font-bold font-mono text-[var(--text-primary)]">
                                 {{ $metric['value'] ?? '' }}

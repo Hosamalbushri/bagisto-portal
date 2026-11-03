@@ -25,7 +25,7 @@
             @if ($buttonText)
                 <div class="mt-8 flex justify-center">
                     <a
-                        href="{{ $buttonUrl }}"
+                        href="{{ portal_sanitize_url($buttonUrl) }}"
                         class="btn-primary !px-10 !py-3.5 text-base shadow-md hover:shadow-[var(--shadow-glow)]"
                     >
                         {{ $buttonText }}

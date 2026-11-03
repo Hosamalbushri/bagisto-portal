@@ -56,7 +56,8 @@ class SitemapController extends Controller
      */
     public function robots(): Response
     {
-        $robots = "User-agent: *\nDisallow: /admin/\nSitemap: ".url('/sitemap.xml');
+        $adminPath = trim(config('app.admin_url', 'admin'), '/');
+        $robots = "User-agent: *\nDisallow: /{$adminPath}/\nSitemap: ".url('/sitemap.xml');
 
         return response($robots, 200, ['Content-Type' => 'text/plain']);
     }

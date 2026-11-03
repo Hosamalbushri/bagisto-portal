@@ -84,7 +84,7 @@ Route::post('login', [LoginController::class, 'login'])
     ->name('portal.auth.login.store')
     ->middleware('throttle:5,1');
 
-Route::any('logout', [LoginController::class, 'logout'])
+Route::post('logout', [LoginController::class, 'logout'])
     ->name('portal.auth.logout');
 
 Route::get('register', [RegisterController::class, 'showRegistrationForm'])
