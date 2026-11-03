@@ -32,10 +32,11 @@
     <!-- Loop over the storefront sections -->
     @if ($sections->isNotEmpty())
         @foreach ($sections as $section)
-            @php ($data = $section->options ?? []) @endphp
-
-            {{-- The layout marks the types it draws on every page, so this page marks the rest. --}}
-            @php ($marks = ($preview ?? false) && ! $section->getTypeInstance()?->rendersInLayout())
+            @php
+                $data = $section->options ?? [];
+                event('portal.section.rendering', [$section, &$data]);
+                $marks = ($preview ?? false) && ! $section->getTypeInstance()?->rendersInLayout();
+            @endphp
 
             @if ($marks)
                 <div
@@ -106,10 +107,20 @@
                     @break
 
                 @default
-                    @includeIf("portal::sections.{$section->type}", [
-                        'options' => $data,
-                        'section' => $section,
-                    ])
+                    @php
+                        $typeInstance = $section->getTypeInstance();
+                        $customView = $typeInstance?->getView();
+                    @endphp
+
+                    @if ($customView && view()->exists($customView))
+                        @include($customView, ['options' => $data, 'section' => $section])
+                    @elseif (view()->exists("portal::sections.{$section->type}"))
+                        @include("portal::sections.{$section->type}", ['options' => $data, 'section' => $section])
+                    @elseif (view()->exists("portal.sections.{$section->type}"))
+                        @include("portal.sections.{$section->type}", ['options' => $data, 'section' => $section])
+                    @elseif (view()->exists("sections.{$section->type}"))
+                        @include("sections.{$section->type}", ['options' => $data, 'section' => $section])
+                    @endif
             @endswitch
 
             @if ($marks)

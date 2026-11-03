@@ -1,0 +1,89 @@
+<?php
+
+namespace App\Portal\Sections;
+
+use Platform\Portal\Sections\SectionType;
+
+class {{ className }} extends SectionType
+{
+    /**
+     * Unique section code identifier.
+     */
+    protected string $code = '{{ code }}';
+
+    /**
+     * Display title for the visual customizer.
+     */
+    protected ?string $title = '{{ title }}';
+
+    /**
+     * Icon class for the section tile in admin.
+     */
+    protected string $icon = 'icon-cms';
+
+    /**
+     * Section description for editor.
+     */
+    protected ?string $description = 'Custom {{ title }} section for storefront pages';
+
+    /**
+     * Custom view path for rendering.
+     */
+    protected ?string $view = '{{ view }}';
+
+    /**
+     * Schema definition for the visual customizer inspector.
+     *
+     * Supported field types: text, textarea, select, switch, color, image, array/repeater.
+     */
+    public function getFields(): array
+    {
+        return [
+            [
+                'name' => 'heading',
+                'type' => 'text',
+                'label' => 'Heading',
+                'default' => '{{ title }}',
+            ],
+            [
+                'name' => 'subheading',
+                'type' => 'textarea',
+                'label' => 'Subheading',
+                'default' => 'Describe your feature or service here.',
+            ],
+            [
+                'name' => 'show_button',
+                'type' => 'switch',
+                'label' => 'Show Action Button',
+                'default' => true,
+            ],
+            [
+                'name' => 'button_text',
+                'type' => 'text',
+                'label' => 'Button Text',
+                'default' => 'Learn More',
+            ],
+            [
+                'name' => 'button_url',
+                'type' => 'text',
+                'label' => 'Button URL',
+                'default' => '#',
+            ],
+        ];
+    }
+
+    /**
+     * Default options fallback when no customizer data is saved yet.
+     */
+    public function getDefaultOptions(): array
+    {
+        return [
+            'heading' => '{{ title }}',
+            'subheading' => 'Describe your feature or service here.',
+            'show_button' => true,
+            'button_text' => 'Learn More',
+            'button_url' => '#',
+        ];
+    }
+}
+

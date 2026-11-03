@@ -1,0 +1,32 @@
+<?php
+
+use Webkul\Theme\Enums\SectionTypeEnum;
+
+return [
+    '{{ themeCode }}' => [
+        'name'            => '{{ themeTitle }}',
+        'author'          => '{{ author }}',
+        'version'         => '1.0.0',
+        'description'     => '{{ description }}',
+        'assets_path'     => 'public/themes/portal/{{ themeCode }}',
+        'views_path'      => 'resources/themes/{{ themeCode }}/views',
+        'views_namespace' => 'portal',
+        'parent'          => '{{ parent }}',
+
+        'vite' => [
+            'hot_file'                 => 'portal-{{ themeCode }}-vite.hot',
+            'build_directory'          => 'themes/portal/{{ themeCode }}/build',
+            'package_assets_directory' => 'resources/themes/{{ themeCode }}/assets',
+        ],
+
+        'customize' => [
+            'sections' => [
+                SectionTypeEnum::IMAGE_CAROUSEL,
+                SectionTypeEnum::SERVICES_CONTENT,
+                SectionTypeEnum::STATIC_CONTENT,
+                SectionTypeEnum::FOOTER_LINKS,
+            ],
+        ],
+    ],
+];
+

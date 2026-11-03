@@ -2,6 +2,7 @@
 
 namespace Platform\Portal\Repositories;
 
+use Illuminate\Support\Facades\Event;
 use Platform\Portal\Contracts\PortalPage as PortalPageContract;
 use Webkul\Core\Eloquent\Repository;
 
@@ -55,6 +56,8 @@ class PortalPageRepository extends Repository
      */
     public function create(array $data)
     {
+        Event::dispatch('portal.page.creating', [$data]);
+
         if (empty($data['status'])) {
             $data['is_home_page'] = 0;
         }
@@ -65,7 +68,11 @@ class PortalPageRepository extends Repository
                 ->update(['is_home_page' => 0]);
         }
 
-        return parent::create($data);
+        $page = parent::create($data);
+
+        Event::dispatch('portal.page.created', $page);
+
+        return $page;
     }
 
     /**
@@ -73,6 +80,8 @@ class PortalPageRepository extends Repository
      */
     public function update(array $data, $id, $attribute = 'id')
     {
+        Event::dispatch('portal.page.updating', [$id, $data]);
+
         if (isset($data['status']) && empty($data['status'])) {
             $data['is_home_page'] = 0;
         }
@@ -89,6 +98,24 @@ class PortalPageRepository extends Repository
             }
         }
 
-        return parent::update($data, $id, $attribute);
+        $page = parent::update($data, $id, $attribute);
+
+        Event::dispatch('portal.page.updated', $page);
+
+        return $page;
+    }
+
+    /**
+     * Delete page by id.
+     */
+    public function delete($id)
+    {
+        Event::dispatch('portal.page.deleting', $id);
+
+        $result = parent::delete($id);
+
+        Event::dispatch('portal.page.deleted', $id);
+
+        return $result;
     }
 }

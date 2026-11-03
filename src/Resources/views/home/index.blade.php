@@ -35,9 +35,10 @@
     @endif
 
     @foreach ($sections as $section)
-        @php ($data = $section->options) @endphp
-
-        @php ($marks = ($preview ?? false) && ! $section->getTypeInstance()?->rendersInLayout())
+        @php
+            $data = $section->options;
+            $marks = ($preview ?? false) && ! $section->getTypeInstance()?->rendersInLayout();
+        @endphp
 
         @if ($marks)
             <div

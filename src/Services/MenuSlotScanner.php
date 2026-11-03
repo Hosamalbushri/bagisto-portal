@@ -46,6 +46,29 @@ class MenuSlotScanner
             }
         }
 
+        // Merge dynamic slots from config('portal.slots', [])
+        $configSlots = config('portal.slots', []);
+        if (is_array($configSlots)) {
+            foreach ($configSlots as $slotId => $slotConfig) {
+                if (! is_string($slotId) || empty($slotId)) {
+                    continue;
+                }
+
+                $location = is_array($slotConfig) ? ($slotConfig['location'] ?? 'other') : 'other';
+                $group = in_array($location, ['header', 'footer'], true) ? $location : 'other';
+
+                $slots[$group][$slotId] = [
+                    'id' => $slotId,
+                    'label' => is_array($slotConfig) && ! empty($slotConfig['label'])
+                        ? $slotConfig['label']
+                        : $this->humanizeIdentifier($slotId),
+                    'location' => $location,
+                    'default' => is_array($slotConfig) ? ($slotConfig['default'] ?? null) : null,
+                    'file' => 'config/portal.php',
+                ];
+            }
+        }
+
         return $slots;
     }
 
@@ -67,6 +90,19 @@ class MenuSlotScanner
         // 2. Active Theme or Application theme directories
         if ($themePath && File::isDirectory($themePath)) {
             $dirs[] = $themePath;
+        } elseif (function_exists('themes') && ($activeTheme = themes()->current())) {
+            $viewPaths = method_exists($activeTheme, 'getViewPaths') ? $activeTheme->getViewPaths() : [];
+
+            if (empty($viewPaths) && ! empty($activeTheme->viewsPath)) {
+                $rawPath = $activeTheme->viewsPath;
+                $viewPaths = [str_starts_with($rawPath, '/') ? base_path(substr($rawPath, 1)) : base_path($rawPath)];
+            }
+
+            foreach ($viewPaths as $vp) {
+                if (File::isDirectory($vp)) {
+                    $dirs[] = $vp;
+                }
+            }
         }
 
         $appThemes = resource_path('themes');

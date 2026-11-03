@@ -1,0 +1,48 @@
+@php
+    $channel = core()->getCurrentChannel();
+    $assignedMenu = portal_menu_slot('footer_bottom');
+@endphp
+
+<footer class="bg-[var(--bg-surface)] border-t border-[var(--border-subtle)] transition-colors duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div class="space-y-4">
+                <span class="font-extrabold text-xl tracking-tight text-[var(--brand-primary)]">
+                    {{ $channel->name ?? config('app.name') }}
+                </span>
+                <p class="text-sm text-[var(--text-secondary)]">
+                    {{ $channel->description ?? 'Empowering your digital commerce presence.' }}
+                </p>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-semibold uppercase tracking-wider text-[var(--text-primary)] mb-4">
+                    {{ trans('portal::app.home.footer.quick-links') }}
+                </h4>
+                @portalMenuSlot('footer_col_1')
+            </div>
+
+            <div>
+                <h4 class="text-sm font-semibold uppercase tracking-wider text-[var(--text-primary)] mb-4">
+                    {{ trans('portal::app.home.footer.services') }}
+                </h4>
+                @portalMenuSlot('footer_col_2')
+            </div>
+
+            <div>
+                <h4 class="text-sm font-semibold uppercase tracking-wider text-[var(--text-primary)] mb-4">
+                    {{ trans('portal::app.home.footer.support') }}
+                </h4>
+                @portalMenuSlot('footer_col_3')
+            </div>
+        </div>
+
+        <div class="pt-8 border-t border-[var(--border-subtle)] flex flex-col md:flex-row items-center justify-between text-sm text-[var(--text-secondary)]">
+            <p>&copy; {{ date('Y') }} {{ $channel->name ?? config('app.name') }}. {{ trans('portal::app.home.footer.all-rights-reserved') }}.</p>
+            <div class="flex items-center gap-6 mt-4 md:mt-0">
+                @portalMenuSlot('footer_bottom')
+            </div>
+        </div>
+    </div>
+</footer>
+

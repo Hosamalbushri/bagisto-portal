@@ -4,14 +4,23 @@ namespace Platform\Portal\Providers;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Platform\Portal\Console\Commands\InstallPortalCommand;
+use Platform\Portal\Console\Commands\MakeSectionCommand;
+use Platform\Portal\Console\Commands\MakeThemeCommand;
 use Platform\Portal\Http\Middleware\CacheResponse;
 use Platform\Portal\Http\Middleware\CheckStorefrontStatus;
 use Platform\Portal\Http\Middleware\Currency;
 use Platform\Portal\Http\Middleware\Locale;
 use Platform\Portal\Http\Middleware\Theme;
 use Platform\Portal\Sections\SectionTypeRegistry;
+use Platform\Portal\Services\ExtendedThemeCatalog;
+use Platform\Portal\Services\ThemeManager;
+use Webkul\Core\Repositories\ChannelRepository;
+use Webkul\Theme\Repositories\SectionRepository;
+use Webkul\Theme\ThemeCatalog;
 
 class PortalServiceProvider extends ServiceProvider
 {
@@ -28,17 +37,45 @@ class PortalServiceProvider extends ServiceProvider
             return new SectionTypeRegistry;
         });
 
+        $this->app->alias(SectionTypeRegistry::class, 'portal.section');
+
         $this->mergeConfigFrom(
             dirname(__DIR__).'/Config/bagisto-vite.php',
             'bagisto-vite.viters'
         );
 
+        // Bind ThemeManager singleton & auto-discover themes cleanly
+        $this->app->singleton(ThemeManager::class, function () {
+            return new ThemeManager;
+        });
+
         $portalThemes = require dirname(__DIR__).'/Config/themes.php';
+        $discoveredThemes = $this->app->make(ThemeManager::class)->toConfigArray();
 
         $this->app['config']->set(
             'themes.shop',
-            array_merge($this->app['config']->get('themes.shop', []), $portalThemes)
+            array_merge($this->app['config']->get('themes.shop', []), $portalThemes, $discoveredThemes)
         );
+
+        // Clean container extension: enhance ThemeCatalog with local theme configs without touching Bagisto core
+        if (class_exists(ThemeCatalog::class)) {
+            $this->app->extend(ThemeCatalog::class, function ($catalog, $app) {
+                return new ExtendedThemeCatalog(
+                    $app[ChannelRepository::class],
+                    $app[SectionRepository::class]
+                );
+            });
+        }
+
+        // Clean container extension: enhance ThemeCatalog with local theme configs without touching Bagisto core
+        if (class_exists(ThemeCatalog::class)) {
+            $this->app->extend(ThemeCatalog::class, function ($catalog, $app) {
+                return new ExtendedThemeCatalog(
+                    $app[ChannelRepository::class],
+                    $app[SectionRepository::class]
+                );
+            });
+        }
 
         $this->mergeConfigFrom(
             dirname(__DIR__).'/Config/menu.php',
@@ -95,6 +132,24 @@ class PortalServiceProvider extends ServiceProvider
             return "<?php echo \$__env->make('portal::components.menu-slot.index', ['id' => {$expression}], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
         });
 
+        // Listen for Bagisto theme activations and dispatch portal domain event
+        Event::listen('appearance.theme.activate.after', function ($channel) {
+            $channelId = is_object($channel) ? ($channel->id ?? 0) : (int) $channel;
+            $themeCode = is_object($channel) ? ($channel->theme ?? '') : (core()->getCurrentChannel()?->theme ?? '');
+
+            app(ThemeManager::class)->clearCache();
+            event('portal.theme.activated', [$channelId, $themeCode]);
+        });
+
+        // Listen for Bagisto theme activations and dispatch portal domain event
+        Event::listen('appearance.theme.activate.after', function ($channel) {
+            $channelId = is_object($channel) ? ($channel->id ?? 0) : (int) $channel;
+            $themeCode = is_object($channel) ? ($channel->theme ?? '') : (core()->getCurrentChannel()?->theme ?? '');
+
+            app(ThemeManager::class)->clearCache();
+            event('portal.theme.activated', [$channelId, $themeCode]);
+        });
+
         $portalMenu = require dirname(__DIR__).'/Config/menu.php';
         $currentMenu = config('menu.admin', []);
         config(['menu.admin' => collect($currentMenu)->concat($portalMenu)->unique('key')->values()->toArray()]);
@@ -108,6 +163,13 @@ class PortalServiceProvider extends ServiceProvider
         config(['core' => collect($currentCore)->concat($portalSystem)->unique('key')->values()->toArray()]);
 
         if ($this->app->runningInConsole()) {
+            $this->commands([
+                InstallPortalCommand::class,
+                InstallPortalCommand::class,
+                MakeSectionCommand::class,
+                MakeThemeCommand::class,
+            ]);
+
             $this->publishes([
                 __DIR__.'/../Resources/views' => resource_path('views/vendor/portal'),
             ], 'portal-views');
@@ -119,6 +181,20 @@ class PortalServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../Resources/lang' => $this->app->langPath('vendor/portal'),
             ], 'portal-lang');
+
+            $this->publishes([
+                __DIR__.'/../Resources/assets' => public_path('vendor/portal'),
+            ], 'portal-assets');
+
+            $this->publishes([
+                dirname(__DIR__, 2).'/stubs' => base_path('stubs/portal'),
+            ], 'portal-stubs');
+
+            $this->publishes([
+                dirname(__DIR__).'/Config/portal.php' => config_path('portal.php'),
+                __DIR__.'/../Resources/views' => resource_path('views/vendor/portal'),
+                __DIR__.'/../Resources/lang' => $this->app->langPath('vendor/portal'),
+            ], 'portal');
         }
     }
 }

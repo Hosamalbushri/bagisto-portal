@@ -1,0 +1,6 @@
+/**
+ * {{ themeTitle }} JavaScript Entrypoint
+ */
+
+console.log('✨ [{{ themeTitle }}] Theme loaded successfully.');
+

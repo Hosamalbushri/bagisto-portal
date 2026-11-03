@@ -32,4 +32,26 @@ return [
         'mode' => env('PORTAL_ROUTING_MODE', 'override_shop'),
         'prefix' => env('PORTAL_PREFIX', 'portal'),
     ],
+
+    /*
+     * Dynamic Menu Slots Configuration.
+     *
+     * Define custom menu locations without modifying core package layout files.
+     * These slots appear automatically in the admin menu slot assignment manager.
+     *
+     * Example:
+     * 'slots' => [
+     *     'sidebar_navigation' => [
+     *         'label' => 'Main Sidebar Navigation',
+     *         'location' => 'other', // 'header', 'footer', or 'other'
+     *     ],
+     *     'top_announcement' => [
+     *         'label' => 'Top Bar Links',
+     *         'location' => 'header',
+     *     ],
+     * ],
+     */
+    'slots' => [
+        // Custom slot definitions registered by the host application
+    ],
 ];

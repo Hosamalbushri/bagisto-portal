@@ -42,6 +42,11 @@ abstract class SectionType
     protected bool $layout = false;
 
     /**
+     * Custom view path if not following default conventions.
+     */
+    protected ?string $view = null;
+
+    /**
      * Get the section code.
      */
     public function getCode(): string
@@ -97,6 +102,14 @@ abstract class SectionType
     public function rendersInLayout(): bool
     {
         return $this->layout;
+    }
+
+    /**
+     * Get custom view path if explicitly defined.
+     */
+    public function getView(): ?string
+    {
+        return $this->view;
     }
 
     /**

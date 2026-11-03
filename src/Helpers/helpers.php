@@ -5,6 +5,7 @@ use Platform\Portal\Contracts\PortalMenu;
 use Platform\Portal\Repositories\PortalLayoutSettingRepository;
 use Platform\Portal\Repositories\PortalMenuRepository;
 use Platform\Portal\Repositories\PortalMenuSlotAssignmentRepository;
+use Platform\Portal\Services\ThemeManager;
 
 if (! function_exists('portal_menu')) {
     /**
@@ -156,5 +157,16 @@ if (! function_exists('portal_layout_settings')) {
             $themeCode,
             $localeCode
         );
+    }
+}
+
+if (! function_exists('portal_theme_css')) {
+    /**
+     * Retrieve the active theme's custom CSS design tokens or overrides.
+     * Injects live CSS into <head> for instant zero-build style and color updates.
+     */
+    function portal_theme_css(?string $themeCode = null): ?string
+    {
+        return app(ThemeManager::class)->resolveThemeCss($themeCode);
     }
 }

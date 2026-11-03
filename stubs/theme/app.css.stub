@@ -1,0 +1,37 @@
+/* ==========================================================================
+   {{ themeTitle }} — Theme Design Tokens
+   Override these variables to change the visual identity without altering code.
+   ========================================================================== */
+
+:root {
+    /* Brand Baseline */
+    --brand-primary: #1c66f6;
+    --brand-primary-hover: #1551c6;
+    --brand-primary-light: #e0edff;
+    --on-brand-primary: #ffffff;
+
+    --brand-accent: #fe8312;
+    --brand-accent-hover: #e0700a;
+    --brand-accent-light: #fff3e6;
+    --on-brand-accent: #090d16;
+
+    /* Light Theme Surfaces */
+    --bg-app: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-surface-elevated: #f1f5f9;
+    --text-primary: #090d16;
+    --text-secondary: #475569;
+    --border-subtle: #e2e8f0;
+}
+
+.dark,
+[data-theme="dark"] {
+    /* Dark Theme Surfaces */
+    --bg-app: #080b11;
+    --bg-surface: #0f141f;
+    --bg-surface-elevated: #161e2e;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+}
+

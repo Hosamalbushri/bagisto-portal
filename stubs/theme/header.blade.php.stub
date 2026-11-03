@@ -1,0 +1,35 @@
+@php
+    $assignedMenu = portal_menu_slot('header_main');
+    $menuTree = $assignedMenu ? $assignedMenu->tree : collect();
+@endphp
+
+<header class="sticky top-0 z-40 w-full backdrop-blur-md bg-[var(--bg-surface)]/90 border-b border-[var(--border-subtle)] transition-colors duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <!-- Brand Logo -->
+        <a href="{{ url('/') }}" class="flex items-center gap-3">
+            <span class="font-extrabold text-2xl tracking-tight text-[var(--brand-primary)]">
+                {{ core()->getCurrentChannel()->name ?? config('app.name') }}
+            </span>
+        </a>
+
+        <!-- Navigation Menu -->
+        <nav class="hidden md:flex items-center gap-8">
+            @portalMenuSlot('header_main')
+        </nav>
+
+        <!-- Right Action Items -->
+        <div class="flex items-center gap-4">
+            <v-dark>
+                <button
+                    type="button"
+                    class="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
+                    title="{{ request()->cookie('portal_dark_mode') ? trans('portal::app.home.theme.light-mode') : trans('portal::app.home.theme.dark-mode') }}"
+                    aria-label="Toggle theme"
+                >
+                    <span class="{{ request()->cookie('portal_dark_mode') ? 'icon-light text-amber-400' : 'icon-dark text-[var(--text-secondary)]' }} text-lg"></span>
+                </button>
+            </v-dark>
+        </div>
+    </div>
+</header>
+

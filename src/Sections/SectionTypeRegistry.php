@@ -38,13 +38,43 @@ class SectionTypeRegistry
     }
 
     /**
-     * Register a new section type.
+     * Register a new section type (by class name or instance).
      */
-    public function register(SectionType $type): self
+    public function register(string|SectionType $type): self
     {
+        if (is_string($type)) {
+            if (! is_subclass_of($type, SectionType::class)) {
+                throw new \InvalidArgumentException("Class [{$type}] must extend ".SectionType::class);
+            }
+
+            $type = app($type);
+        }
+
         $this->types[$type->getCode()] = $type;
 
+        event('portal.section.registered', [$type]);
+
         return $this;
+    }
+
+    /**
+     * Unregister a section type by its code.
+     */
+    public function unregister(string $code): self
+    {
+        unset($this->types[$code]);
+
+        return $this;
+    }
+
+    /**
+     * Get all registered section type codes.
+     *
+     * @return array<int, string>
+     */
+    public function codes(): array
+    {
+        return array_keys($this->types);
     }
 
     /**

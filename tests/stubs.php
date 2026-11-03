@@ -13,8 +13,12 @@ namespace {
     if (! function_exists('themes')) {
         function themes()
         {
-            return new class
+            static $activeTheme = null;
+
+            return new class($activeTheme)
             {
+                protected static $currentThemeCode = 'default';
+
                 public function exists($theme)
                 {
                     return true;
@@ -22,12 +26,39 @@ namespace {
 
                 public function set($theme)
                 {
+                    self::$currentThemeCode = $theme;
+
                     return $this;
                 }
 
                 public function get()
                 {
-                    return 'default';
+                    return self::$currentThemeCode;
+                }
+
+                public function find($code)
+                {
+                    return $this->current();
+                }
+
+                public function current()
+                {
+                    return new class(self::$currentThemeCode)
+                    {
+                        public $code;
+
+                        public $viewsPath = null;
+
+                        public function __construct($code)
+                        {
+                            $this->code = $code;
+                        }
+
+                        public function getViewPaths()
+                        {
+                            return [];
+                        }
+                    };
                 }
             };
         }
@@ -108,7 +139,26 @@ namespace Webkul\Core\Eloquent {
         {
             public function translations()
             {
-                return $this->hasMany(Model::class);
+                $translationClass = static::class.'Translation';
+
+                if (class_exists($translationClass)) {
+                    return $this->hasMany($translationClass);
+                }
+
+                return $this->hasMany(static::class);
+            }
+
+            public function translate($locale = null, $withFallback = false)
+            {
+                return null;
+            }
+
+            public function translateOrNew($locale)
+            {
+                return new class
+                {
+                    public $draft_options = null;
+                };
             }
         }
     }
@@ -144,6 +194,48 @@ namespace Webkul\Core\Eloquent {
             public function getModel()
             {
                 return $this->model;
+            }
+
+            public function create(array $attributes)
+            {
+                return $this->model->create($attributes);
+            }
+
+            public function update(array $attributes, $id)
+            {
+                $record = $this->find($id);
+                if ($record) {
+                    $record->update($attributes);
+                }
+
+                return $record;
+            }
+
+            public function delete($id)
+            {
+                $record = $this->find($id);
+
+                return $record ? $record->delete() : false;
+            }
+
+            public function find($id, $columns = ['*'])
+            {
+                return $this->model->find($id, $columns);
+            }
+
+            public function findOrFail($id, $columns = ['*'])
+            {
+                return $this->model->findOrFail($id, $columns);
+            }
+
+            public function findWhere(array $where, $columns = ['*'])
+            {
+                return $this->model->where($where)->get($columns);
+            }
+
+            public function findOneWhere(array $where, $columns = ['*'])
+            {
+                return $this->model->where($where)->first($columns);
             }
 
             abstract public function model();

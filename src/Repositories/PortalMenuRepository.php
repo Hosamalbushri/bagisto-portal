@@ -3,6 +3,7 @@
 namespace Platform\Portal\Repositories;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Platform\Portal\Contracts\PortalMenu as PortalMenuContract;
 use Webkul\Core\Eloquent\Repository;
 
@@ -35,6 +36,8 @@ class PortalMenuRepository extends Repository
         } catch (\Throwable) {
             Cache::put(self::CACHE_VERSION_KEY, time(), 86400 * 30);
         }
+
+        Event::dispatch('portal.menu.updated');
     }
 
     /**

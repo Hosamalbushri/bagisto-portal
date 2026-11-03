@@ -61,7 +61,7 @@ class PortalMenuSlotAssignmentRepository extends Repository
      * Find single assignment for slot, with locale fallback.
      * Cached with versioning for high concurrency.
      */
-    public function findForSlot(string $slotId, int $channelId, string $themeCode = 'default', ?string $localeCode = null): ?PortalMenuSlotAssignment
+    public function findForSlot(string $slotId, int $channelId, string $themeCode = 'default', ?string $localeCode = null): ?PortalMenuSlotAssignmentContract
     {
         $version = Cache::get(PortalMenuRepository::CACHE_VERSION_KEY, 1);
         $cacheKey = "portal_slot_v{$version}_{$slotId}_{$channelId}_{$themeCode}_".($localeCode ?? 'none');

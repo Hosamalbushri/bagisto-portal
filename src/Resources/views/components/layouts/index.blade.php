@@ -45,6 +45,12 @@
 
     @bagistoVite(['src/Resources/assets/css/app.css', 'src/Resources/assets/js/app.js'])
 
+    @if ($customThemeCss = portal_theme_css())
+        <style id="portal-theme-custom-tokens">
+            {!! $customThemeCss !!}
+        </style>
+    @endif
+
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />

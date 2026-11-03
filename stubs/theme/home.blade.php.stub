@@ -1,0 +1,32 @@
+<x-portal::layouts>
+    <!-- Dynamic Portal Sections managed via Bagisto Admin Visual Customizer -->
+    @if (isset($sections) && count($sections))
+        @foreach ($sections as $section)
+            @php
+                $sec = is_array($section) ? (object) $section : $section;
+                $opts = is_array($sec->options ?? null) ? $sec->options : json_decode($sec->options ?? '{}', true);
+            @endphp
+
+            @if ($sec->type === 'hero_slider')
+                <x-portal::sections.hero-slider :options="$opts" :section="$sec" />
+            @elseif ($sec->type === 'features_grid')
+                <x-portal::sections.features-grid :options="$opts" :section="$sec" />
+            @elseif ($sec->type === 'rich_content')
+                <x-portal::sections.rich-content :options="$opts" :section="$sec" />
+            @elseif ($sec->type === 'testimonials')
+                <x-portal::sections.testimonials :options="$opts" :section="$sec" />
+            @elseif ($sec->type === 'faq_accordion')
+                <x-portal::sections.faq-accordion :options="$opts" :section="$sec" />
+            @elseif ($sec->type === 'cta_banner')
+                <x-portal::sections.cta-banner :options="$opts" :section="$sec" />
+            @elseif ($sec->type === 'contact_section')
+                <x-portal::sections.contact-section :options="$opts" :section="$sec" />
+            @elseif ($sec->type === 'bento_grid')
+                <x-portal::sections.bento-grid :options="$opts" :section="$sec" />
+            @elseif (\Platform\Portal\Facades\PortalSection::has($sec->type))
+                {!! \Platform\Portal\Facades\PortalSection::render($sec->type, $opts, $sec) !!}
+            @endif
+        @endforeach
+    @endif
+</x-portal::layouts>
+

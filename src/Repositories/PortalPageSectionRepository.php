@@ -4,6 +4,7 @@ namespace Platform\Portal\Repositories;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Platform\Portal\Contracts\PortalPageSection as PortalPageSectionContract;
 use Webkul\Core\Eloquent\Repository;
 
@@ -175,6 +176,8 @@ class PortalPageSectionRepository extends Repository
                 }
             }
         });
+
+        Event::dispatch('portal.page.published', $pageId);
     }
 
     /**
@@ -196,5 +199,7 @@ class PortalPageSectionRepository extends Repository
                 }
             }
         });
+
+        Event::dispatch('portal.page.drafts_discarded', $pageId);
     }
 }

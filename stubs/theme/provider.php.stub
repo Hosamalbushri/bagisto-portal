@@ -1,0 +1,32 @@
+<?php
+
+namespace {{ vendor }}\{{ packageName }}\Providers;
+
+use Illuminate\Support\ServiceProvider;
+
+class {{ packageName }}ServiceProvider extends ServiceProvider
+{
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'portal');
+
+        $this->publishes([
+            __DIR__.'/../Resources/views' => resource_path('views/vendor/portal'),
+        ], '{{ themeCode }}-views');
+    }
+
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        $this->mergeConfigFrom(
+            __DIR__.'/../Config/themes.php',
+            'themes.shop'
+        );
+    }
+}
+
