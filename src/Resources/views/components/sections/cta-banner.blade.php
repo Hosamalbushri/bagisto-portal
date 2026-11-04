@@ -17,7 +17,7 @@
             @endif
 
             @if ($description)
-                <p class="mt-4 text-lg max-sm:text-sm text-zinc-300 leading-relaxed">
+                <p class="mt-4 text-lg max-sm:text-sm text-white/80 leading-relaxed">
                     {{ $description }}
                 </p>
             @endif

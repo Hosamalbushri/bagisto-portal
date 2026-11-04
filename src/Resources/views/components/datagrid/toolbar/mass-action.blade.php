@@ -57,10 +57,10 @@
                                     <i class="icon-arrow-right rtl:icon-arrow-left text-2xl"></i>
                                 </a>
 
-                                <ul class="absolute top-0 z-10 hidden w-max min-w-[150px] rounded border border-gray-300 bg-white shadow-[0_5px_20px_rgba(0,0,0,0.15)] group-hover/item:block ltr:left-full rtl:right-full">
+                                <ul class="absolute top-0 z-10 hidden w-max min-w-[150px] rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-[var(--shadow-card)] group-hover/item:block ltr:left-full rtl:right-full">
                                     <li v-for="option in massAction.options">
                                         <a
-                                            class="whitespace-no-wrap block rounded-t px-4 py-2 hover:bg-gray-100"
+                                            class="whitespace-no-wrap block rounded-t-xl px-4 py-2 hover:bg-[var(--bg-surface-elevated)]"
                                             href="javascript:void(0);"
                                             @click="performMassAction(massAction, option)"
                                         >
@@ -72,7 +72,7 @@
 
                             <li v-else>
                                 <a
-                                    class="whitespace-no-wrap flex gap-1.5 rounded-b px-4 py-2 hover:bg-gray-100"
+                                    class="whitespace-no-wrap flex gap-1.5 rounded-b-xl px-4 py-2 hover:bg-[var(--bg-surface-elevated)] text-[var(--text-primary)]"
                                     href="javascript:void(0);"
                                     @click="performMassAction(massAction)"
                                 >
@@ -91,7 +91,7 @@
                 </x-portal::dropdown>
 
                 <div class="ltr:pl-2.5 rtl:pr-2.5">
-                    <p class="text-sm font-light text-gray-800">
+                    <p class="text-sm font-light text-[var(--text-secondary)]">
                         @{{ "@lang('portal::app.components.datagrid.toolbar.length-of')".replace(':length', massActions.indices.length) }}
 
                         @{{ "@lang('portal::app.components.datagrid.toolbar.selected')".replace(':total', available.meta.total) }}

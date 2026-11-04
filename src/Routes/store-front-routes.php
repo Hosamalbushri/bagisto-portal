@@ -6,8 +6,11 @@ use Platform\Portal\Http\Controllers\Auth\RegisterController;
 use Platform\Portal\Http\Controllers\CurrencyController;
 use Platform\Portal\Http\Controllers\HomeController;
 use Platform\Portal\Http\Controllers\LocaleController;
+use Platform\Portal\Http\Controllers\ManifestController;
 use Platform\Portal\Http\Controllers\PageController;
+use Platform\Portal\Http\Controllers\SearchController;
 use Platform\Portal\Http\Controllers\SitemapController;
+use Platform\Portal\Http\Controllers\SubscriptionController;
 
 /**
  * Dynamic Modular and CMS pages.
@@ -57,6 +60,25 @@ Route::get('sitemap.xml', [SitemapController::class, 'index'])
 
 Route::get('robots.txt', [SitemapController::class, 'robots'])
     ->name('portal.robots');
+
+Route::get('manifest.json', [ManifestController::class, 'index'])
+    ->name('portal.manifest');
+
+/**
+ * Search portal pages and content.
+ */
+Route::get('search', [SearchController::class, 'index'])
+    ->name('portal.search.index');
+
+/**
+ * Newsletter subscription.
+ */
+Route::post('subscription', [SubscriptionController::class, 'store'])
+    ->name('portal.subscription.store')
+    ->middleware('throttle:10,1');
+
+Route::get('subscription/unsubscribe/{token}', [SubscriptionController::class, 'destroy'])
+    ->name('portal.subscription.destroy');
 
 /**
  * Locale switch.

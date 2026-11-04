@@ -18,6 +18,7 @@ use Platform\Portal\Http\Middleware\Theme;
 use Platform\Portal\Sections\SectionTypeRegistry;
 use Platform\Portal\Services\ExtendedThemeCatalog;
 use Platform\Portal\Services\ThemeManager;
+use Spatie\ResponseCache\ResponseCache;
 use Webkul\Core\Repositories\ChannelRepository;
 use Webkul\Theme\Repositories\SectionRepository;
 use Webkul\Theme\ThemeCatalog;
@@ -162,13 +163,21 @@ class PortalServiceProvider extends ServiceProvider
             event('portal.theme.activated', [$channelId, $themeCode]);
         });
 
-        // Listen for Bagisto theme activations and dispatch portal domain event
-        Event::listen('appearance.theme.activate.after', function ($channel) {
-            $channelId = is_object($channel) ? ($channel->id ?? 0) : (int) $channel;
-            $themeCode = is_object($channel) ? ($channel->theme ?? '') : (core()->getCurrentChannel()?->theme ?? '');
-
-            app(ThemeManager::class)->clearCache();
-            event('portal.theme.activated', [$channelId, $themeCode]);
+        // Event-driven full page cache (FPC) invalidation
+        Event::listen([
+            'portal.page.created',
+            'portal.page.updated',
+            'portal.page.deleted',
+            'portal.theme.activated',
+            'portal.menu.updated',
+        ], function () {
+            if (class_exists(ResponseCache::class) && app()->bound(ResponseCache::class)) {
+                try {
+                    app(ResponseCache::class)->clear();
+                } catch (\Throwable) {
+                    // Graceful fallback
+                }
+            }
         });
 
         $portalMenu = require dirname(__DIR__).'/Config/menu.php';

@@ -16,11 +16,13 @@
     <script>
         (function() {
             var cookie = document.cookie.match(/(?:^|; )portal_dark_mode=([^;]*)/);
-            var isDark = cookie ? cookie[1] === '1' : (localStorage.getItem('portal_dark_mode') === '1');
-            if (isDark) {
+            var manualPreference = cookie ? cookie[1] : localStorage.getItem('portal_dark_mode');
+            if (manualPreference === '1') {
                 document.documentElement.classList.add('dark');
-            } else if (cookie && cookie[1] === '0') {
+            } else if (manualPreference === '0') {
                 document.documentElement.classList.remove('dark');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
             }
         })();
     </script>
@@ -34,8 +36,14 @@
     <meta name="base-url" content="{{ url()->to('/') }}">
     <meta name="currency" content="{{ core()->getCurrentCurrency()->toJson() }}">
     <meta name="generator" content="Bagisto">
+    <meta name="theme-color" content="#1c66f6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
     @stack('meta')
+
+    <link rel="manifest" href="{{ route('portal.manifest') }}">
 
     <link
         rel="icon"
@@ -57,11 +65,30 @@
 
     @stack('styles')
 
+    @if ($customCss = core()->getConfigData('general.content.custom_scripts.custom_css'))
+        <style id="portal-channel-custom-css">
+            {!! $customCss !!}
+        </style>
+    @endif
+
+    @if (core()->getConfigData('general.content.speculation_rules.enabled'))
+        <script type="speculationrules">
+            @json(core()->getSpeculationRules(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+        </script>
+    @endif
+
     {!! view_render_event('bagisto.portal.layout.head.after') !!}
 </head>
 
 <body class="antialiased min-h-screen flex flex-col justify-between overflow-x-hidden transition-colors duration-200" style="background-color: var(--bg-app); color: var(--text-primary);">
     {!! view_render_event('bagisto.portal.layout.body.before') !!}
+
+    <a
+        href="#main"
+        class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[var(--bg-surface-elevated)] focus:text-[var(--brand-primary)] focus:rounded-xl focus:shadow-lg focus:border focus:border-[var(--border-subtle)] focus:font-semibold"
+    >
+        @lang('portal::app.components.layouts.index.skip-to-main-content')
+    </a>
 
     <div id="app" class="flex min-h-screen flex-col justify-between">
         <x-portal::flash-group />
@@ -87,9 +114,18 @@
         @if ($hasFooter)
             <x-portal::layouts.footer />
         @endif
+
+        @if (
+            core()->getConfigData('general.gdpr.settings.enabled')
+            && core()->getConfigData('general.gdpr.cookie.enabled')
+        )
+            <x-portal::layouts.cookie />
+        @endif
     </div>
 
     {!! view_render_event('bagisto.portal.layout.body.after') !!}
+
+    <x-portal::layouts.webmcp />
 
     @stack('scripts')
 
@@ -109,6 +145,12 @@
         }
     </script>
     {!! view_render_event('bagisto.portal.layout.vue-app-mount.after') !!}
+
+    @if ($customJs = core()->getConfigData('general.content.custom_scripts.custom_javascript'))
+        <script type="text/javascript" id="portal-channel-custom-js">
+            {!! $customJs !!}
+        </script>
+    @endif
 </body>
 </html>
 

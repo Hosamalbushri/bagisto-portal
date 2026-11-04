@@ -92,7 +92,9 @@ namespace Webkul\Core {
                     'code' => 'default',
                     'name' => 'Default Store',
                     'theme' => 'default',
-                    'locales' => collect([(object) ['code' => 'en']]),
+                    'logo_url' => null,
+                    'favicon_url' => null,
+                    'locales' => collect([(object) ['code' => 'en', 'name' => 'English']]),
                     'currencies' => collect([(object) ['code' => 'USD']]),
                     'default_locale' => (object) ['code' => 'en'],
                     'base_currency' => (object) ['code' => 'USD'],
@@ -106,12 +108,35 @@ namespace Webkul\Core {
 
             public function getCurrentLocale()
             {
-                return (object) ['code' => 'en'];
+                return (object) ['code' => 'en', 'direction' => 'ltr'];
+            }
+
+            public function getConfigData(string $field)
+            {
+                return null;
+            }
+
+            public function getSpeculationRules()
+            {
+                return [];
             }
 
             public function getRequestedLocaleCode(string $param = 'locale', bool $fallback = true)
             {
                 return 'en';
+            }
+
+            public function getCurrentCurrency()
+            {
+                return new class
+                {
+                    public $code = 'USD';
+
+                    public function toJson()
+                    {
+                        return json_encode(['code' => 'USD']);
+                    }
+                };
             }
 
             public function setCurrentCurrency(string $code)
@@ -160,7 +185,22 @@ namespace Webkul\Core\Eloquent {
 
             public function translate($locale = null, $withFallback = false)
             {
-                return null;
+                $locale = $locale ?? app()->getLocale();
+
+                return $this->translations->firstWhere('locale', $locale);
+            }
+
+            public function getAttribute($key)
+            {
+                if (in_array($key, $this->translatedAttributes ?? [])) {
+                    $translation = $this->translate();
+
+                    if ($translation && isset($translation->$key)) {
+                        return $translation->$key;
+                    }
+                }
+
+                return parent::getAttribute($key);
             }
 
             public function translateOrNew($locale)
@@ -275,6 +315,182 @@ namespace Webkul\Core\Repositories {
     if (! class_exists(CurrencyRepository::class)) {
         class CurrencyRepository {}
     }
+
+    if (! class_exists(SubscribersListRepository::class)) {
+        class SubscribersListRepository
+        {
+            protected static array $subscribers = [];
+
+            public function findOneWhere(array $where)
+            {
+                foreach (self::$subscribers as $subscriber) {
+                    $match = true;
+                    foreach ($where as $key => $value) {
+                        if (($subscriber->$key ?? null) != $value) {
+                            $match = false;
+                            break;
+                        }
+                    }
+                    if ($match) {
+                        return $subscriber;
+                    }
+                }
+
+                return null;
+            }
+
+            public function findOneByField(string $field, mixed $value)
+            {
+                return $this->findOneWhere([$field => $value]);
+            }
+
+            public function create(array $data)
+            {
+                $id = count(self::$subscribers) + 1;
+                $obj = new class(array_merge(['id' => $id], $data))
+                {
+                    public $id;
+
+                    public $email;
+
+                    public $token;
+
+                    public $is_subscribed;
+
+                    public $channel_id;
+
+                    public function __construct(array $attributes)
+                    {
+                        foreach ($attributes as $k => $v) {
+                            $this->$k = $v;
+                        }
+                    }
+
+                    public function update(array $attributes)
+                    {
+                        foreach ($attributes as $k => $v) {
+                            $this->$k = $v;
+                        }
+
+                        return true;
+                    }
+                };
+
+                self::$subscribers[$id] = $obj;
+
+                return $obj;
+            }
+
+            public function deleteWhere(array $where)
+            {
+                foreach (self::$subscribers as $id => $subscriber) {
+                    $match = true;
+                    foreach ($where as $key => $value) {
+                        if (($subscriber->$key ?? null) != $value) {
+                            $match = false;
+                            break;
+                        }
+                    }
+                    if ($match) {
+                        unset(self::$subscribers[$id]);
+                    }
+                }
+            }
+
+            public function delete($id)
+            {
+                unset(self::$subscribers[$id]);
+            }
+        }
+    }
+
+    if (! class_exists(SubscribersListRepository::class)) {
+        class SubscribersListRepository
+        {
+            protected static array $subscribers = [];
+
+            public function findOneWhere(array $where)
+            {
+                foreach (self::$subscribers as $subscriber) {
+                    $match = true;
+                    foreach ($where as $key => $value) {
+                        if (($subscriber->$key ?? null) != $value) {
+                            $match = false;
+                            break;
+                        }
+                    }
+                    if ($match) {
+                        return $subscriber;
+                    }
+                }
+
+                return null;
+            }
+
+            public function findOneByField(string $field, mixed $value)
+            {
+                return $this->findOneWhere([$field => $value]);
+            }
+
+            public function create(array $data)
+            {
+                $id = count(self::$subscribers) + 1;
+                $obj = new class(array_merge(['id' => $id], $data))
+                {
+                    public $id;
+
+                    public $email;
+
+                    public $token;
+
+                    public $is_subscribed;
+
+                    public $channel_id;
+
+                    public function __construct(array $attributes)
+                    {
+                        foreach ($attributes as $k => $v) {
+                            $this->$k = $v;
+                        }
+                    }
+
+                    public function update(array $attributes)
+                    {
+                        foreach ($attributes as $k => $v) {
+                            $this->$k = $v;
+                        }
+
+                        return true;
+                    }
+                };
+
+                self::$subscribers[$id] = $obj;
+
+                return $obj;
+            }
+
+            public function deleteWhere(array $where)
+            {
+                foreach (self::$subscribers as $id => $subscriber) {
+                    $match = true;
+                    foreach ($where as $key => $value) {
+                        if (($subscriber->$key ?? null) != $value) {
+                            $match = false;
+                            break;
+                        }
+                    }
+                    if ($match) {
+                        unset(self::$subscribers[$id]);
+                    }
+                }
+            }
+
+            public function delete($id)
+            {
+                unset(self::$subscribers[$id]);
+            }
+        }
+    }
 }
 
 namespace Webkul\CMS\Repositories {
@@ -296,7 +512,13 @@ namespace Webkul\CMS\Repositories {
 
 namespace Webkul\Theme\Repositories {
     if (! class_exists(SectionRepository::class)) {
-        class SectionRepository {}
+        class SectionRepository
+        {
+            public function findAllOfType($type, $channelId = null, $theme = null)
+            {
+                return collect();
+            }
+        }
     }
 }
 

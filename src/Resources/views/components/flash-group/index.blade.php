@@ -13,7 +13,9 @@
             }
         }
 
-        $willResponseBeCached = \Webkul\FPC\FullPageCache::willCache();
+        $willResponseBeCached = class_exists(\Webkul\FPC\FullPageCache::class)
+            ? \Webkul\FPC\FullPageCache::willCache()
+            : false;
     @endphp
 
     <script

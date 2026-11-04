@@ -78,7 +78,7 @@
                                     @{{ column.label }}
 
                                     <i
-                                        class="align-text-bottom text-base text-gray-800"
+                                        class="align-text-bottom text-base text-[var(--text-primary)]"
                                         :class="[applied.sort.order === 'asc' ? 'icon-arrow-down': 'icon-arrow-up']"
                                         v-if="column.index == applied.sort.column"
                                     ></i>
@@ -192,14 +192,14 @@
                             <!-- Pagination -->
                             <div class="flex items-center gap-1">
                                 <div
-                                    class="inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-1 rounded-md border border-transparent p-1.5 text-center text-gray-600 transition-all marker:shadow hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-black active:border-gray-300"
+                                    class="inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-1 rounded-md border border-transparent p-1.5 text-center text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-surface-elevated)] hover:text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                                     @click="changePage('previous')"
                                 >
                                     <span class="icon-sort-left text-2xl"></span>
                                 </div>
 
                                 <div
-                                    class="inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-1 rounded-md border border-transparent p-1.5 text-center text-gray-600 transition-all marker:shadow hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-black active:border-gray-300"
+                                    class="inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-1 rounded-md border border-transparent p-1.5 text-center text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-surface-elevated)] hover:text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                                     @click="changePage('next')"
                                 >
                                     <span class="icon-sort-right text-2xl"></span>
@@ -207,11 +207,11 @@
                             </div>
 
                             <nav aria-label="@lang('portal::app.components.datagrid.table.page-navigation')">
-                                <ul class="inline-flex items-center -space-x-px rounded-lg border border-zinc-200 max-md:px-0">
+                                <ul class="inline-flex items-center -space-x-px rounded-lg border border-[var(--border-subtle)] max-md:px-0">
                                     <li  @click="changePage('previous')">
                                         <a
                                             href="javascript:void(0);"
-                                            class="flex h-10 w-9 items-center justify-center font-medium leading-normal hover:bg-gray-100 max-md:h-8 max-md:w-6 max-md:justify-normal"
+                                            class="flex h-10 w-9 items-center justify-center font-medium leading-normal text-[var(--text-secondary)] hover:bg-[var(--bg-surface-elevated)] hover:text-[var(--text-primary)] max-md:h-8 max-md:w-6 max-md:justify-normal"
                                             aria-label="@lang('portal::app.components.datagrid.table.previous-page')"
                                         >
                                             <span class="icon-arrow-left rtl:icon-arrow-right text-2xl"></span>
@@ -222,7 +222,7 @@
                                         <input
                                             type="text"
                                             :value="$parent.available.meta.current_page"
-                                            class="max-w-[42px] items-center border-l border-r px-4 py-2 font-medium leading-normal text-black hover:bg-gray-100 max-md:max-w-9 max-md:justify-normal max-md:px-0 max-md:py-1 max-md:text-center"
+                                            class="max-w-[42px] items-center border-l border-r border-[var(--border-subtle)] px-4 py-2 font-medium leading-normal text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] max-md:max-w-9 max-md:justify-normal max-md:px-0 max-md:py-1 max-md:text-center"
                                             @change="changePage(parseInt($event.target.value))"
                                             aria-label="@lang('portal::app.components.datagrid.table.page-number')"
                                         >
@@ -231,7 +231,7 @@
                                     <li @click="changePage('next')">
                                         <a
                                             href="javascript:void(0);"
-                                            class="flex h-10 w-9 items-center justify-center font-medium leading-normal hover:bg-gray-100 max-md:h-8 max-md:w-6 max-md:justify-normal"
+                                            class="flex h-10 w-9 items-center justify-center font-medium leading-normal text-[var(--text-secondary)] hover:bg-[var(--bg-surface-elevated)] hover:text-[var(--text-primary)] max-md:h-8 max-md:w-6 max-md:justify-normal"
                                             aria-label="@lang('portal::app.components.datagrid.table.next-page')"
                                         >
                                             <span class="icon-arrow-right rtl:icon-arrow-left text-2xl"></span>

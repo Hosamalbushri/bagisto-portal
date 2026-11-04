@@ -719,6 +719,17 @@ return [
             ],
         ],
         'layouts' => [
+            'index' => [
+                'skip-to-main-content' => 'Skip to main content',
+            ],
+            'webmcp' => [
+                'search-description' => 'Search portal pages, articles, and content',
+                'search-query-label' => 'Search query string',
+                'view-page-description' => 'View a specific portal or CMS page by slug',
+                'view-page-slug-label' => 'Page slug or identifier',
+                'subscribe-description' => 'Subscribe email address to the portal newsletter',
+                'subscribe-email-label' => 'Subscriber email address',
+            ],
             'account' => [
                 'greeting' => 'Hello! :name',
                 'profile-image' => 'Profile Image',
@@ -876,6 +887,44 @@ return [
             'image-slide' => 'Image Slide',
             'next' => 'Next',
             'previous' => 'Previous',
+        ],
+    ],
+    'subscription' => [
+        'already' => 'You are already subscribed to our newsletter.',
+        'subscribe-success' => 'Thank you for subscribing to our newsletter!',
+        'unsubscribe-success' => 'You have been successfully unsubscribed from our newsletter.',
+    ],
+    'search' => [
+        'title' => 'Search',
+        'title-query' => 'Search results for ":query"',
+        'description' => 'Search across all published portal pages and articles.',
+        'heading' => 'Explore Knowledge & Content',
+        'subheading' => 'Search through modular pages, documentation, and articles',
+        'placeholder' => 'Search for anything...',
+        'submit' => 'Search',
+        'results-count' => ':count results found for ":query"',
+        'showing-results' => 'Showing :count of :total items',
+        'no-results-found' => 'No results found',
+        'no-results-hint' => 'We couldn\'t find anything matching your search term. Try different keywords or check spelling.',
+        'back-home' => 'Back to Home',
+    ],
+    'errors' => [
+        'go-to-home' => 'Go to Homepage',
+        '404' => [
+            'title' => 'Page Not Found',
+            'description' => 'The page you are looking for does not exist, has been moved, or is temporarily unavailable.',
+        ],
+        '403' => [
+            'title' => 'Access Forbidden',
+            'description' => 'You do not have permission to access this resource or page.',
+        ],
+        '500' => [
+            'title' => 'Internal Server Error',
+            'description' => 'Something went wrong on our end. Please try refreshing or check back later.',
+        ],
+        '503' => [
+            'title' => 'Scheduled Maintenance',
+            'description' => 'We are currently performing system maintenance. We will be back online shortly.',
         ],
     ],
 ];

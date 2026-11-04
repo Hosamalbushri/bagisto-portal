@@ -7,19 +7,14 @@
 
 <!-- SEO Meta Content -->
 @push ('meta')
-    <meta
-        name="title"
-        content="{{ $metaTitle }}"
-    />
-
-    <meta
-        name="description"
-        content="{{ $metaDesc }}"
-    />
-
-    <meta
-        name="keywords"
-        content="{{ $metaKeywords }}"
+    <x-portal::seo
+        :title="$metaTitle"
+        :description="$metaDesc"
+        :keywords="$metaKeywords"
+        :type="$page->is_home_page ? 'website' : 'article'"
+        :published-at="$page->created_at"
+        :modified-at="$page->updated_at"
+        :author="$page->author_name ?? null"
     />
 @endpush
 

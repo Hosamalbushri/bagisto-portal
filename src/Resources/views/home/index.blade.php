@@ -3,9 +3,12 @@
 @endphp
 
 @push ('meta')
-    <meta name="title" content="{{ $channel->home_seo['meta_title'] ?? config('app.name') }}" />
-    <meta name="description" content="{{ $channel->home_seo['meta_description'] ?? '' }}" />
-    <meta name="keywords" content="{{ $channel->home_seo['meta_keywords'] ?? '' }}" />
+    <x-portal::seo
+        :title="$channel->home_seo['meta_title'] ?? config('app.name')"
+        :description="$channel->home_seo['meta_description'] ?? ''"
+        :keywords="$channel->home_seo['meta_keywords'] ?? ''"
+        type="website"
+    />
 @endpush
 
 <x-portal::layouts>

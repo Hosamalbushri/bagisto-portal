@@ -193,3 +193,13 @@ if (! function_exists('portal_asset')) {
         }
     }
 }
+
+if (! function_exists('view_render_event')) {
+    /**
+     * Fallback for view_render_event when testing standalone without Bagisto Core.
+     */
+    function view_render_event(string $eventName, mixed $params = null): string
+    {
+        return '';
+    }
+}

@@ -19,9 +19,9 @@
         id="v-media-template"
     >
         <div class="mb-4 flex cursor-pointer flex-col rounded-lg">
-            <div :class="{'border border-dashed border-gray-300 rounded-2xl': isDragOver }">
+            <div :class="{'border border-dashed border-[var(--border-strong)] rounded-2xl': isDragOver }">
                 <div
-                    class="flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center rounded-xl bg-zinc-100 hover:bg-gray-100 max-md:h-36 max-md:w-36 max-sm:h-[100px] max-sm:w-[100px]"
+                    class="flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center rounded-xl bg-[var(--bg-surface-elevated)] hover:bg-[var(--bg-surface-muted)] text-[var(--text-secondary)] max-md:h-36 max-md:w-36 max-sm:h-[100px] max-sm:w-[100px]"
                     v-if="uploadedFiles.isPicked"
                 >
                     <div 
@@ -38,7 +38,7 @@
 
                         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform opacity-0 transition-opacity group-hover:opacity-100">
                             <span 
-                                class="icon-bin cursor-pointer text-2xl text-black"
+                                class="icon-bin cursor-pointer text-2xl text-[var(--text-primary)]"
                                 @click="remove"
                             >
                             </span>
@@ -48,7 +48,7 @@
 
                 <label 
                     :for="`${$.uid}_fileInput`"
-                    class="flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl bg-zinc-100 hover:bg-gray-100 max-md:h-36 max-md:w-36 max-sm:h-[100px] max-sm:w-[100px] max-sm:gap-1"
+                    class="flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl bg-[var(--bg-surface-elevated)] hover:bg-[var(--bg-surface-muted)] text-[var(--text-secondary)] max-md:h-36 max-md:w-36 max-sm:h-[100px] max-sm:w-[100px] max-sm:gap-1"
                     :style="{'max-width': this.width, 'max-height': this.height}"
                     v-show="! uploadedFiles.isPicked"
                     @dragover="onDragOver"
@@ -108,7 +108,7 @@
                                 >
                                 <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform opacity-0 transition-opacity group-hover:opacity-100">
                                     <span
-                                        class="icon-bin cursor-pointer text-2xl text-black"
+                                        class="icon-bin cursor-pointer text-2xl text-[var(--text-primary)]"
                                         @click="remove(index)"
                                     >
                                     </span>
@@ -131,7 +131,7 @@
                                 </video>
                                 <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform opacity-0 transition-opacity group-hover:opacity-100">
                                     <span 
-                                        class="icon-bin cursor-pointer text-2xl text-black"
+                                        class="icon-bin cursor-pointer text-2xl text-[var(--text-primary)]"
                                         @click="remove(index)"
                                     >
                                     </span>
