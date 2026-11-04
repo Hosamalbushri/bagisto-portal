@@ -161,14 +161,11 @@ class ThemeManager
             if (class_exists(PortalLayoutSettingRepository::class)) {
                 $customTokens = app(PortalLayoutSettingRepository::class)->getSettings('theme_tokens', $channelId, $themeCode);
                 if (! empty($customTokens)) {
-                    $tokenRules = ":root {\n";
-                    foreach ($customTokens as $token => $value) {
-                        if (filled($value)) {
-                            $tokenRules .= "  {$token}: {$value};\n";
-                        }
+                    $tokenCompiler = app(TokenCompilerService::class);
+                    $compiledCss = $tokenCompiler->compile($customTokens, $themeCode);
+                    if (filled($compiledCss)) {
+                        $css = $compiledCss."\n".($css ?? '');
                     }
-                    $tokenRules .= "}\n";
-                    $css = $tokenRules.($css ?? '');
                 }
             }
         } catch (\Throwable) {

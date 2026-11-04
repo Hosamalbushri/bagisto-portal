@@ -9,6 +9,7 @@ use Platform\Portal\Http\Requests\ContactRequest;
 use Platform\Portal\Mail\ContactUs;
 use Platform\Portal\Repositories\PortalPageRepository;
 use Platform\Portal\Repositories\PortalPageSectionRepository;
+use Platform\Portal\Services\ThemeManager;
 use Webkul\Core\Http\Middleware\SecureHeaders;
 use Webkul\Theme\Repositories\SectionRepository;
 use Webkul\Theme\ThemeCatalog;

@@ -56,9 +56,14 @@ Route::group(['middleware' => ['web', 'admin'], 'prefix' => config('app.admin_ur
     Route::prefix('portal/themes')->group(function () {
         Route::get('', [ThemeController::class, 'index'])->name('admin.portal.themes.index');
         Route::get('customize/{code}', [ThemeController::class, 'customize'])->name('admin.portal.themes.customize');
+        Route::get('customize-tokens/{code}', [ThemeController::class, 'customizeTokensPage'])->name('admin.portal.themes.tokens.customize');
         Route::post('activate', [ThemeController::class, 'activate'])->name('admin.portal.themes.activate');
         Route::get('tokens', [ThemeController::class, 'getTokens'])->name('admin.portal.themes.tokens.get');
         Route::post('tokens', [ThemeController::class, 'customizeTokens'])->name('admin.portal.themes.tokens');
         Route::post('tokens/reset', [ThemeController::class, 'resetTokens'])->name('admin.portal.themes.tokens.reset');
+        Route::get('tokens/presets', [ThemeController::class, 'getPresets'])->name('admin.portal.themes.tokens.presets');
+        Route::post('tokens/apply-preset', [ThemeController::class, 'applyPreset'])->name('admin.portal.themes.tokens.apply-preset');
+        Route::get('tokens/export', [ThemeController::class, 'exportTokens'])->name('admin.portal.themes.tokens.export');
+        Route::post('tokens/import', [ThemeController::class, 'importTokens'])->name('admin.portal.themes.tokens.import');
     });
 });

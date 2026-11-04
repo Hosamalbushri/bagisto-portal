@@ -139,14 +139,13 @@
                                         @lang('admin::app.appearance.themes.index.customize-btn')
                                     </a>
 
-                                    <button
-                                        type="button"
+                                    <a
                                         class="secondary-button"
+                                        :href="'{{ route('admin.portal.themes.tokens.customize', '__CODE__') }}'.replace('__CODE__', theme.code)"
                                         v-if="theme.status === 'active'"
-                                        @click="openTokens(theme)"
                                     >
                                         @lang('portal::app.admin.themes.customize-tokens-btn')
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -215,161 +214,6 @@
                         </form>
                     </x-admin::form>
                 </Teleport>
-
-                <!-- Tokens Palette Modal (Native Bagisto Form Controls) -->
-                <Teleport to="body">
-                    <x-admin::form
-                        v-slot="{ meta, errors, handleSubmit }"
-                        as="div"
-                    >
-                        <form @submit="handleSubmit($event, saveTokens)">
-                            <x-admin::modal ref="tokensModal">
-                                <x-slot:header>
-                                    <p class="text-lg font-bold text-gray-800 dark:text-white">
-                                        @lang('portal::app.admin.themes.brand-colors')
-                                    </p>
-                                </x-slot>
-
-                                <x-slot:content>
-                                    <p class="mb-4 text-xs text-gray-500 dark:text-gray-300">
-                                        @lang('portal::app.admin.themes.tokens-hint')
-                                    </p>
-
-                                    <!-- Channel Selection -->
-                                    <x-admin::form.control-group class="!mb-4">
-                                        <x-admin::form.control-group.label class="required">
-                                            @lang('portal::app.admin.themes.channel')
-                                        </x-admin::form.control-group.label>
-
-                                        <x-admin::form.control-group.control
-                                            type="select"
-                                            name="tokens_channel_id"
-                                            v-model="tokenChannelId"
-                                            @change="loadTokens"
-                                        >
-                                            <option
-                                                v-for="channel in selected.active_on"
-                                                :key="channel.id"
-                                                :value="channel.id"
-                                                v-text="channel.name"
-                                            ></option>
-                                        </x-admin::form.control-group.control>
-                                    </x-admin::form.control-group>
-
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <!-- Primary Color -->
-                                        <x-admin::form.control-group class="!mb-3">
-                                            <x-admin::form.control-group.label>
-                                                @lang('portal::app.admin.themes.brand-primary')
-                                            </x-admin::form.control-group.label>
-
-                                            <div class="flex items-center gap-2">
-                                                <input
-                                                    type="color"
-                                                    class="h-9 w-9 rounded cursor-pointer border border-gray-300 dark:border-gray-700 bg-transparent p-0.5"
-                                                    v-model="tokens['--brand-primary']"
-                                                />
-                                                <x-admin::form.control-group.control
-                                                    type="text"
-                                                    name="tokens[--brand-primary]"
-                                                    v-model="tokens['--brand-primary']"
-                                                    placeholder="#2563eb"
-                                                    class="font-mono text-xs"
-                                                />
-                                            </div>
-                                        </x-admin::form.control-group>
-
-                                        <!-- Hover Color -->
-                                        <x-admin::form.control-group class="!mb-3">
-                                            <x-admin::form.control-group.label>
-                                                @lang('portal::app.admin.themes.brand-primary-hover')
-                                            </x-admin::form.control-group.label>
-
-                                            <div class="flex items-center gap-2">
-                                                <input
-                                                    type="color"
-                                                    class="h-9 w-9 rounded cursor-pointer border border-gray-300 dark:border-gray-700 bg-transparent p-0.5"
-                                                    v-model="tokens['--brand-primary-hover']"
-                                                />
-                                                <x-admin::form.control-group.control
-                                                    type="text"
-                                                    name="tokens[--brand-primary-hover]"
-                                                    v-model="tokens['--brand-primary-hover']"
-                                                    placeholder="#1d4ed8"
-                                                    class="font-mono text-xs"
-                                                />
-                                            </div>
-                                        </x-admin::form.control-group>
-
-                                        <!-- Secondary Color -->
-                                        <x-admin::form.control-group class="!mb-3">
-                                            <x-admin::form.control-group.label>
-                                                @lang('portal::app.admin.themes.brand-secondary')
-                                            </x-admin::form.control-group.label>
-
-                                            <div class="flex items-center gap-2">
-                                                <input
-                                                    type="color"
-                                                    class="h-9 w-9 rounded cursor-pointer border border-gray-300 dark:border-gray-700 bg-transparent p-0.5"
-                                                    v-model="tokens['--brand-secondary']"
-                                                />
-                                                <x-admin::form.control-group.control
-                                                    type="text"
-                                                    name="tokens[--brand-secondary]"
-                                                    v-model="tokens['--brand-secondary']"
-                                                    placeholder="#0ea5e9"
-                                                    class="font-mono text-xs"
-                                                />
-                                            </div>
-                                        </x-admin::form.control-group>
-
-                                        <!-- Background Color -->
-                                        <x-admin::form.control-group class="!mb-3">
-                                            <x-admin::form.control-group.label>
-                                                @lang('portal::app.admin.themes.surface-background')
-                                            </x-admin::form.control-group.label>
-
-                                            <div class="flex items-center gap-2">
-                                                <input
-                                                    type="color"
-                                                    class="h-9 w-9 rounded cursor-pointer border border-gray-300 dark:border-gray-700 bg-transparent p-0.5"
-                                                    v-model="tokens['--surface-background']"
-                                                />
-                                                <x-admin::form.control-group.control
-                                                    type="text"
-                                                    name="tokens[--surface-background]"
-                                                    v-model="tokens['--surface-background']"
-                                                    placeholder="#f8fafc"
-                                                    class="font-mono text-xs"
-                                                />
-                                            </div>
-                                        </x-admin::form.control-group>
-                                    </div>
-                                </x-slot>
-
-                                <x-slot:footer>
-                                    <div class="flex items-center justify-between w-full">
-                                        <button
-                                            type="button"
-                                            class="transparent-button text-red-600 hover:text-red-700 text-xs font-semibold"
-                                            @click="resetTokens"
-                                        >
-                                            @lang('portal::app.admin.themes.reset-tokens-btn')
-                                        </button>
-
-                                        <x-admin::button
-                                            button-type="submit"
-                                            class="primary-button"
-                                            :title="trans('portal::app.admin.themes.save-tokens-btn')"
-                                            ::loading="isTokensLoading"
-                                            ::disabled="isTokensLoading"
-                                        />
-                                    </div>
-                                </x-slot>
-                            </x-admin::modal>
-                        </form>
-                    </x-admin::form>
-                </Teleport>
             </div>
         </script>
 
@@ -388,17 +232,6 @@
                         failed: {},
 
                         isLoading: false,
-
-                        isTokensLoading: false,
-
-                        tokenChannelId: null,
-
-                        tokens: {
-                            '--brand-primary': '#2563eb',
-                            '--brand-primary-hover': '#1d4ed8',
-                            '--brand-secondary': '#0ea5e9',
-                            '--surface-background': '#f8fafc',
-                        },
                     };
                 },
 
@@ -451,94 +284,6 @@
                             })
                             .catch(error => {
                                 this.isLoading = false;
-
-                                this.$emitter.emit('add-flash', {
-                                    type: 'error',
-                                    message: error.response?.data?.message ?? error.message,
-                                });
-                            });
-                    },
-
-                    openTokens(theme) {
-                        this.selected = theme;
-                        this.tokenChannelId = theme.active_on?.[0]?.id || this.channels[0]?.id;
-
-                        this.$refs.tokensModal.open();
-                        this.loadTokens();
-                    },
-
-                    loadTokens() {
-                        if (! this.tokenChannelId || ! this.selected?.code) {
-                            return;
-                        }
-
-                        this.$axios.get("{{ route('admin.portal.themes.tokens.get') }}", {
-                                params: {
-                                    channel_id: this.tokenChannelId,
-                                    theme_code: this.selected.code,
-                                },
-                            })
-                            .then(response => {
-                                const fetched = response.data?.tokens || {};
-                                this.tokens = {
-                                    '--brand-primary': fetched['--brand-primary'] || '#2563eb',
-                                    '--brand-primary-hover': fetched['--brand-primary-hover'] || '#1d4ed8',
-                                    '--brand-secondary': fetched['--brand-secondary'] || '#0ea5e9',
-                                    '--surface-background': fetched['--surface-background'] || '#f8fafc',
-                                };
-                            })
-                            .catch(() => {});
-                    },
-
-                    saveTokens() {
-                        this.isTokensLoading = true;
-
-                        this.$axios.post("{{ route('admin.portal.themes.tokens') }}", {
-                                channel_id: this.tokenChannelId,
-                                theme_code: this.selected.code,
-                                tokens: this.tokens,
-                            })
-                            .then(response => {
-                                this.isTokensLoading = false;
-                                this.$refs.tokensModal.close();
-
-                                this.$emitter.emit('add-flash', {
-                                    type: 'success',
-                                    message: response.data.message,
-                                });
-                            })
-                            .catch(error => {
-                                this.isTokensLoading = false;
-
-                                this.$emitter.emit('add-flash', {
-                                    type: 'error',
-                                    message: error.response?.data?.message ?? error.message,
-                                });
-                            });
-                    },
-
-                    resetTokens() {
-                        if (! confirm('هل أنت متأكد من استعادة ألوان القالب الافتراضية؟')) {
-                            return;
-                        }
-
-                        this.isTokensLoading = true;
-
-                        this.$axios.post("{{ route('admin.portal.themes.tokens.reset') }}", {
-                                channel_id: this.tokenChannelId,
-                                theme_code: this.selected.code,
-                            })
-                            .then(response => {
-                                this.isTokensLoading = false;
-                                this.$refs.tokensModal.close();
-
-                                this.$emitter.emit('add-flash', {
-                                    type: 'success',
-                                    message: response.data.message,
-                                });
-                            })
-                            .catch(error => {
-                                this.isTokensLoading = false;
 
                                 this.$emitter.emit('add-flash', {
                                     type: 'error',

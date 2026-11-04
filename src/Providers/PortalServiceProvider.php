@@ -18,6 +18,7 @@ use Platform\Portal\Http\Middleware\Theme;
 use Platform\Portal\Sections\SectionTypeRegistry;
 use Platform\Portal\Services\ExtendedThemeCatalog;
 use Platform\Portal\Services\ThemeManager;
+use Platform\Portal\Services\TokenCompilerService;
 use Spatie\ResponseCache\ResponseCache;
 use Webkul\Core\Repositories\ChannelRepository;
 use Webkul\Theme\Repositories\SectionRepository;
@@ -44,6 +45,24 @@ class PortalServiceProvider extends ServiceProvider
             dirname(__DIR__).'/Config/bagisto-vite.php',
             'bagisto-vite.viters'
         );
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__).'/Config/design-tokens.php',
+            'design-tokens'
+        );
+
+        $this->app->singleton(TokenCompilerService::class, function () {
+            return new TokenCompilerService;
+        });
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__).'/Config/design-tokens.php',
+            'design-tokens'
+        );
+
+        $this->app->singleton(TokenCompilerService::class, function () {
+            return new TokenCompilerService;
+        });
 
         // Bind ThemeManager singleton & auto-discover themes cleanly
         $this->app->singleton(ThemeManager::class, function () {
