@@ -3,8 +3,12 @@
         @lang('portal::app.home.contact-us.title')
     </x-slot>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="m-auto w-full rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-8 sm:p-14 shadow-[var(--shadow-card)]">
+    <div class="portal-container mx-auto py-16">
+        <div
+            class="portal-card m-auto w-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-8 sm:p-14 shadow-[var(--shadow-card)]"
+            data-portal-card
+            style="border-radius: var(--card-radius, 1rem);"
+        >
             <h1 class="text-3xl font-extrabold text-[var(--text-primary)] font-cairo sm:text-4xl">
                 @lang('portal::app.home.contact-us.heading')
             </h1>
@@ -101,7 +105,7 @@
                     <!-- Submit Button -->
                     <div class="mt-8">
                         <x-portal::button
-                            class="w-full sm:w-auto px-8 py-3 bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] text-white font-semibold rounded-xl shadow-sm transition-all"
+                            class="btn-primary w-full sm:w-auto !px-8 !py-3 shadow-sm hover:shadow-[var(--shadow-glow)]"
                             type="submit"
                         >
                             @lang('portal::app.home.contact-us.submit')

@@ -36,14 +36,18 @@
     </div>
 @endif
 
-<header class="{{ $isSticky ? 'sticky top-0' : 'relative' }} z-50 bg-[var(--bg-app)]/85 backdrop-blur-md border-b border-[var(--border-subtle)] shadow-[0_1px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+<header
+    class="portal-header {{ $isSticky ? 'sticky top-0' : 'relative' }} z-50 backdrop-blur-md border-b border-[var(--border-subtle)] shadow-[0_1px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300"
+    data-portal-header
+    style="background-color: var(--header-bg, var(--bg-surface)); color: var(--header-text, var(--text-primary)); min-height: var(--header-height, 4rem);"
+>
+    <div class="portal-container mx-auto flex items-center justify-between gap-4" style="max-width: var(--container-max-width, 1280px); min-height: var(--header-height, 4rem); padding-inline: var(--page-padding-x, 1rem);">
         <!-- Left: Hamburger (Mobile) + Brand Monogram Logo -->
         <div class="flex items-center gap-3 sm:gap-4 shrink-0 min-w-0">
             <!-- Mobile Menu Toggle Button -->
             <button
                 type="button"
-                class="md:hidden flex items-center justify-center w-10 h-10 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] transition-colors focus:outline-none"
+                class="md:hidden flex items-center justify-center w-10 h-10 rounded-[var(--btn-radius,0.5rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] transition-colors focus:outline-none"
                 @click="$refs.mobileMenuDrawer.open()"
                 aria-label="Open navigation menu"
             >
@@ -55,7 +59,7 @@
                 @if ($logo = core()->getCurrentChannel()->logo_url)
                     <img id="logo-image" src="{{ $logo }}" class="h-8 w-auto transition-transform group-hover:scale-105" alt="{{ $channelName }}" />
                 @else
-                    <div class="w-9 h-9 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-center p-1.5 shadow-2xs group-hover:border-[var(--brand-primary)] transition-colors duration-200 shrink-0">
+                    <div class="w-9 h-9 rounded-[var(--btn-radius,0.5rem)] bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-center p-1.5 shadow-2xs group-hover:border-[var(--brand-primary)] transition-colors duration-200 shrink-0">
                         <svg viewBox="0 0 64 64" fill="none" class="w-full h-full" aria-hidden="true">
                             <path d="M18 44V20H32C36.4183 20 40 23.5817 40 28C40 32.4183 36.4183 36 32 36H24" stroke="#1c66f6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
                             <path d="M30 36L44 44" stroke="#fe8312" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
@@ -121,7 +125,7 @@
                         </button>
                     </x-slot>
 
-                    <x-slot:content class="!p-1.5 min-w-[140px] shadow-[var(--shadow-card)] rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+                    <x-slot:content class="!p-1.5 min-w-[140px] shadow-[var(--shadow-card)] rounded-[var(--card-radius,0.75rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
                         @foreach (core()->getCurrentChannel()->locales as $locale)
                             <a
                                 href="{{ route('portal.locale.switch', $locale->code) }}"
@@ -151,7 +155,8 @@
             <!-- Direct Consultation Primary CTA Button -->
             <a
                 href="#contact"
-                class="btn-primary !px-4 !py-2 !text-xs !rounded-full hidden lg:inline-flex items-center gap-1.5 shadow-sm hover:shadow-[var(--shadow-glow)] transition-all"
+                class="btn-primary !px-4 !py-2 !text-xs hidden lg:inline-flex items-center gap-1.5 shadow-sm hover:shadow-[var(--shadow-glow)] transition-all"
+                style="border-radius: var(--btn-radius, 0.5rem);"
             >
                 <span>@lang('portal::app.sections.hero_scaffold.default_primary_cta')</span>
                 <span class="icon-arrow-right rtl:rotate-180 text-xs"></span>
@@ -174,7 +179,7 @@
                             </button>
                         </x-slot>
 
-                        <x-slot:content class="!p-1.5 min-w-[140px] shadow-[var(--shadow-card)] rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+                        <x-slot:content class="portal-card !p-1.5 min-w-[140px] shadow-[var(--shadow-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)]" style="border-radius: var(--card-radius, 0.75rem);">
                             <form method="POST" action="{{ route('portal.auth.logout') }}">
                                 @csrf
                                 <button
@@ -197,7 +202,8 @@
 
                         <a
                             href="{{ route('portal.auth.register') }}"
-                            class="btn-primary !px-3.5 !py-1.5 !text-xs !rounded-full font-semibold shadow-xs"
+                            class="btn-primary !px-3.5 !py-1.5 !text-xs font-semibold shadow-xs"
+                            style="border-radius: var(--btn-radius, 0.5rem);"
                         >
                             @lang('portal::app.auth.register.title')
                         </a>
@@ -285,7 +291,8 @@
 
                     <a
                         href="{{ route('portal.auth.register') }}"
-                        class="btn-primary flex items-center justify-center px-4 py-2.5 !rounded-xl text-sm font-semibold shadow-sm"
+                        class="btn-primary flex items-center justify-center px-4 py-2.5 text-sm font-semibold shadow-sm"
+                        style="border-radius: var(--btn-radius, 0.5rem);"
                     >
                         @lang('portal::app.auth.register.title')
                     </a>
@@ -345,7 +352,8 @@
             <div class="mt-4 pt-3 border-t border-[var(--border-subtle)]">
                 <a
                     href="#contact"
-                    class="btn-primary w-full flex items-center justify-center gap-2 !py-2.5 !text-sm !rounded-xl"
+                    class="btn-primary w-full flex items-center justify-center gap-2 !py-2.5 !text-sm"
+                    style="border-radius: var(--btn-radius, 0.5rem);"
                 >
                     <span>@lang('portal::app.sections.hero_scaffold.default_primary_cta')</span>
                     <span class="icon-arrow-right rtl:rotate-180 text-xs"></span>

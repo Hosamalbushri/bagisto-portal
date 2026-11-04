@@ -192,6 +192,150 @@ return [
                 'dark' => '#60a5fa',
             ],
         ],
+
+        'components' => [
+            '--header-bg' => [
+                'type' => 'color',
+                'label' => 'portal::app.admin.tokens.header-bg',
+                'default' => '#ffffff',
+                'dark' => '#0f141f',
+            ],
+            '--header-text' => [
+                'type' => 'color',
+                'label' => 'portal::app.admin.tokens.header-text',
+                'default' => '#090d16',
+                'dark' => '#f8fafc',
+            ],
+            '--header-height' => [
+                'type' => 'dimension',
+                'label' => 'portal::app.admin.tokens.header-height',
+                'default' => '4.5rem',
+                'dark' => '4.5rem',
+            ],
+            '--footer-bg' => [
+                'type' => 'color',
+                'label' => 'portal::app.admin.tokens.footer-bg',
+                'default' => '#0f172a',
+                'dark' => '#080b11',
+            ],
+            '--footer-text' => [
+                'type' => 'color',
+                'label' => 'portal::app.admin.tokens.footer-text',
+                'default' => '#94a3b8',
+                'dark' => '#94a3b8',
+            ],
+            '--btn-radius' => [
+                'type' => 'dimension',
+                'label' => 'portal::app.admin.tokens.btn-radius',
+                'default' => '0.5rem',
+                'dark' => '0.5rem',
+            ],
+            '--card-radius' => [
+                'type' => 'dimension',
+                'label' => 'portal::app.admin.tokens.card-radius',
+                'default' => '1rem',
+                'dark' => '1rem',
+            ],
+        ],
+
+        'shadows' => [
+            '--shadow-card' => [
+                'type' => 'shadow',
+                'label' => 'portal::app.admin.tokens.shadow-card',
+                'default' => '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                'dark' => '0 10px 30px -5px rgba(0, 0, 0, 0.5)',
+            ],
+            '--shadow-glow' => [
+                'type' => 'shadow',
+                'label' => 'portal::app.admin.tokens.shadow-glow',
+                'default' => '0 0 25px rgba(28, 102, 246, 0.25)',
+                'dark' => '0 0 35px rgba(28, 102, 246, 0.4)',
+            ],
+        ],
+
+        'layout' => [
+            '--container-max-width' => [
+                'type' => 'dimension',
+                'label' => 'portal::app.admin.tokens.container-max-width',
+                'description' => 'portal::app.admin.tokens.container-max-width-desc',
+                'default' => '1280px',
+                'dark' => '1280px',
+            ],
+            '--page-padding-x' => [
+                'type' => 'dimension',
+                'label' => 'portal::app.admin.tokens.page-padding-x',
+                'description' => 'portal::app.admin.tokens.page-padding-x-desc',
+                'default' => '1rem',
+                'dark' => '1rem',
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Curated Fonts Catalog (Arabic & Latin)
+    |--------------------------------------------------------------------------
+    */
+    'fonts' => [
+        'arabic' => [
+            'Cairo' => [
+                'name' => 'Cairo',
+                'family' => "'Cairo', system-ui, sans-serif",
+                'weights' => '400;500;600;700;800;900',
+            ],
+            'Tajawal' => [
+                'name' => 'Tajawal',
+                'family' => "'Tajawal', system-ui, sans-serif",
+                'weights' => '400;500;700;800',
+            ],
+            'Almarai' => [
+                'name' => 'Almarai',
+                'family' => "'Almarai', system-ui, sans-serif",
+                'weights' => '400;700;800',
+            ],
+            'Readex Pro' => [
+                'name' => 'Readex Pro',
+                'family' => "'Readex Pro', system-ui, sans-serif",
+                'weights' => '400;500;600;700',
+            ],
+            'Alexandria' => [
+                'name' => 'Alexandria',
+                'family' => "'Alexandria', system-ui, sans-serif",
+                'weights' => '400;500;600;700',
+            ],
+            'IBM Plex Sans Arabic' => [
+                'name' => 'IBM Plex Sans Arabic',
+                'family' => "'IBM Plex Sans Arabic', system-ui, sans-serif",
+                'weights' => '400;500;600;700',
+            ],
+        ],
+        'latin' => [
+            'Inter' => [
+                'name' => 'Inter',
+                'family' => "'Inter', system-ui, sans-serif",
+                'weights' => '400;500;600;700;800',
+            ],
+            'Plus Jakarta Sans' => [
+                'name' => 'Plus Jakarta Sans',
+                'family' => "'Plus Jakarta Sans', system-ui, sans-serif",
+                'weights' => '400;500;600;700;800',
+            ],
+            'Outfit' => [
+                'name' => 'Outfit',
+                'family' => "'Outfit', system-ui, sans-serif",
+                'weights' => '400;500;600;700;800',
+            ],
+            'Poppins' => [
+                'name' => 'Poppins',
+                'family' => "'Poppins', system-ui, sans-serif",
+                'weights' => '400;500;600;700;800',
+            ],
+            'Roboto' => [
+                'name' => 'Roboto',
+                'family' => "'Roboto', system-ui, sans-serif",
+                'weights' => '400;500;700;900',
+            ],
+        ],
     ],
 
     /*

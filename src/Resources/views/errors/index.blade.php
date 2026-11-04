@@ -41,7 +41,7 @@
             <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
                 <a
                     href="{{ portal_home_url() }}"
-                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] text-white font-medium text-sm shadow-xs transition-all"
+                    class="btn-primary w-full sm:w-auto text-sm"
                 >
                     <span class="icon-arrow-left rtl:rotate-180 text-xs"></span>
                     <span>@lang('portal::app.errors.go-to-home')</span>
@@ -50,7 +50,7 @@
                 @if ($errorCode == 404)
                     <a
                         href="{{ route('portal.search.index') }}"
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] font-medium text-sm transition-all"
+                        class="btn-secondary w-full sm:w-auto text-sm"
                     >
                         <span class="icon-search text-xs"></span>
                         <span>@lang('portal::app.search.title')</span>

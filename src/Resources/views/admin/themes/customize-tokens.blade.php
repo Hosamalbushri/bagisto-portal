@@ -147,18 +147,28 @@
 
                     <x-slot:content>
                         <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 pt-1">
-                            <!-- Primary Color -->
+                            <!-- Primary Color with Live WCAG Contrast Badge -->
                             <x-admin::form.control-group>
-                                <x-admin::form.control-group.label class="required">
-                                    @lang('portal::app.admin.tokens.brand-primary')
-                                </x-admin::form.control-group.label>
+                                <div class="flex items-center justify-between">
+                                    <x-admin::form.control-group.label class="required !mb-0">
+                                        @lang('portal::app.admin.tokens.brand-primary')
+                                    </x-admin::form.control-group.label>
 
-                                <div class="flex items-center gap-2">
+                                    <span
+                                        id="brand-contrast-badge"
+                                        class="rounded px-2 py-0.5 text-[10px] font-bold transition-all bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300"
+                                        title="مؤشر سهولة قراءة النصوص على هذا اللون الأساسي وفق معيار WCAG 2.1"
+                                    >
+                                        AAA 7.5:1
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center gap-2 mt-1">
                                     <input
                                         type="color"
                                         class="h-9 w-9 shrink-0 cursor-pointer rounded border border-gray-300 bg-transparent p-0.5 dark:border-gray-700"
                                         value="{{ $tokens['--brand-primary'] ?? '#1c66f6' }}"
-                                        oninput="document.getElementById('input-brand-primary').value = this.value; updatePreviewToken('--brand-primary', this.value);"
+                                        oninput="document.getElementById('input-brand-primary').value = this.value; updatePreviewToken('--brand-primary', this.value); updateContrastBadge();"
                                     />
                                     <x-admin::form.control-group.control
                                         type="text"
@@ -167,7 +177,7 @@
                                         :value="$tokens['--brand-primary'] ?? '#1c66f6'"
                                         placeholder="#1c66f6"
                                         class="font-mono text-xs"
-                                        oninput="updatePreviewToken('--brand-primary', this.value);"
+                                        oninput="updatePreviewToken('--brand-primary', this.value); updateContrastBadge();"
                                     />
                                 </div>
                             </x-admin::form.control-group>
@@ -415,12 +425,14 @@
                                     name="tokens[--font-arabic]"
                                     :value="$tokens['--font-arabic'] ?? '\'Cairo\', system-ui, sans-serif'"
                                     class="cursor-pointer text-xs"
-                                    onchange="updatePreviewToken('--font-arabic', this.value);"
+                                    onchange="onFontSelected('--font-arabic', this.value);"
                                 >
-                                    <option value="'Cairo', system-ui, sans-serif" {{ ($tokens['--font-arabic'] ?? '') === "'Cairo', system-ui, sans-serif" ? 'selected' : '' }}>Cairo (كايرو - الافتراضي)</option>
-                                    <option value="'Tajawal', system-ui, sans-serif" {{ ($tokens['--font-arabic'] ?? '') === "'Tajawal', system-ui, sans-serif" ? 'selected' : '' }}>Tajawal (تجوال)</option>
-                                    <option value="'Almarai', system-ui, sans-serif" {{ ($tokens['--font-arabic'] ?? '') === "'Almarai', system-ui, sans-serif" ? 'selected' : '' }}>Almarai (المراعي)</option>
-                                    <option value="'IBM Plex Sans Arabic', system-ui, sans-serif" {{ ($tokens['--font-arabic'] ?? '') === "'IBM Plex Sans Arabic', system-ui, sans-serif" ? 'selected' : '' }}>IBM Plex Sans Arabic</option>
+                                    <option value="'Cairo', system-ui, sans-serif" {{ str_contains($tokens['--font-arabic'] ?? '', 'Cairo') || empty($tokens['--font-arabic']) ? 'selected' : '' }}>Cairo (كايرو - الافتراضي)</option>
+                                    <option value="'Tajawal', system-ui, sans-serif" {{ str_contains($tokens['--font-arabic'] ?? '', 'Tajawal') ? 'selected' : '' }}>Tajawal (تجوال - هندسي نظيف)</option>
+                                    <option value="'Almarai', system-ui, sans-serif" {{ str_contains($tokens['--font-arabic'] ?? '', 'Almarai') ? 'selected' : '' }}>Almarai (المراعي - عريض للشركات)</option>
+                                    <option value="'Readex Pro', system-ui, sans-serif" {{ str_contains($tokens['--font-arabic'] ?? '', 'Readex Pro') ? 'selected' : '' }}>Readex Pro (ريديكس برو - للشاشات)</option>
+                                    <option value="'Alexandria', system-ui, sans-serif" {{ str_contains($tokens['--font-arabic'] ?? '', 'Alexandria') ? 'selected' : '' }}>Alexandria (الإسكندرية - عصري)</option>
+                                    <option value="'IBM Plex Sans Arabic', system-ui, sans-serif" {{ str_contains($tokens['--font-arabic'] ?? '', 'IBM Plex') ? 'selected' : '' }}>IBM Plex Sans Arabic (تقني احترافي)</option>
                                     <option value="system-ui, -apple-system, sans-serif" {{ ($tokens['--font-arabic'] ?? '') === "system-ui, -apple-system, sans-serif" ? 'selected' : '' }}>خط النظام (System Sans)</option>
                                 </x-admin::form.control-group.control>
                             </x-admin::form.control-group>
@@ -436,11 +448,13 @@
                                     name="tokens[--font-latin]"
                                     :value="$tokens['--font-latin'] ?? '\'Inter\', system-ui, sans-serif'"
                                     class="cursor-pointer text-xs"
-                                    onchange="updatePreviewToken('--font-latin', this.value);"
+                                    onchange="onFontSelected('--font-latin', this.value);"
                                 >
-                                    <option value="'Inter', system-ui, sans-serif" {{ ($tokens['--font-latin'] ?? '') === "'Inter', system-ui, sans-serif" ? 'selected' : '' }}>Inter (الافتراضي)</option>
-                                    <option value="'Plus Jakarta Sans', system-ui, sans-serif" {{ ($tokens['--font-latin'] ?? '') === "'Plus Jakarta Sans', system-ui, sans-serif" ? 'selected' : '' }}>Plus Jakarta Sans</option>
-                                    <option value="'Roboto', system-ui, sans-serif" {{ ($tokens['--font-latin'] ?? '') === "'Roboto', system-ui, sans-serif" ? 'selected' : '' }}>Roboto</option>
+                                    <option value="'Inter', system-ui, sans-serif" {{ str_contains($tokens['--font-latin'] ?? '', 'Inter') || empty($tokens['--font-latin']) ? 'selected' : '' }}>Inter (Clean Tech Standard)</option>
+                                    <option value="'Plus Jakarta Sans', system-ui, sans-serif" {{ str_contains($tokens['--font-latin'] ?? '', 'Plus Jakarta') ? 'selected' : '' }}>Plus Jakarta Sans (Modern Geometric)</option>
+                                    <option value="'Outfit', system-ui, sans-serif" {{ str_contains($tokens['--font-latin'] ?? '', 'Outfit') ? 'selected' : '' }}>Outfit (Futuristic Minimal)</option>
+                                    <option value="'Poppins', system-ui, sans-serif" {{ str_contains($tokens['--font-latin'] ?? '', 'Poppins') ? 'selected' : '' }}>Poppins (Friendly Rounded)</option>
+                                    <option value="'Roboto', system-ui, sans-serif" {{ str_contains($tokens['--font-latin'] ?? '', 'Roboto') ? 'selected' : '' }}>Roboto (Universal Google Sans)</option>
                                     <option value="system-ui, -apple-system, sans-serif" {{ ($tokens['--font-latin'] ?? '') === "system-ui, -apple-system, sans-serif" ? 'selected' : '' }}>System Default</option>
                                 </x-admin::form.control-group.control>
                             </x-admin::form.control-group>
@@ -647,8 +661,254 @@
                             </x-admin::form.control-group>
                         </div>
                     </x-slot>
-                </x-admin::accordion>                        </div>
-                    </div>
+                </x-admin::accordion>
+
+                <!-- 7. Components & Structural Styling Accordion -->
+                <x-admin::accordion :is-active="false">
+                    <x-slot:header>
+                        <div class="flex items-center gap-2 p-1.5">
+                            <span class="icon-menu text-xl text-blue-600"></span>
+                            <p class="text-base font-semibold text-gray-800 dark:text-white">
+                                @lang('portal::app.admin.tokens.tab-components')
+                            </p>
+                        </div>
+                    </x-slot>
+
+                    <x-slot:content>
+                        <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 pt-1">
+                            <!-- Header Background -->
+                            <x-admin::form.control-group>
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.tokens.header-bg')
+                                </x-admin::form.control-group.label>
+
+                                <div class="flex items-center gap-2">
+                                    <input
+                                        type="color"
+                                        class="h-9 w-9 shrink-0 cursor-pointer rounded border border-gray-300 bg-transparent p-0.5 dark:border-gray-700"
+                                        value="{{ $tokens['--header-bg'] ?? '#ffffff' }}"
+                                        oninput="document.getElementById('input-header-bg').value = this.value; updatePreviewToken('--header-bg', this.value);"
+                                    />
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        id="input-header-bg"
+                                        name="tokens[--header-bg]"
+                                        :value="$tokens['--header-bg'] ?? '#ffffff'"
+                                        placeholder="#ffffff"
+                                        class="font-mono text-xs"
+                                        oninput="updatePreviewToken('--header-bg', this.value);"
+                                    />
+                                </div>
+                            </x-admin::form.control-group>
+
+                            <!-- Header Text -->
+                            <x-admin::form.control-group>
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.tokens.header-text')
+                                </x-admin::form.control-group.label>
+
+                                <div class="flex items-center gap-2">
+                                    <input
+                                        type="color"
+                                        class="h-9 w-9 shrink-0 cursor-pointer rounded border border-gray-300 bg-transparent p-0.5 dark:border-gray-700"
+                                        value="{{ $tokens['--header-text'] ?? '#090d16' }}"
+                                        oninput="document.getElementById('input-header-text').value = this.value; updatePreviewToken('--header-text', this.value);"
+                                    />
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        id="input-header-text"
+                                        name="tokens[--header-text]"
+                                        :value="$tokens['--header-text'] ?? '#090d16'"
+                                        placeholder="#090d16"
+                                        class="font-mono text-xs"
+                                        oninput="updatePreviewToken('--header-text', this.value);"
+                                    />
+                                </div>
+                            </x-admin::form.control-group>
+
+                            <!-- Footer Background -->
+                            <x-admin::form.control-group>
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.tokens.footer-bg')
+                                </x-admin::form.control-group.label>
+
+                                <div class="flex items-center gap-2">
+                                    <input
+                                        type="color"
+                                        class="h-9 w-9 shrink-0 cursor-pointer rounded border border-gray-300 bg-transparent p-0.5 dark:border-gray-700"
+                                        value="{{ $tokens['--footer-bg'] ?? '#0f172a' }}"
+                                        oninput="document.getElementById('input-footer-bg').value = this.value; updatePreviewToken('--footer-bg', this.value);"
+                                    />
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        id="input-footer-bg"
+                                        name="tokens[--footer-bg]"
+                                        :value="$tokens['--footer-bg'] ?? '#0f172a'"
+                                        placeholder="#0f172a"
+                                        class="font-mono text-xs"
+                                        oninput="updatePreviewToken('--footer-bg', this.value);"
+                                    />
+                                </div>
+                            </x-admin::form.control-group>
+
+                            <!-- Footer Text -->
+                            <x-admin::form.control-group>
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.tokens.footer-text')
+                                </x-admin::form.control-group.label>
+
+                                <div class="flex items-center gap-2">
+                                    <input
+                                        type="color"
+                                        class="h-9 w-9 shrink-0 cursor-pointer rounded border border-gray-300 bg-transparent p-0.5 dark:border-gray-700"
+                                        value="{{ $tokens['--footer-text'] ?? '#94a3b8' }}"
+                                        oninput="document.getElementById('input-footer-text').value = this.value; updatePreviewToken('--footer-text', this.value);"
+                                    />
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        id="input-footer-text"
+                                        name="tokens[--footer-text]"
+                                        :value="$tokens['--footer-text'] ?? '#94a3b8'"
+                                        placeholder="#94a3b8"
+                                        class="font-mono text-xs"
+                                        oninput="updatePreviewToken('--footer-text', this.value);"
+                                    />
+                                </div>
+                            </x-admin::form.control-group>
+
+                            <!-- Button Radius -->
+                            <x-admin::form.control-group>
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.tokens.btn-radius')
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control
+                                    type="select"
+                                    name="tokens[--btn-radius]"
+                                    :value="$tokens['--btn-radius'] ?? '0.5rem'"
+                                    class="cursor-pointer text-xs"
+                                    onchange="updatePreviewToken('--btn-radius', this.value);"
+                                >
+                                    <option value="0rem" {{ ($tokens['--btn-radius'] ?? '') === '0rem' ? 'selected' : '' }}>مستطيل حاد (Square - 0px)</option>
+                                    <option value="0.375rem" {{ ($tokens['--btn-radius'] ?? '') === '0.375rem' ? 'selected' : '' }}>انحناء خفيف (Rounded - 6px)</option>
+                                    <option value="0.5rem" {{ ($tokens['--btn-radius'] ?? '') === '0.5rem' || empty($tokens['--btn-radius']) ? 'selected' : '' }}>انحناء قياسي (Standard - 8px)</option>
+                                    <option value="0.75rem" {{ ($tokens['--btn-radius'] ?? '') === '0.75rem' ? 'selected' : '' }}>انحناء ناعم (Smooth - 12px)</option>
+                                    <option value="9999px" {{ ($tokens['--btn-radius'] ?? '') === '9999px' ? 'selected' : '' }}>كبسولة دائرية (Pill - 9999px)</option>
+                                </x-admin::form.control-group.control>
+                            </x-admin::form.control-group>
+
+                            <!-- Card Radius -->
+                            <x-admin::form.control-group>
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.tokens.card-radius')
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control
+                                    type="select"
+                                    name="tokens[--card-radius]"
+                                    :value="$tokens['--card-radius'] ?? '1rem'"
+                                    class="cursor-pointer text-xs"
+                                    onchange="updatePreviewToken('--card-radius', this.value);"
+                                >
+                                    <option value="0rem" {{ ($tokens['--card-radius'] ?? '') === '0rem' ? 'selected' : '' }}>حواف حادة (Square - 0px)</option>
+                                    <option value="0.5rem" {{ ($tokens['--card-radius'] ?? '') === '0.5rem' ? 'selected' : '' }}>انحناء خفيف (8px)</option>
+                                    <option value="0.75rem" {{ ($tokens['--card-radius'] ?? '') === '0.75rem' ? 'selected' : '' }}>انحناء متوسط (12px)</option>
+                                    <option value="1rem" {{ ($tokens['--card-radius'] ?? '') === '1rem' || empty($tokens['--card-radius']) ? 'selected' : '' }}>انحناء بطاقات قياسي (16px)</option>
+                                    <option value="1.5rem" {{ ($tokens['--card-radius'] ?? '') === '1.5rem' ? 'selected' : '' }}>انحناء عريض بارز (24px)</option>
+                                </x-admin::form.control-group.control>
+                            </x-admin::form.control-group>
+                        </div>
+                    </x-slot>
+                </x-admin::accordion>
+
+                <!-- 8. Page Layout & Containers Accordion -->
+                <x-admin::accordion :is-active="false">
+                    <x-slot:header>
+                        <div class="flex items-center gap-2 p-1.5">
+                            <span class="icon-dashboard text-xl text-indigo-600"></span>
+                            <p class="text-base font-semibold text-gray-800 dark:text-white">
+                                @lang('portal::app.admin.tokens.tab-layout')
+                            </p>
+                        </div>
+                    </x-slot>
+
+                    <x-slot:content>
+                        <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 pt-1">
+                            <!-- Container Max Width -->
+                            <x-admin::form.control-group>
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.tokens.container-max-width')
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control
+                                    type="select"
+                                    name="tokens[--container-max-width]"
+                                    :value="$tokens['--container-max-width'] ?? '1280px'"
+                                    class="cursor-pointer text-xs"
+                                    onchange="updatePreviewToken('--container-max-width', this.value);"
+                                >
+                                    <option value="1200px" {{ ($tokens['--container-max-width'] ?? '') === '1200px' ? 'selected' : '' }}>مدمج (Compact - 1200px)</option>
+                                    <option value="1280px" {{ ($tokens['--container-max-width'] ?? '') === '1280px' || empty($tokens['--container-max-width']) ? 'selected' : '' }}>قياسي (Standard - 1280px)</option>
+                                    <option value="1440px" {{ ($tokens['--container-max-width'] ?? '') === '1440px' ? 'selected' : '' }}>عريض (Wide - 1440px)</option>
+                                    <option value="1600px" {{ ($tokens['--container-max-width'] ?? '') === '1600px' ? 'selected' : '' }}>فائق العرض (Ultra Wide - 1600px)</option>
+                                    <option value="100%" {{ ($tokens['--container-max-width'] ?? '') === '100%' ? 'selected' : '' }}>كامل الشاشة (Full Width - 100%)</option>
+                                </x-admin::form.control-group.control>
+                            </x-admin::form.control-group>
+
+                            <!-- Page Horizontal Padding -->
+                            <x-admin::form.control-group>
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.tokens.page-padding-x')
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control
+                                    type="select"
+                                    name="tokens[--page-padding-x]"
+                                    :value="$tokens['--page-padding-x'] ?? '1rem'"
+                                    class="cursor-pointer text-xs"
+                                    onchange="updatePreviewToken('--page-padding-x', this.value);"
+                                >
+                                    <option value="0.75rem" {{ ($tokens['--page-padding-x'] ?? '') === '0.75rem' ? 'selected' : '' }}>ضيق (Narrow - 12px)</option>
+                                    <option value="1rem" {{ ($tokens['--page-padding-x'] ?? '') === '1rem' || empty($tokens['--page-padding-x']) ? 'selected' : '' }}>قياسي (Standard - 16px)</option>
+                                    <option value="1.5rem" {{ ($tokens['--page-padding-x'] ?? '') === '1.5rem' ? 'selected' : '' }}>مريح (Comfortable - 24px)</option>
+                                    <option value="2rem" {{ ($tokens['--page-padding-x'] ?? '') === '2rem' ? 'selected' : '' }}>رحب (Spacious - 32px)</option>
+                                </x-admin::form.control-group.control>
+                            </x-admin::form.control-group>
+                        </div>
+                    </x-slot>
+                </x-admin::accordion>
+
+                <!-- 9. Additional Custom CSS Accordion -->
+                <x-admin::accordion :is-active="false">
+                    <x-slot:header>
+                        <div class="flex items-center gap-2 p-1.5">
+                            <span class="icon-attribute text-xl text-cyan-600"></span>
+                            <p class="text-base font-semibold text-gray-800 dark:text-white">
+                                @lang('portal::app.admin.tokens.tab-custom-css')
+                            </p>
+                        </div>
+                    </x-slot>
+
+                    <x-slot:content>
+                        <div class="space-y-3 pt-1">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                @lang('portal::app.admin.tokens.custom-css-desc')
+                            </p>
+
+                            <textarea
+                                id="input-custom-css"
+                                name="custom_css"
+                                rows="8"
+                                dir="ltr"
+                                class="w-full rounded border border-gray-300 bg-gray-50 p-3 font-mono text-xs leading-relaxed text-gray-800 placeholder-gray-400 focus:border-blue-600 focus:bg-white focus:outline-none dark:border-gray-700 dark:bg-gray-950 dark:text-gray-200"
+                                placeholder="@lang('portal::app.admin.tokens.custom-css-placeholder')"
+                                oninput="updatePreviewCustomCss(this.value);"
+                            >{{ $customCss ?? '' }}</textarea>
+                        </div>
+                    </x-slot>
+                </x-admin::accordion>
+            </div>
+        </div>
 
                     <!-- Preview Pane (Matching Bagisto Appearance Editor) -->
                     <div
@@ -688,6 +948,17 @@
                                     onclick="setPreviewDevice('mobile', this);"
                                 >
                                     @lang('admin::app.appearance.sections.index.mobile')
+                                </button>
+
+                                <button
+                                    type="button"
+                                    id="btn-preview-dark-toggle"
+                                    class="portal-device-btn flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-all text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-950"
+                                    onclick="togglePreviewDarkMode(this);"
+                                    title="تبديل معاينة الوضع الداكن"
+                                >
+                                    <span class="icon-dark text-base"></span>
+                                    <span id="preview-dark-text">الداكن</span>
                                 </button>
 
                                 <button
@@ -742,6 +1013,7 @@
     @pushOnce('scripts')
         <script>
             let currentDevice = 'desktop';
+            let isPreviewDark = false;
             const deviceWidths = { desktop: 1440, tablet: 768, mobile: 390 };
             const stagePadding = 16;
 
@@ -774,13 +1046,143 @@
                 currentDevice = device;
 
                 if (btn) {
-                    document.querySelectorAll('.portal-device-btn').forEach(b => {
+                    document.querySelectorAll('.portal-device-btn:not(#btn-preview-dark-toggle)').forEach(b => {
                         b.className = 'portal-device-btn rounded px-2.5 py-1 text-xs font-medium transition-all text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-950';
                     });
                     btn.className = 'portal-device-btn rounded px-2.5 py-1 text-xs font-medium transition-all bg-blue-50 text-blue-700 dark:bg-gray-950 dark:text-blue-400';
                 }
 
                 layoutPreviewFrame();
+            }
+
+            function togglePreviewDarkMode(btn) {
+                isPreviewDark = ! isPreviewDark;
+                const frame = document.getElementById('portal-preview-frame');
+
+                if (btn) {
+                    if (isPreviewDark) {
+                        btn.classList.add('bg-gray-900', 'text-white', 'dark:bg-white', 'dark:text-gray-900');
+                        btn.classList.remove('text-gray-500');
+                        const text = document.getElementById('preview-dark-text');
+                        if (text) text.textContent = 'الفاتح';
+                    } else {
+                        btn.classList.remove('bg-gray-900', 'text-white', 'dark:bg-white', 'dark:text-gray-900');
+                        btn.classList.add('text-gray-500');
+                        const text = document.getElementById('preview-dark-text');
+                        if (text) text.textContent = 'الداكن';
+                    }
+                }
+
+                if (frame && frame.contentWindow) {
+                    try {
+                        frame.contentWindow.postMessage({
+                            type: 'toggle-dark',
+                            dark: isPreviewDark,
+                        }, window.location.origin);
+                    } catch (e) {}
+
+                    try {
+                        const doc = frame.contentDocument || frame.contentWindow?.document;
+                        if (doc) {
+                            doc.documentElement.classList.toggle('dark', isPreviewDark);
+                            doc.documentElement.setAttribute('data-theme', isPreviewDark ? 'dark' : 'light');
+                        }
+                    } catch (e) {}
+                }
+
+                updateContrastBadge();
+            }
+
+            function onFontSelected(tokenName, fontValue) {
+                updatePreviewToken(tokenName, fontValue);
+
+                const match = fontValue.match(/['"]([^'"]+)['"]/);
+                const fontName = match ? match[1].trim() : fontValue.split(',')[0].trim();
+                const systemFonts = ['system-ui', '-apple-system', 'sans-serif', 'serif', 'monospace', 'inherit', 'initial'];
+
+                if (! fontName || systemFonts.includes(fontName.toLowerCase())) {
+                    return;
+                }
+
+                const fontUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName.replace(/ /g, '+'))}:wght@300;400;500;600;700;800&display=swap`;
+
+                const frame = document.getElementById('portal-preview-frame');
+                if (frame && frame.contentWindow) {
+                    try {
+                        frame.contentWindow.postMessage({
+                            type: 'load-font',
+                            url: fontUrl,
+                        }, window.location.origin);
+                    } catch (e) {}
+
+                    try {
+                        const doc = frame.contentDocument || frame.contentWindow?.document;
+                        if (doc && ! doc.querySelector(`link[href="${fontUrl}"]`)) {
+                            const link = doc.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = fontUrl;
+                            doc.head.appendChild(link);
+                        }
+                    } catch (e) {}
+                }
+            }
+
+            function calculateLuminance(hex) {
+                if (! hex || typeof hex !== 'string') return 1;
+                hex = hex.replace('#', '').trim();
+                if (hex.length === 3) {
+                    hex = hex.split('').map(c => c + c).join('');
+                }
+                if (hex.length !== 6) return 1;
+
+                const r = parseInt(hex.substring(0, 2), 16) / 255;
+                const g = parseInt(hex.substring(2, 4), 16) / 255;
+                const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+                const sRgb = [r, g, b].map(val => {
+                    return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
+                });
+
+                return (0.2126 * sRgb[0]) + (0.7152 * sRgb[1]) + (0.0722 * sRgb[2]);
+            }
+
+            function calculateContrastRatio(colorA, colorB) {
+                const lumA = calculateLuminance(colorA);
+                const lumB = calculateLuminance(colorB);
+                const brightest = Math.max(lumA, lumB);
+                const darkest = Math.min(lumA, lumB);
+                return (brightest + 0.05) / (darkest + 0.05);
+            }
+
+            function updateContrastBadge() {
+                const badge = document.getElementById('brand-contrast-badge');
+                if (! badge) return;
+
+                const primaryInput = document.getElementById('input-brand-primary');
+                const primaryColor = primaryInput ? primaryInput.value : '#1c66f6';
+
+                const ratio = calculateContrastRatio(primaryColor, '#ffffff');
+                const formatted = ratio.toFixed(1) + ':1';
+
+                badge.className = 'rounded px-2 py-0.5 text-[10px] font-bold transition-all';
+
+                if (ratio >= 7.0) {
+                    badge.textContent = `AAA ${formatted}`;
+                    badge.classList.add('bg-green-100', 'text-green-700', 'dark:bg-green-950', 'dark:text-green-300');
+                    badge.title = `توافق ممتاز مع معايير الوصول (WCAG AAA - ${formatted}) عند الكتابة باللون الأبيض`;
+                } else if (ratio >= 4.5) {
+                    badge.textContent = `AA ${formatted}`;
+                    badge.classList.add('bg-blue-100', 'text-blue-700', 'dark:bg-blue-950', 'dark:text-blue-300');
+                    badge.title = `توافق قياسي مع معايير الوصول (WCAG AA - ${formatted}) عند الكتابة باللون الأبيض`;
+                } else if (ratio >= 3.0) {
+                    badge.textContent = `AA Large ${formatted}`;
+                    badge.classList.add('bg-amber-100', 'text-amber-700', 'dark:bg-amber-950', 'dark:text-amber-300');
+                    badge.title = `مقبول للعناوين الكبيرة فقط (WCAG AA Large - ${formatted}). قد يصعب قراءة النصوص الصغيرة`;
+                } else {
+                    badge.textContent = `ضعيف ${formatted}`;
+                    badge.classList.add('bg-red-100', 'text-red-700', 'dark:bg-red-950', 'dark:text-red-300');
+                    badge.title = `مخالف لمعايير الوصول (WCAG Fail - ${formatted}). التباين منخفض جداً`;
+                }
             }
 
             async function applyPresetLive(selectEl) {
@@ -806,7 +1208,16 @@
                     if (response.ok) {
                         const data = await response.json();
                         if (data.tokens) {
+                            if (data.tokens.custom_css) {
+                                const customCssInput = document.getElementById('input-custom-css');
+                                if (customCssInput) {
+                                    customCssInput.value = data.tokens.custom_css;
+                                    updatePreviewCustomCss(data.tokens.custom_css);
+                                }
+                            }
+
                             for (const [key, value] of Object.entries(data.tokens)) {
+                                if (key === 'custom_css') continue;
                                 const inputs = document.querySelectorAll(`input[name="tokens[${key}]"], select[name="tokens[${key}]"]`);
                                 inputs.forEach(input => {
                                     input.value = value;
@@ -817,6 +1228,18 @@
                                 });
                                 updatePreviewToken(key, value);
                             }
+
+                            const frame = document.getElementById('portal-preview-frame');
+                            if (frame && frame.contentWindow) {
+                                try {
+                                    frame.contentWindow.postMessage({
+                                        type: 'update-tokens',
+                                        tokens: data.tokens,
+                                    }, window.location.origin);
+                                } catch (e) {}
+                            }
+
+                            updateContrastBadge();
                         }
                     } else {
                         document.getElementById('portal-apply-preset-val').value = preset;
@@ -832,6 +1255,18 @@
                 const frame = document.getElementById('portal-preview-frame');
                 if (! frame) return;
 
+                // 1. PostMessage communication (safe cross-window)
+                if (frame.contentWindow) {
+                    try {
+                        frame.contentWindow.postMessage({
+                            type: 'update-token',
+                            name: key,
+                            value: value,
+                        }, window.location.origin);
+                    } catch (e) {}
+                }
+
+                // 2. Direct DOM fallback
                 try {
                     const doc = frame.contentDocument || frame.contentWindow?.document;
                     if (! doc) return;
@@ -844,6 +1279,48 @@
                     }
 
                     doc.documentElement.style.setProperty(key, value);
+
+                    if (key === '--header-bg') {
+                        doc.querySelectorAll('header, .portal-header, [data-portal-header]').forEach(el => el.style.backgroundColor = value);
+                    } else if (key === '--header-text') {
+                        doc.querySelectorAll('header, .portal-header, [data-portal-header]').forEach(el => el.style.color = value);
+                    } else if (key === '--footer-bg') {
+                        doc.querySelectorAll('footer, .portal-footer, [data-portal-footer]').forEach(el => el.style.backgroundColor = value);
+                    } else if (key === '--footer-text') {
+                        doc.querySelectorAll('footer, .portal-footer, [data-portal-footer]').forEach(el => el.style.color = value);
+                    } else if (key === '--card-radius') {
+                        doc.querySelectorAll('.portal-card, [data-portal-card], .glass-card, [data-spotlight], .rounded-card').forEach(el => el.style.borderRadius = value);
+                    } else if (key === '--btn-radius') {
+                        doc.querySelectorAll('.btn-primary, .btn-secondary, .btn-accent, .primary-button, .secondary-button, input, select, textarea').forEach(el => el.style.borderRadius = value);
+                    }
+                } catch (e) {}
+            }
+
+            function updatePreviewCustomCss(css) {
+                const frame = document.getElementById('portal-preview-frame');
+                if (! frame) return;
+
+                if (frame.contentWindow) {
+                    try {
+                        frame.contentWindow.postMessage({
+                            type: 'custom-css',
+                            css: css,
+                        }, window.location.origin);
+                    } catch (e) {}
+                }
+
+                try {
+                    const doc = frame.contentDocument || frame.contentWindow?.document;
+                    if (! doc) return;
+
+                    let styleTag = doc.getElementById('portal-custom-css-live');
+                    if (! styleTag) {
+                        styleTag = doc.createElement('style');
+                        styleTag.id = 'portal-custom-css-live';
+                        doc.head.appendChild(styleTag);
+                    }
+
+                    styleTag.textContent = css || '';
                 } catch (e) {}
             }
 
@@ -851,19 +1328,57 @@
                 const frame = document.getElementById('portal-preview-frame');
                 if (! frame) return;
 
+                const tokensMap = {};
+                const inputs = document.querySelectorAll('input[name^="tokens["], select[name^="tokens["]');
+                inputs.forEach(function (input) {
+                    const match = input.name.match(/tokens\[(.*?)\]/);
+                    if (match && match[1] && input.value) {
+                        tokensMap[match[1]] = input.value;
+                    }
+                });
+
+                if (frame.contentWindow) {
+                    try {
+                        frame.contentWindow.postMessage({
+                            type: 'update-tokens',
+                            tokens: tokensMap,
+                        }, window.location.origin);
+                    } catch (e) {}
+                }
+
                 try {
                     const doc = frame.contentDocument || frame.contentWindow?.document;
-                    if (! doc) return;
-
-                    const inputs = document.querySelectorAll('input[name^="tokens["], select[name^="tokens["]');
-                    inputs.forEach(function (input) {
-                        const match = input.name.match(/tokens\[(.*?)\]/);
-                        if (match && match[1] && input.value) {
-                            doc.documentElement.style.setProperty(match[1], input.value);
+                    if (doc) {
+                        for (const [k, v] of Object.entries(tokensMap)) {
+                            doc.documentElement.style.setProperty(k, v);
                         }
-                    });
+                        if (tokensMap['--header-bg']) {
+                            doc.querySelectorAll('header, .portal-header, [data-portal-header]').forEach(el => el.style.backgroundColor = tokensMap['--header-bg']);
+                        }
+                        if (tokensMap['--header-text']) {
+                            doc.querySelectorAll('header, .portal-header, [data-portal-header]').forEach(el => el.style.color = tokensMap['--header-text']);
+                        }
+                        if (tokensMap['--footer-bg']) {
+                            doc.querySelectorAll('footer, .portal-footer, [data-portal-footer]').forEach(el => el.style.backgroundColor = tokensMap['--footer-bg']);
+                        }
+                        if (tokensMap['--footer-text']) {
+                            doc.querySelectorAll('footer, .portal-footer, [data-portal-footer]').forEach(el => el.style.color = tokensMap['--footer-text']);
+                        }
+                        if (tokensMap['--card-radius']) {
+                            doc.querySelectorAll('.portal-card, [data-portal-card], .glass-card, [data-spotlight], .rounded-card').forEach(el => el.style.borderRadius = tokensMap['--card-radius']);
+                        }
+                        if (tokensMap['--btn-radius']) {
+                            doc.querySelectorAll('.btn-primary, .btn-secondary, .btn-accent, .primary-button, .secondary-button, input, select, textarea').forEach(el => el.style.borderRadius = tokensMap['--btn-radius']);
+                        }
+                    }
                 } catch (e) {}
 
+                const customCssInput = document.getElementById('input-custom-css');
+                if (customCssInput) {
+                    updatePreviewCustomCss(customCssInput.value);
+                }
+
+                updateContrastBadge();
                 layoutPreviewFrame();
             }
 
@@ -873,6 +1388,7 @@
                     new ResizeObserver(() => layoutPreviewFrame()).observe(stage);
                 }
                 layoutPreviewFrame();
+                updateContrastBadge();
             });
 
             window.addEventListener('resize', layoutPreviewFrame);

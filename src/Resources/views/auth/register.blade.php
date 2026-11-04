@@ -4,7 +4,11 @@
     </x-slot>
 
     <div class="min-h-[75vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8 bg-[var(--bg-surface)] p-8 sm:p-10 rounded-2xl shadow-[var(--shadow-card)] border border-[var(--border-subtle)]">
+        <div
+            class="portal-card max-w-md w-full space-y-8 bg-[var(--bg-surface)] p-8 sm:p-10 shadow-[var(--shadow-card)] border border-[var(--border-subtle)]"
+            data-portal-card
+            style="border-radius: var(--card-radius, 1rem);"
+        >
             <!-- Header -->
             <div class="text-center">
                 <a href="{{ portal_home_url() }}" class="inline-block mb-4">
@@ -114,7 +118,7 @@
                 <div class="pt-2">
                     <button
                         type="submit"
-                        class="w-full flex justify-center py-3 px-4 rounded-xl shadow-sm text-sm font-semibold text-white bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--brand-primary)] transition-all"
+                        class="btn-primary w-full !py-3 text-sm shadow-sm hover:shadow-[var(--shadow-glow)]"
                     >
                         @lang('portal::app.auth.register.submit')
                     </button>

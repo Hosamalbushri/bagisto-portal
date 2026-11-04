@@ -129,4 +129,3 @@ class ExtendedSecurityHardeningTest extends TestCase
         $this->assertEquals(302, $response->getStatusCode());
     }
 }
-

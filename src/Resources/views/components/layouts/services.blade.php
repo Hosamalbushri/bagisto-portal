@@ -17,7 +17,7 @@
     @continue (empty($section->options['services']))
 
     <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16"
+        class="portal-container mx-auto my-16"
         v-pre
         @if ($sectionRepository->isPreviewing())
             data-section-id="{{ $section->id }}"
@@ -28,7 +28,7 @@
             @foreach ($section->options['services'] as $service)
                 <x-portal::card :interactive="true" class="flex items-start gap-4 !p-6 group">
                     <span
-                        class="{{ $service['service_icon'] ?? 'icon-cms' }} flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--brand-primary-light)] text-[var(--brand-primary)] text-2xl flex-shrink-0 group-hover:scale-105 transition-transform"
+                        class="{{ $service['service_icon'] ?? 'icon-cms' }} flex items-center justify-center w-12 h-12 rounded-[var(--btn-radius,0.75rem)] bg-[var(--brand-primary-light)] text-[var(--brand-primary)] text-2xl flex-shrink-0 group-hover:scale-105 transition-transform"
                         role="presentation"
                     >
                     </span>

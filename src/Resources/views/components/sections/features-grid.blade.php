@@ -12,7 +12,7 @@
     };
 @endphp
 
-<div class="container mt-20 max-1180:px-5 max-md:mt-10 max-md:px-4" v-pre>
+<div class="portal-container mx-auto mt-20 max-md:mt-10" v-pre>
     @if ($heading || $subheading)
         <div class="text-center max-w-[700px] m-auto mb-12 max-md:mb-8">
             @if ($heading)
@@ -33,7 +33,7 @@
         <div class="grid {{ $colClass }} gap-6">
             @foreach ($items as $item)
                 <x-portal::card :interactive="true" class="flex flex-col !p-8 max-md:!p-6 group">
-                    <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-[var(--brand-primary-light)] text-2xl text-[var(--brand-primary)] group-hover:scale-105 transition-transform">
+                    <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-[var(--btn-radius,0.75rem)] bg-[var(--brand-primary-light)] text-2xl text-[var(--brand-primary)] group-hover:scale-105 transition-transform">
                         <span class="{{ $item['icon'] ?? 'icon-star' }}"></span>
                     </div>
 

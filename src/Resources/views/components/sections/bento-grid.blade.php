@@ -23,7 +23,7 @@
 @endphp
 
 <section class="py-20 lg:py-28 bg-[var(--bg-app)] border-b border-[var(--border-subtle)] transition-colors duration-200" v-pre>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="portal-container mx-auto">
         <!-- Section Header -->
         <div class="max-w-3xl mb-14">
             @if ($badge)

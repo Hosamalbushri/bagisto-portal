@@ -7,8 +7,11 @@ class TokenCompilerService
     /**
      * Compile CSS variables string from raw tokens and defaults.
      */
-    public function compile(array $customTokens = [], ?string $themeCode = null): string
+    public function compile(array $customTokens = [], ?string $themeCode = null, ?string $customCss = null): string
     {
+        $customCss = $customCss ?? ($customTokens['custom_css'] ?? null);
+        unset($customTokens['custom_css']);
+
         $darkOverrides = [];
 
         // Check if dark tokens are passed explicitly via nested key or prefix
@@ -30,7 +33,7 @@ class TokenCompilerService
         // Derive missing contextual tokens (hover, light, contrast, shadows, radii)
         $tokens = $this->deriveTokens($tokens);
 
-        if (empty($tokens) && empty($darkOverrides)) {
+        if (empty($tokens) && empty($darkOverrides) && empty($customCss)) {
             return '';
         }
 
@@ -66,7 +69,32 @@ class TokenCompilerService
         $rootCss .= "}\n";
         $darkCss .= "}\n";
 
-        return $rootCss."\n".$darkCss;
+        $fontsUrl = $this->getGoogleFontsUrl($tokens);
+        $fontImport = $fontsUrl ? "@import url('{$fontsUrl}');\n\n" : '';
+
+        // Global container utility class and universal token bindings
+        $layoutUtilities = "\n.portal-container {\n  width: 100%;\n  max-width: var(--container-max-width, 1280px);\n  margin-inline: auto;\n  padding-inline: var(--page-padding-x, 1rem);\n}\n"
+            .".rounded-card, .portal-card, [data-portal-card], .glass-card, [data-spotlight] {\n  border-radius: var(--card-radius, 1rem) !important;\n}\n"
+            .".rounded-btn {\n  border-radius: var(--btn-radius, 0.5rem) !important;\n}\n"
+            .".portal-header, header[data-portal-header], header.portal-header {\n  background-color: var(--header-bg, var(--bg-surface)) !important;\n  color: var(--header-text, var(--text-primary)) !important;\n  min-height: var(--header-height, 4rem);\n}\n"
+            .".portal-footer, footer[data-portal-footer], footer.portal-footer {\n  background-color: var(--footer-bg, var(--bg-surface-elevated)) !important;\n  color: var(--footer-text, var(--text-secondary)) !important;\n}\n"
+            .".btn-primary, .primary-button, [data-portal-btn=\"primary\"], button.primary-button, a.primary-button {\n  border-radius: var(--btn-radius, 0.5rem) !important;\n  background-color: var(--brand-primary) !important;\n  color: var(--on-brand-primary, #ffffff) !important;\n}\n"
+            .".btn-primary:hover, .primary-button:hover, button.primary-button:hover, a.primary-button:hover {\n  background-color: var(--brand-primary-hover) !important;\n}\n"
+            .".btn-accent, [data-portal-btn=\"accent\"] {\n  border-radius: var(--btn-radius, 0.5rem) !important;\n  background-color: var(--brand-accent) !important;\n  color: var(--on-brand-accent, #090d16) !important;\n}\n"
+            .".btn-accent:hover {\n  background-color: var(--brand-accent-hover) !important;\n}\n"
+            .".btn-secondary, .secondary-button, [data-portal-btn=\"secondary\"], button.secondary-button, a.secondary-button, .btn-outline, .btn-ghost {\n  border-radius: var(--btn-radius, 0.5rem) !important;\n}\n"
+            ."input[type=\"text\"], input[type=\"email\"], input[type=\"password\"], input[type=\"number\"], input[type=\"search\"], input[type=\"tel\"], input[type=\"url\"], select, select.custom-select, textarea {\n  border-radius: var(--btn-radius, 0.5rem) !important;\n}\n"
+            ."[dir=\"rtl\"], [dir=\"rtl\"] * {\n  font-family: var(--font-arabic, 'Cairo', system-ui, sans-serif);\n}\n"
+            ."[dir=\"ltr\"] {\n  font-family: var(--font-latin, 'Inter', system-ui, sans-serif);\n}\n";
+
+        $compiled = $fontImport.$rootCss."\n".$darkCss.$layoutUtilities;
+
+        $cleanCustomCss = $this->sanitizeCustomCss($customCss);
+        if (filled($cleanCustomCss)) {
+            $compiled .= "\n/* Additional Custom CSS */\n".$cleanCustomCss."\n";
+        }
+
+        return $compiled;
     }
 
     /**
@@ -134,6 +162,52 @@ class TokenCompilerService
             $tokens['--radius-lg'] = "calc({$base} * 1.33)";
             $tokens['--radius-xl'] = "calc({$base} * 1.75)";
             $tokens['--radius-pill'] = '9999px';
+
+            if (! isset($tokens['--btn-radius'])) {
+                $tokens['--btn-radius'] = "calc({$base} * 0.75)";
+            }
+
+            if (! isset($tokens['--card-radius'])) {
+                $tokens['--card-radius'] = "calc({$base} * 1.33)";
+            }
+        }
+
+        if (! isset($tokens['--btn-radius'])) {
+            $tokens['--btn-radius'] = '0.5rem';
+        }
+
+        if (! isset($tokens['--card-radius'])) {
+            $tokens['--card-radius'] = '1rem';
+        }
+
+        // 4. Derive Component and Shadow Defaults
+        if (! isset($tokens['--shadow-card'])) {
+            $tokens['--shadow-card'] = '0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03)';
+        }
+
+        if (! isset($tokens['--header-bg'])) {
+            $tokens['--header-bg'] = $tokens['--bg-surface'] ?? '#ffffff';
+        }
+
+        if (! isset($tokens['--header-text'])) {
+            $tokens['--header-text'] = $tokens['--text-primary'] ?? '#090d16';
+        }
+
+        if (! isset($tokens['--footer-bg'])) {
+            $tokens['--footer-bg'] = $tokens['--bg-surface-elevated'] ?? '#0f172a';
+        }
+
+        if (! isset($tokens['--footer-text'])) {
+            $tokens['--footer-text'] = $tokens['--text-secondary'] ?? '#94a3b8';
+        }
+
+        // 5. Layout & Container Dimensions
+        if (! isset($tokens['--container-max-width'])) {
+            $tokens['--container-max-width'] = '1280px';
+        }
+
+        if (! isset($tokens['--page-padding-x'])) {
+            $tokens['--page-padding-x'] = '1rem';
         }
 
         return $tokens;
@@ -199,6 +273,46 @@ class TokenCompilerService
     }
 
     /**
+     * Sanitize user-provided Custom CSS (Additional CSS).
+     * Preserves valid CSS selectors, rules, media queries, and animations
+     * while rigorously neutralizing HTML tags, scripts, expression(), behavior:, and XSS vectors.
+     */
+    public function sanitizeCustomCss(?string $css): string
+    {
+        if (empty($css) || ! is_string($css)) {
+            return '';
+        }
+
+        // 1. Remove entire <script>...</script> blocks including content
+        $clean = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $css);
+
+        // 2. Remove any HTML tags
+        $clean = strip_tags($clean);
+
+        // 3. Remove any remaining breakout tags (like </style> or <svg>)
+        $clean = preg_replace('/<\/?(style|script|iframe|object|embed|svg|img|link|meta)\b[^>]*>/is', '', $clean);
+
+        // 4. Block dangerous pseudo-protocols, legacy XSS, and expressions
+        $dangerousPatterns = [
+            '/javascript\s*:/i',
+            '/vbscript\s*:/i',
+            '/expression\s*\([^)]*\)/i',
+            '/behavior\s*:[^;]+;/i',
+            '/-moz-binding\s*:[^;]+;/i',
+            '/@import\s+[^;]+;/i',
+            '/data\s*:\s*text\/html/i',
+            '/data\s*:\s*image\/svg\+xml/i',
+        ];
+
+        $clean = preg_replace($dangerousPatterns, '/* blocked */', $clean);
+
+        // 5. Disallow </style inside CSS
+        $clean = preg_replace('/<\/style/i', '', $clean);
+
+        return trim((string) $clean);
+    }
+
+    /**
      * Retrieve all available presets from configuration.
      */
     public function getPresets(): array
@@ -229,13 +343,25 @@ class TokenCompilerService
         ];
 
         foreach ($tokens as $name => $value) {
+            if ($name === 'custom_css') {
+                $dtcg['custom_css'] = $value;
+
+                continue;
+            }
+
             $cleanName = ltrim($name, '-');
             if (str_contains($cleanName, 'font')) {
                 $dtcg['typography'][$cleanName] = [
                     '$value' => $value,
                     '$type' => 'fontFamily',
                 ];
-            } elseif (str_contains($cleanName, 'radius') || str_contains($cleanName, 'spacing')) {
+            } elseif (
+                str_contains($cleanName, 'radius')
+                || str_contains($cleanName, 'spacing')
+                || str_contains($cleanName, 'width')
+                || str_contains($cleanName, 'height')
+                || str_contains($cleanName, 'padding')
+            ) {
                 $dtcg['dimension'][$cleanName] = [
                     '$value' => $value,
                     '$type' => 'dimension',
@@ -280,7 +406,16 @@ class TokenCompilerService
             }
         }
 
-        return $this->sanitizeTokens($imported);
+        $sanitized = $this->sanitizeTokens($imported);
+
+        if (isset($json['custom_css']) && is_string($json['custom_css'])) {
+            $cleanCss = $this->sanitizeCustomCss($json['custom_css']);
+            if (filled($cleanCss)) {
+                $sanitized['custom_css'] = $cleanCss;
+            }
+        }
+
+        return $sanitized;
     }
 
     /**
@@ -330,9 +465,51 @@ class TokenCompilerService
     }
 
     /**
-     * Calculate relative luminance to determine contrasting text color (white or dark).
+     * Generate Google Fonts embed URL for any Google fonts specified in tokens.
      */
-    public function getContrastTextColor(string $hex): string
+    public function getGoogleFontsUrl(array $tokens): ?string
+    {
+        $supportedFonts = [
+            'Cairo' => 'Cairo:wght@400;500;600;700;800;900',
+            'Tajawal' => 'Tajawal:wght@400;500;700;800',
+            'Almarai' => 'Almarai:wght@400;700;800',
+            'Readex Pro' => 'Readex+Pro:wght@400;500;600;700',
+            'Alexandria' => 'Alexandria:wght@400;500;600;700',
+            'IBM Plex Sans Arabic' => 'IBM+Plex+Sans+Arabic:wght@400;500;600;700',
+            'Inter' => 'Inter:wght@400;500;600;700;800',
+            'Plus Jakarta Sans' => 'Plus+Jakarta+Sans:wght@400;500;600;700;800',
+            'Outfit' => 'Outfit:wght@400;500;600;700;800',
+            'Poppins' => 'Poppins:wght@400;500;600;700;800',
+            'Roboto' => 'Roboto:wght@400;500;700;900',
+        ];
+
+        $matched = [];
+
+        foreach ($tokens as $key => $value) {
+            if (! is_string($value)) {
+                continue;
+            }
+
+            foreach ($supportedFonts as $fontName => $fontParam) {
+                if (stripos($value, $fontName) !== false) {
+                    $matched[$fontName] = $fontParam;
+                }
+            }
+        }
+
+        if (empty($matched)) {
+            return null;
+        }
+
+        $query = implode('&family=', array_values($matched));
+
+        return "https://fonts.googleapis.com/css2?family={$query}&display=swap";
+    }
+
+    /**
+     * Calculate relative luminance for contrast calculations.
+     */
+    public function calculateLuminance(string $hex): float
     {
         $hex = ltrim($hex, '#');
 
@@ -341,7 +518,7 @@ class TokenCompilerService
         }
 
         if (strlen($hex) !== 6) {
-            return '#ffffff';
+            return 1.0;
         }
 
         $rgb = array_map(function ($val) {
@@ -350,7 +527,29 @@ class TokenCompilerService
             return ($c <= 0.03928) ? ($c / 12.92) : pow(($c + 0.055) / 1.055, 2.4);
         }, str_split($hex, 2));
 
-        $luminance = 0.2126 * $rgb[0] + 0.7152 * $rgb[1] + 0.0722 * $rgb[2];
+        return 0.2126 * $rgb[0] + 0.7152 * $rgb[1] + 0.0722 * $rgb[2];
+    }
+
+    /**
+     * Calculate WCAG 2.1 contrast ratio between two hex colors.
+     */
+    public function calculateContrastRatio(string $colorA, string $colorB): float
+    {
+        $l1 = $this->calculateLuminance($colorA);
+        $l2 = $this->calculateLuminance($colorB);
+
+        $lighter = max($l1, $l2);
+        $darker = min($l1, $l2);
+
+        return round(($lighter + 0.05) / ($darker + 0.05), 2);
+    }
+
+    /**
+     * Calculate relative luminance to determine contrasting text color (white or dark).
+     */
+    public function getContrastTextColor(string $hex): string
+    {
+        $luminance = $this->calculateLuminance($hex);
 
         // If luminance is high (bright background), return dark text; otherwise white.
         return $luminance > 0.45 ? '#090d16' : '#ffffff';

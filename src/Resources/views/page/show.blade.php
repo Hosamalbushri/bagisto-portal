@@ -91,7 +91,7 @@
                     @endif
 
                     @if (! empty($data['html']))
-                        <div class="container my-12 max-1180:px-5 max-md:px-4" v-pre>
+                        <div class="portal-container mx-auto my-12" v-pre>
                             {!! $data['html'] !!}
                         </div>
                     @endif
@@ -124,7 +124,7 @@
         @endforeach
     @else
         <div class="py-24 text-center">
-            <div class="container m-auto max-w-xl max-1180:px-5 max-md:px-4">
+            <div class="portal-container mx-auto max-w-xl">
                 <h1 class="font-cairo font-bold text-4xl text-[var(--text-primary)] mb-4 max-md:text-3xl max-sm:text-xl">
                     {{ $page->title }}
                 </h1>

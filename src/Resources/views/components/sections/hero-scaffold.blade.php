@@ -38,7 +38,7 @@
     <x-portal::shader-fallback />
 
     <!-- Content Container -->
-    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+    <div class="portal-container relative z-10 mx-auto py-16 lg:py-24">
         <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
             <!-- Technical System Coordinates Badge -->
             <div class="mb-6 flex items-center justify-center gap-3">

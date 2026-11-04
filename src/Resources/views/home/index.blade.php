@@ -17,7 +17,7 @@
     </x-slot>
 
     @if ($sections->isEmpty())
-        <div class="py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
+        <div class="portal-container mx-auto py-24 text-center">
             <h1 class="text-4xl font-extrabold tracking-tight text-[var(--text-primary)] font-cairo sm:text-5xl">
                 @lang('portal::app.home.welcome-title')
             </h1>
@@ -29,7 +29,7 @@
             <div class="mt-8">
                 <a
                     href="{{ route('admin.portal.themes.index') }}"
-                    class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-xl shadow-sm text-white bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] transition-all"
+                    class="btn-primary !px-6 !py-3 text-sm shadow-sm"
                 >
                     @lang('portal::app.home.customize-appearance') &rarr;
                 </a>

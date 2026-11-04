@@ -66,6 +66,21 @@
     --hero-glow-color: rgba(28, 102, 246, 0.08);
     --code-bg: #0f172a;
     --code-text: #e2e8f0;
+
+    /* Header, Footer & Component Layout Tokens */
+    --header-bg: var(--bg-surface);
+    --header-text: var(--text-primary);
+    --header-height: 4rem;
+
+    --footer-bg: #0f172a;
+    --footer-text: #94a3b8;
+
+    --radius-base: 0.75rem;
+    --btn-radius: 0.5rem;
+    --card-radius: 1rem;
+
+    --container-max-width: 1280px;
+    --page-padding-x: 1rem;
 }
 
 .dark,
@@ -122,6 +137,12 @@
     --hero-glow-color: rgba(28, 102, 246, 0.28);
     --code-bg: #06090e;
     --code-text: #f1f5f9;
+
+    /* Dark Header & Footer Overrides */
+    --header-bg: #0f141f;
+    --header-text: #f8fafc;
+    --footer-bg: #080b11;
+    --footer-text: #94a3b8;
 }
 
 /* Typography & Directional Typography Rules */
@@ -621,32 +642,76 @@ img.lazy {
     }
 
     .primary-button {
-        @apply flex gap-x-1.5 items-center place-content-center font-medium rounded-xl text-white bg-[var(--brand-primary)] border border-[var(--brand-primary)] px-8 py-4 max-w-max cursor-pointer transition-all hover:bg-[var(--brand-primary-hover)];
+        @apply flex gap-x-1.5 items-center place-content-center font-medium text-[var(--on-brand-primary,#ffffff)] bg-[var(--brand-primary)] border border-[var(--brand-primary)] px-8 py-4 max-w-max cursor-pointer transition-all hover:bg-[var(--brand-primary-hover)];
+        border-radius: var(--btn-radius, 0.5rem);
     }
 
     .secondary-button {
-        @apply flex gap-x-1.5 items-center place-content-center font-medium rounded-xl bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-strong)] px-8 py-4 max-w-max cursor-pointer transition-all hover:bg-[var(--bg-surface-elevated)];
+        @apply flex gap-x-1.5 items-center place-content-center font-medium bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-strong)] px-8 py-4 max-w-max cursor-pointer transition-all hover:bg-[var(--bg-surface-elevated)];
+        border-radius: var(--btn-radius, 0.5rem);
     }
 
     /* Expanded Roa Soft Button System (Touch-Target Compliant min-h-[44px]) */
     .btn-primary {
-        @apply inline-flex items-center justify-center font-semibold rounded-xl text-white bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] px-5 py-2.5 min-h-[44px] gap-2 transition-all shadow-sm hover:shadow-[var(--shadow-glow)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply inline-flex items-center justify-center font-semibold text-[var(--on-brand-primary,#ffffff)] bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] px-5 py-2.5 min-h-[44px] gap-2 transition-all shadow-sm hover:shadow-[var(--shadow-glow)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+        border-radius: var(--btn-radius, 0.5rem);
     }
 
     .btn-accent {
-        @apply inline-flex items-center justify-center font-semibold rounded-xl text-[var(--on-brand-accent)] bg-[var(--brand-accent)] hover:bg-[var(--brand-accent-hover)] px-5 py-2.5 min-h-[44px] gap-2 transition-all shadow-sm hover:shadow-[var(--shadow-glow-accent)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply inline-flex items-center justify-center font-semibold text-[var(--on-brand-accent)] bg-[var(--brand-accent)] hover:bg-[var(--brand-accent-hover)] px-5 py-2.5 min-h-[44px] gap-2 transition-all shadow-sm hover:shadow-[var(--shadow-glow-accent)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+        border-radius: var(--btn-radius, 0.5rem);
     }
 
     .btn-secondary {
-        @apply inline-flex items-center justify-center font-medium rounded-xl text-[var(--text-primary)] bg-[var(--bg-surface-elevated)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] px-5 py-2.5 min-h-[44px] gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply inline-flex items-center justify-center font-medium text-[var(--text-primary)] bg-[var(--bg-surface-elevated)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] px-5 py-2.5 min-h-[44px] gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+        border-radius: var(--btn-radius, 0.5rem);
     }
 
     .btn-outline {
-        @apply inline-flex items-center justify-center font-medium rounded-xl text-[var(--text-primary)] bg-transparent hover:bg-[var(--bg-surface-elevated)] border border-[var(--border-strong)] hover:border-[var(--brand-primary)] px-5 py-2.5 min-h-[44px] gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply inline-flex items-center justify-center font-medium text-[var(--text-primary)] bg-transparent hover:bg-[var(--bg-surface-elevated)] border border-[var(--border-strong)] hover:border-[var(--brand-primary)] px-5 py-2.5 min-h-[44px] gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+        border-radius: var(--btn-radius, 0.5rem);
     }
 
     .btn-ghost {
-        @apply inline-flex items-center justify-center font-medium rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-transparent hover:bg-[var(--bg-surface-elevated)] px-4 py-2 min-h-[44px] gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply inline-flex items-center justify-center font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-transparent hover:bg-[var(--bg-surface-elevated)] px-4 py-2 min-h-[44px] gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+        border-radius: var(--btn-radius, 0.5rem);
+    }
+
+    /* Universal Design Token Component Bindings */
+    .portal-header, header[data-portal-header] {
+        background-color: var(--header-bg, var(--bg-surface));
+        color: var(--header-text, var(--text-primary));
+        min-height: var(--header-height, 4rem);
+    }
+
+    .portal-footer, footer[data-portal-footer] {
+        background-color: var(--footer-bg, #0f172a);
+        color: var(--footer-text, #94a3b8);
+    }
+
+    .portal-card, [data-portal-card], .glass-card, [data-spotlight], .rounded-card {
+        border-radius: var(--card-radius, 1rem);
+    }
+
+    .portal-container {
+        width: 100%;
+        max-width: var(--container-max-width, 1280px);
+        margin-inline: auto;
+        padding-inline: var(--page-padding-x, 1rem);
+    }
+
+    /* Form Controls Border Radius */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="search"],
+    input[type="tel"],
+    input[type="url"],
+    select,
+    select.custom-select,
+    textarea {
+        border-radius: var(--btn-radius, 0.5rem);
     }
 
     /* Expanded Roa Soft Badge System */

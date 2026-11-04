@@ -8,7 +8,7 @@
         :description="trans('portal::app.search.description')"
     />
 
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="portal-container mx-auto py-12">
         <!-- Search Header & Search Form -->
         <div class="text-center max-w-2xl mx-auto mb-10">
             <h1 class="text-3xl font-extrabold text-[var(--text-primary)] font-cairo sm:text-4xl">
@@ -27,7 +27,7 @@
                         name="query"
                         value="{{ $query }}"
                         placeholder="@lang('portal::app.search.placeholder')"
-                        class="w-full ps-11 pe-4 py-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/40 focus:border-[var(--brand-primary)] transition-all text-sm"
+                        class="w-full ps-11 pe-4 py-3 rounded-[var(--btn-radius,0.75rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/40 focus:border-[var(--brand-primary)] transition-all text-sm"
                         required
                         minlength="2"
                     />
@@ -35,7 +35,7 @@
 
                 <x-portal::button
                     type="submit"
-                    class="!px-6 !py-3 bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] text-white font-medium rounded-xl shadow-xs transition-colors shrink-0"
+                    class="!px-6 !py-3 bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] text-[var(--on-brand-primary,#ffffff)] font-medium rounded-[var(--btn-radius,0.75rem)] shadow-xs transition-colors shrink-0"
                 >
                     @lang('portal::app.search.submit')
                 </x-portal::button>
@@ -61,7 +61,11 @@
         @if ($results->isNotEmpty())
             <div class="space-y-4">
                 @foreach ($results as $item)
-                    <article class="p-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] hover:border-[var(--brand-primary)]/40 shadow-xs hover:shadow-md transition-all group">
+                    <article
+                        class="portal-card p-6 border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] hover:border-[var(--brand-primary)]/40 shadow-xs hover:shadow-md transition-all group"
+                        data-portal-card
+                        style="border-radius: var(--card-radius, 1rem);"
+                    >
                         <div class="flex items-start justify-between gap-4">
                             <div class="flex-1 min-w-0">
                                 <a href="{{ $item['url'] }}" class="text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] transition-colors line-clamp-1">
@@ -81,7 +85,7 @@
 
                             <a
                                 href="{{ $item['url'] }}"
-                                class="hidden sm:flex items-center justify-center w-9 h-9 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface-muted)] text-[var(--text-secondary)] group-hover:text-white group-hover:bg-[var(--brand-primary)] group-hover:border-[var(--brand-primary)] transition-all shrink-0"
+                                class="hidden sm:flex items-center justify-center w-9 h-9 rounded-[var(--btn-radius,0.5rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface-muted)] text-[var(--text-secondary)] group-hover:text-white group-hover:bg-[var(--brand-primary)] group-hover:border-[var(--brand-primary)] transition-all shrink-0"
                                 aria-label="{{ $item['title'] }}"
                             >
                                 <span class="icon-arrow-right rtl:rotate-180 text-sm"></span>
@@ -99,8 +103,8 @@
             @endif
         @elseif (! empty($query))
             <!-- Empty Results State -->
-            <div class="text-center py-16 px-4 rounded-2xl border border-dashed border-[var(--border-subtle)] bg-[var(--bg-surface)]/50">
-                <div class="w-14 h-14 mx-auto rounded-2xl bg-[var(--bg-surface-muted)] flex items-center justify-center text-[var(--text-muted)] text-2xl mb-4">
+            <div class="portal-card text-center py-16 px-4 border border-dashed border-[var(--border-subtle)] bg-[var(--bg-surface)]/50" data-portal-card style="border-radius: var(--card-radius, 1rem);">
+                <div class="portal-card w-14 h-14 mx-auto bg-[var(--bg-surface-muted)] flex items-center justify-center text-[var(--text-muted)] text-2xl mb-4" data-portal-card style="border-radius: var(--card-radius, 1rem);">
                     <span class="icon-search"></span>
                 </div>
 
@@ -115,7 +119,7 @@
                 <div class="mt-6">
                     <a
                         href="{{ portal_home_url() }}"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] text-sm font-medium text-[var(--text-primary)] transition-colors shadow-2xs"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-[var(--btn-radius,0.5rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] text-sm font-medium text-[var(--text-primary)] transition-colors shadow-2xs"
                     >
                         <span class="icon-arrow-left rtl:rotate-180 text-xs"></span>
                         <span>@lang('portal::app.search.back-home')</span>

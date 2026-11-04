@@ -8,8 +8,12 @@
     $address = $options['address'] ?? '';
 @endphp
 
-<div class="container mt-20 max-1180:px-5 max-md:mt-10 max-md:px-4">
-    <div class="m-auto w-full max-w-[1000px] rounded-2xl border border-[var(--border-subtle)] p-12 max-md:p-6 bg-[var(--bg-surface)] shadow-[var(--shadow-card)]">
+<div class="portal-container mx-auto mt-20 max-md:mt-10">
+    <div
+        class="portal-card m-auto w-full max-w-[1000px] border border-[var(--border-subtle)] p-12 max-md:p-6 bg-[var(--bg-surface)] shadow-[var(--shadow-card)]"
+        data-portal-card
+        style="border-radius: var(--card-radius, 1rem);"
+    >
         <div class="grid grid-cols-2 gap-12 max-md:grid-cols-1">
             <!-- Left Info -->
             <div v-pre>

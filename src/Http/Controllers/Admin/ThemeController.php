@@ -102,6 +102,7 @@ class ThemeController extends Controller
         $currentChannel = $channels->firstWhere('id', $channelId) ?? $channels->first();
 
         $tokens = $this->layoutSettingRepository->getSettings('theme_tokens', $currentChannel->id, $code) ?: [];
+        $customCss = $tokens['custom_css'] ?? '';
 
         $presets = $this->tokenCompiler->getPresets();
 
@@ -115,6 +116,7 @@ class ThemeController extends Controller
             'currentChannel' => $currentChannel,
             'channels' => $channels,
             'tokens' => $tokens,
+            'customCss' => $customCss,
             'presets' => $presets,
             'previewUrl' => $previewUrl,
         ]);
@@ -400,9 +402,17 @@ class ThemeController extends Controller
             'channel_id' => 'required|integer',
             'theme_code' => 'required|string',
             'tokens' => 'nullable|array',
+            'custom_css' => 'nullable|string|max:50000',
         ]);
 
         $sanitizedTokens = $this->tokenCompiler->sanitizeTokens($validated['tokens'] ?? []);
+
+        if (array_key_exists('custom_css', $validated)) {
+            $cleanCustomCss = $this->tokenCompiler->sanitizeCustomCss($validated['custom_css'] ?? '');
+            if (filled($cleanCustomCss)) {
+                $sanitizedTokens['custom_css'] = $cleanCustomCss;
+            }
+        }
 
         $this->layoutSettingRepository->saveSettings(
             'theme_tokens',

@@ -14,7 +14,7 @@
     @endpush
 @endif
 
-<div class="container mt-16 max-1180:px-5 max-md:mt-8 max-md:px-4" v-pre>
+<div class="portal-container mx-auto mt-16 max-md:mt-8" v-pre>
     <div class="m-auto max-w-[850px]">
         @if ($title)
             <h2 class="font-cairo font-bold text-3xl max-md:text-2xl text-[var(--text-primary)] mb-6">

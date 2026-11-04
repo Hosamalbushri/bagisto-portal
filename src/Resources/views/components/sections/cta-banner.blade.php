@@ -7,8 +7,12 @@
     $buttonUrl = $options['button_url'] ?? '#';
 @endphp
 
-<div class="container mt-20 max-1180:px-5 max-md:mt-10 max-md:px-4" v-pre>
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0b101b] via-[#111827] to-[#0b101b] border border-[var(--border-subtle)] px-12 py-16 text-center text-white max-md:px-6 max-md:py-10 shadow-[var(--shadow-card)]">
+<div class="portal-container mx-auto mt-20 max-md:mt-10" v-pre>
+    <div
+        class="portal-card relative overflow-hidden bg-gradient-to-br from-[#0b101b] via-[#111827] to-[#0b101b] border border-[var(--border-subtle)] px-12 py-16 text-center text-white max-md:px-6 max-md:py-10 shadow-[var(--shadow-card)]"
+        data-portal-card
+        style="border-radius: var(--card-radius, 1rem);"
+    >
         <div class="m-auto max-w-[700px] relative z-10">
             @if ($heading)
                 <h2 class="font-cairo font-bold text-4xl max-md:text-3xl max-sm:text-xl text-white">

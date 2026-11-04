@@ -18,7 +18,7 @@
                 name="{{ $name }}"
                 v-bind="field"
                 :class="[errors.length ? 'border !border-red-500 hover:border-red-500' : '']"
-                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base font-normal text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)] max-sm:px-4 max-md:py-2 max-sm:text-sm']) }}
+                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-[var(--btn-radius,0.5rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base font-normal text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)] max-sm:px-4 max-md:py-2 max-sm:text-sm']) }}
             >
         </v-field>
         @break
@@ -36,7 +36,7 @@
                         name="{{ $name }}"
                         v-bind="field"
                         :class="[errors.length ? 'border !border-red-500 hover:border-red-500' : '']"
-                        {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base font-normal text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)] max-sm:px-4 max-md:py-2 max-sm:text-sm ltr:!pr-12 rtl:!pl-12 [&::-ms-reveal]:hidden']) }}
+                        {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-[var(--btn-radius,0.5rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base font-normal text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)] max-sm:px-4 max-md:py-2 max-sm:text-sm ltr:!pr-12 rtl:!pl-12 [&::-ms-reveal]:hidden']) }}
                     >
 
                     <button
@@ -131,7 +131,7 @@
                 type="{{ $type }}"
                 name="{{ $name }}"
                 :class="[errors.length ? 'border !border-red-500 hover:border-red-500' : '']"
-                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base text-[var(--text-primary)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] max-sm:px-4 max-md:py-2 max-sm:text-sm']) }}
+                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-[var(--btn-radius,0.5rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base text-[var(--text-primary)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] max-sm:px-4 max-md:py-2 max-sm:text-sm']) }}
             >
         </v-field>
         @break
@@ -146,7 +146,7 @@
                 type="{{ $type }}"
                 :class="[errors.length ? 'border !border-red-500' : '']"
                 v-bind="field"
-                {{ $attributes->except(['value'])->merge(['class' => 'rounded-xl w-full appearance-none border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-base text-[var(--text-primary)] transition-all hover:border-[var(--border-strong)]']) }}
+                {{ $attributes->except(['value'])->merge(['class' => 'rounded-[var(--btn-radius,0.5rem)] w-full appearance-none border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-base text-[var(--text-primary)] transition-all hover:border-[var(--border-strong)]']) }}
             >
         </v-field>
         @break
@@ -162,7 +162,7 @@
                 name="{{ $name }}"
                 v-bind="field"
                 :class="[errors.length ? 'border !border-red-500 hover:border-red-500' : '']"
-                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base font-normal text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)]']) }}
+                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-[var(--btn-radius,0.5rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base font-normal text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)]']) }}
             >
             </textarea>
 
@@ -188,7 +188,7 @@
                     name="{{ $name }}"
                     v-bind="field"
                     :class="[errors.length ? 'border !border-red-500 hover:border-red-500' : '']"
-                    {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)] max-sm:px-4 max-md:py-2 max-sm:text-sm']) }}
+                    {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-[var(--btn-radius,0.5rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)] max-sm:px-4 max-md:py-2 max-sm:text-sm']) }}
                     autocomplete="off"
                 >
             </x-portal::flat-picker.date>
@@ -206,7 +206,7 @@
                     name="{{ $name }}"
                     v-bind="field"
                     :class="[errors.length ? 'border !border-red-500 hover:border-red-500' : '']"
-                    {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)] max-sm:px-4 max-md:py-2 max-sm:text-sm']) }}
+                    {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'mb-1.5 w-full rounded-[var(--btn-radius,0.5rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)] max-sm:px-4 max-md:py-2 max-sm:text-sm']) }}
                     autocomplete="off"
                 >
             </x-portal::flat-picker.datetime>
@@ -223,7 +223,7 @@
                 name="{{ $name }}"
                 v-bind="field"
                 :class="[errors.length ? 'border !border-red-500' : '']"
-                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'custom-select mb-1.5 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base text-[var(--text-primary)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus-visible:outline-none max-md:py-2 max-sm:px-4 max-sm:text-sm']) }}
+                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'custom-select mb-1.5 w-full rounded-[var(--btn-radius,0.5rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base text-[var(--text-primary)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus-visible:outline-none max-md:py-2 max-sm:px-4 max-sm:text-sm']) }}
             >
                 {{ $slot }}
             </select>
@@ -235,7 +235,7 @@
             as="select"
             v-slot="{ value }"
             :class="[errors && errors['{{ $name }}'] ? 'border !border-red-500' : '']"
-            {{ $attributes->except([])->merge(['class' => 'mb-1.5 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base text-[var(--text-primary)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus-visible:outline-none max-md:py-2 max-sm:px-4 max-sm:text-sm']) }}
+            {{ $attributes->except([])->merge(['class' => 'mb-1.5 w-full rounded-[var(--btn-radius,0.5rem)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-5 py-3 text-base text-[var(--text-primary)] transition-all hover:border-[var(--border-strong)] focus:border-[var(--brand-primary)] focus-visible:outline-none max-md:py-2 max-sm:px-4 max-sm:text-sm']) }}
             name="{{ $name }}"
             multiple
         >

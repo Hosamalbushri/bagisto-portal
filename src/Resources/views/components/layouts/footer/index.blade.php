@@ -28,11 +28,15 @@
 
 {!! view_render_event('bagisto.portal.layout.footer.before') !!}
 
-<footer class="relative border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] mt-20 transition-colors duration-200 overflow-hidden">
+<footer
+    class="portal-footer relative border-t border-[var(--border-subtle)] mt-20 transition-colors duration-200 overflow-hidden"
+    data-portal-footer
+    style="background-color: var(--footer-bg, #0f172a); color: var(--footer-text, #94a3b8);"
+>
     <!-- Top Accent Highlight Gradient Line -->
     <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--brand-primary)]/40 to-transparent" aria-hidden="true"></div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="portal-container mx-auto py-12" style="max-width: var(--container-max-width, 1280px); padding-inline: var(--page-padding-x, 1rem);">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <!-- Brand & Contact Column -->
             <div class="space-y-4">

@@ -111,6 +111,80 @@
             if (event.data?.type === 'section-focus') {
                 focusSection(event.data.id);
             }
+
+            // Real-time live design token updates without full reload
+            if (event.data?.type === 'update-token') {
+                const { name, value } = event.data;
+                if (name && value !== undefined) {
+                    document.documentElement.style.setProperty(name, value);
+                    if (name === '--header-bg') {
+                        document.querySelectorAll('header, .portal-header, [data-portal-header]').forEach(el => el.style.backgroundColor = value);
+                    } else if (name === '--header-text') {
+                        document.querySelectorAll('header, .portal-header, [data-portal-header]').forEach(el => el.style.color = value);
+                    } else if (name === '--footer-bg') {
+                        document.querySelectorAll('footer, .portal-footer, [data-portal-footer]').forEach(el => el.style.backgroundColor = value);
+                    } else if (name === '--footer-text') {
+                        document.querySelectorAll('footer, .portal-footer, [data-portal-footer]').forEach(el => el.style.color = value);
+                    } else if (name === '--card-radius') {
+                        document.querySelectorAll('.portal-card, [data-portal-card], .glass-card, [data-spotlight], .rounded-card').forEach(el => el.style.borderRadius = value);
+                    } else if (name === '--btn-radius') {
+                        document.querySelectorAll('.btn-primary, .btn-secondary, .btn-accent, .primary-button, .secondary-button, input, select, textarea').forEach(el => el.style.borderRadius = value);
+                    }
+                }
+            }
+
+            if (event.data?.type === 'update-tokens') {
+                const { tokens } = event.data;
+                if (tokens && typeof tokens === 'object') {
+                    for (const [k, v] of Object.entries(tokens)) {
+                        document.documentElement.style.setProperty(k, v);
+                    }
+                    if (tokens['--header-bg']) {
+                        document.querySelectorAll('header, .portal-header, [data-portal-header]').forEach(el => el.style.backgroundColor = tokens['--header-bg']);
+                    }
+                    if (tokens['--header-text']) {
+                        document.querySelectorAll('header, .portal-header, [data-portal-header]').forEach(el => el.style.color = tokens['--header-text']);
+                    }
+                    if (tokens['--footer-bg']) {
+                        document.querySelectorAll('footer, .portal-footer, [data-portal-footer]').forEach(el => el.style.backgroundColor = tokens['--footer-bg']);
+                    }
+                    if (tokens['--footer-text']) {
+                        document.querySelectorAll('footer, .portal-footer, [data-portal-footer]').forEach(el => el.style.color = tokens['--footer-text']);
+                    }
+                    if (tokens['--card-radius']) {
+                        document.querySelectorAll('.portal-card, [data-portal-card], .glass-card, [data-spotlight], .rounded-card').forEach(el => el.style.borderRadius = tokens['--card-radius']);
+                    }
+                    if (tokens['--btn-radius']) {
+                        document.querySelectorAll('.btn-primary, .btn-secondary, .btn-accent, .primary-button, .secondary-button, input, select, textarea').forEach(el => el.style.borderRadius = tokens['--btn-radius']);
+                    }
+                }
+            }
+
+            if (event.data?.type === 'toggle-dark') {
+                const isDark = Boolean(event.data.dark);
+                document.documentElement.classList.toggle('dark', isDark);
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            }
+
+            if (event.data?.type === 'load-font') {
+                const { url } = event.data;
+                if (url && !document.querySelector(`link[href="${url}"]`)) {
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = url;
+                    document.head.appendChild(link);
+                }
+            }
+
+            if (event.data?.type === 'custom-css') {
+                let customStyleTag = document.getElementById('portal-custom-css-live');
+                if (! customStyleTag) {
+                    customStyleTag = document.createElement('style');
+                    customStyleTag.id = 'portal-custom-css-live';
+                    document.head.appendChild(customStyleTag);
+                }
+                customStyleTag.textContent = event.data.css || '';
+            }
         });
 
         document.addEventListener('click', event => {

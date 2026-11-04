@@ -6,7 +6,7 @@
     $items = $options['items'] ?? [];
 @endphp
 
-<div class="container mt-20 max-1180:px-5 max-md:mt-10 max-md:px-4" v-pre>
+<div class="portal-container mx-auto mt-20 max-md:mt-10" v-pre>
     @if ($heading || $subheading)
         <div class="text-center max-w-[700px] m-auto mb-12 max-md:mb-8">
             @if ($heading)

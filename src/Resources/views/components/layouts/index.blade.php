@@ -57,6 +57,60 @@
         <style id="portal-theme-custom-tokens">
             {!! $customThemeCss !!}
         </style>
+    @else
+        <style id="portal-theme-custom-tokens">
+            :root {
+                --header-bg: var(--bg-surface, #ffffff);
+                --header-text: var(--text-primary, #090d16);
+                --header-height: 4rem;
+                --footer-bg: #0f172a;
+                --footer-text: #94a3b8;
+                --btn-radius: 0.5rem;
+                --card-radius: 1rem;
+                --container-max-width: 1280px;
+                --page-padding-x: 1rem;
+            }
+            .dark, [data-theme="dark"] {
+                --header-bg: #0f141f;
+                --header-text: #f8fafc;
+                --footer-bg: #080b11;
+                --footer-text: #94a3b8;
+            }
+            .portal-container {
+                width: 100%;
+                max-width: var(--container-max-width, 1280px);
+                margin-inline: auto;
+                padding-inline: var(--page-padding-x, 1rem);
+            }
+            .portal-header, header[data-portal-header], header.portal-header {
+                background-color: var(--header-bg, var(--bg-surface)) !important;
+                color: var(--header-text, var(--text-primary)) !important;
+                min-height: var(--header-height, 4rem);
+            }
+            .portal-footer, footer[data-portal-footer], footer.portal-footer {
+                background-color: var(--footer-bg, var(--bg-surface-elevated)) !important;
+                color: var(--footer-text, var(--text-secondary)) !important;
+            }
+            .portal-card, [data-portal-card], .glass-card, [data-spotlight], .rounded-card {
+                border-radius: var(--card-radius, 1rem) !important;
+            }
+            .btn-primary, .primary-button, [data-portal-btn="primary"], button.primary-button, a.primary-button {
+                border-radius: var(--btn-radius, 0.5rem) !important;
+                background-color: var(--brand-primary) !important;
+                color: var(--on-brand-primary, #ffffff) !important;
+            }
+            .btn-accent, [data-portal-btn="accent"] {
+                border-radius: var(--btn-radius, 0.5rem) !important;
+                background-color: var(--brand-accent) !important;
+                color: var(--on-brand-accent, #090d16) !important;
+            }
+            .btn-secondary, .secondary-button, [data-portal-btn="secondary"], button.secondary-button, a.secondary-button, .btn-outline, .btn-ghost {
+                border-radius: var(--btn-radius, 0.5rem) !important;
+            }
+            input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="search"], select, textarea {
+                border-radius: var(--btn-radius, 0.5rem) !important;
+            }
+        </style>
     @endif
 
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />

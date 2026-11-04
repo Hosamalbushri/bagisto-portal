@@ -6,7 +6,7 @@
     $items = $options['items'] ?? [];
 @endphp
 
-<div class="container mt-20 max-1180:px-5 max-md:mt-10 max-md:px-4">
+<div class="portal-container mx-auto mt-20 max-md:mt-10">
     <div class="m-auto max-w-[850px]">
         @if ($heading || $subheading)
             <div class="text-center mb-10 max-md:mb-6" v-pre>
@@ -27,7 +27,10 @@
         @if (! empty($items))
             <div class="grid gap-3">
                 @foreach ($items as $item)
-                    <x-portal::accordion class="border border-[var(--border-subtle)] rounded-xl bg-[var(--bg-surface)] overflow-hidden shadow-sm">
+                    <x-portal::accordion
+                        class="portal-card border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden shadow-sm"
+                        style="border-radius: var(--card-radius, 0.75rem);"
+                    >
                         <x-slot:header class="p-5 font-semibold text-base text-[var(--text-primary)] hover:bg-[var(--bg-surface-muted)] cursor-pointer transition-colors">
                             {{ $item['question'] ?? '' }}
                         </x-slot>

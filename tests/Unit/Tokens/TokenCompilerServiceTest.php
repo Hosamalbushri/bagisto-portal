@@ -276,4 +276,208 @@ class TokenCompilerServiceTest extends TestCase
         $this->assertStringContainsString('--on-brand-primary:', $css);
         $this->assertStringContainsString('--brand-primary-50:', $css);
     }
+
+    /**
+     * Test Google Fonts URL generation from font tokens.
+     */
+    public function test_generates_google_fonts_url_from_tokens(): void
+    {
+        $tokens = [
+            '--font-arabic' => "'Cairo', system-ui, sans-serif",
+            '--font-latin' => "'Plus Jakarta Sans', system-ui, sans-serif",
+        ];
+
+        $url = $this->compiler->getGoogleFontsUrl($tokens);
+
+        $this->assertNotNull($url);
+        $this->assertStringContainsString('family=Cairo', $url);
+        $this->assertStringContainsString('family=Plus+Jakarta+Sans', $url);
+        $this->assertStringContainsString('display=swap', $url);
+    }
+
+    /**
+     * Test compilation injects @import for Google fonts if non-system fonts are present.
+     */
+    public function test_compile_prepends_google_fonts_import(): void
+    {
+        $tokens = [
+            '--brand-primary' => '#1c66f6',
+            '--font-arabic' => "'Tajawal', sans-serif",
+        ];
+
+        $css = $this->compiler->compile($tokens);
+
+        $this->assertStringContainsString('@import url(\'https://fonts.googleapis.com/css2?family=Tajawal', $css);
+        $this->assertStringContainsString(':root {', $css);
+    }
+
+    /**
+     * Test WCAG luminance and contrast ratio calculations.
+     */
+    public function test_wcag_luminance_and_contrast_ratio_calculations(): void
+    {
+        // Pure black and pure white
+        $ratioBlackWhite = $this->compiler->calculateContrastRatio('#000000', '#ffffff');
+        $this->assertEquals(21.0, round($ratioBlackWhite, 1));
+
+        // #1c66f6 (primary blue) vs #ffffff
+        $ratioBlueWhite = $this->compiler->calculateContrastRatio('#1c66f6', '#ffffff');
+        $this->assertGreaterThan(4.5, $ratioBlueWhite);
+
+        // Identical colors should have contrast ratio of 1.0
+        $ratioSame = $this->compiler->calculateContrastRatio('#fe8312', '#fe8312');
+        $this->assertEquals(1.0, round($ratioSame, 1));
+    }
+
+    /**
+     * Test derivation of component tokens (header, footer, button radius, card radius).
+     */
+    public function test_derives_component_tokens(): void
+    {
+        $tokens = [
+            '--brand-primary' => '#1c66f6',
+            '--radius-base' => '8px',
+        ];
+
+        $derived = $this->compiler->deriveTokens($tokens);
+
+        $this->assertArrayHasKey('--btn-radius', $derived);
+        $this->assertArrayHasKey('--card-radius', $derived);
+        $this->assertArrayHasKey('--header-bg', $derived);
+        $this->assertArrayHasKey('--header-text', $derived);
+        $this->assertArrayHasKey('--footer-bg', $derived);
+        $this->assertArrayHasKey('--footer-text', $derived);
+
+        $this->assertEquals('calc(8px * 0.75)', $derived['--btn-radius']);
+        $this->assertEquals('calc(8px * 1.33)', $derived['--card-radius']);
+    }
+
+    /**
+     * Test Custom CSS sanitization protects against XSS while allowing valid styles.
+     */
+    public function test_sanitizes_custom_css_safely(): void
+    {
+        $malicious = "</style><script>alert('xss')</script>\n.btn { color: red; background: url('javascript:alert(1)'); }\n@media (min-width: 1024px) { .container { width: 100%; } }";
+
+        $clean = $this->compiler->sanitizeCustomCss($malicious);
+
+        $this->assertStringNotContainsString('<script>', $clean);
+        $this->assertStringNotContainsString('</script>', $clean);
+        $this->assertStringNotContainsString('</style>', $clean);
+        $this->assertStringNotContainsString('javascript:', $clean);
+        $this->assertStringContainsString('.btn { color: red;', $clean);
+        $this->assertStringContainsString('@media (min-width: 1024px)', $clean);
+    }
+
+    /**
+     * Test compilation includes layout tokens, container utility, and custom CSS.
+     */
+    public function test_compiles_custom_css_and_layout_tokens(): void
+    {
+        $tokens = [
+            '--brand-primary' => '#1c66f6',
+            '--container-max-width' => '1440px',
+            '--page-padding-x' => '1.5rem',
+            'custom_css' => '.custom-badge { border-radius: 9999px; }',
+        ];
+
+        $css = $this->compiler->compile($tokens);
+
+        $this->assertStringContainsString('--container-max-width: 1440px;', $css);
+        $this->assertStringContainsString('--page-padding-x: 1.5rem;', $css);
+        $this->assertStringContainsString('.portal-container {', $css);
+        $this->assertStringContainsString('max-width: var(--container-max-width, 1280px);', $css);
+        $this->assertStringContainsString('/* Additional Custom CSS */', $css);
+        $this->assertStringContainsString('.custom-badge { border-radius: 9999px; }', $css);
+    }
+
+    /**
+     * Test ThemeController saves custom_css alongside tokens.
+     */
+    public function test_theme_controller_saves_custom_css(): void
+    {
+        if (property_exists(bouncer(), 'allowsAll')) {
+            bouncer()::$allowsAll = true;
+        }
+
+        try {
+            $controller = app(ThemeController::class);
+
+            $request = Request::create('/admin/portal/themes/tokens', 'POST', [
+                'channel_id' => 1,
+                'theme_code' => 'portal',
+                'tokens' => [
+                    '--brand-primary' => '#0284c7',
+                    '--container-max-width' => '1600px',
+                ],
+                'custom_css' => '.header-glow { filter: drop-shadow(0 0 10px blue); }',
+            ]);
+
+            $response = $controller->customizeTokens($request);
+            $this->assertEquals(302, $response->getStatusCode());
+
+            $saved = app(PortalLayoutSettingRepository::class)->getSettings('theme_tokens', 1, 'portal');
+            $this->assertEquals('#0284c7', $saved['--brand-primary']);
+            $this->assertEquals('1600px', $saved['--container-max-width']);
+            $this->assertEquals('.header-glow { filter: drop-shadow(0 0 10px blue); }', $saved['custom_css']);
+        } finally {
+            if (property_exists(bouncer(), 'allowsAll')) {
+                bouncer()::$allowsAll = false;
+            }
+        }
+    }
+
+    /**
+     * Test DTCG export and import with custom_css and layout dimensions.
+     */
+    public function test_dtcg_exports_and_imports_custom_css_and_layout_dimensions(): void
+    {
+        $tokens = [
+            '--brand-primary' => '#1c66f6',
+            '--container-max-width' => '1440px',
+            'custom_css' => '.hero { min-height: 90vh; }',
+        ];
+
+        $dtcg = $this->compiler->exportDtcg($tokens);
+        $this->assertEquals('.hero { min-height: 90vh; }', $dtcg['custom_css']);
+        $this->assertEquals('1440px', $dtcg['dimension']['container-max-width']['$value']);
+
+        $imported = $this->compiler->importDtcg($dtcg);
+        $this->assertEquals('#1c66f6', $imported['--brand-primary']);
+        $this->assertEquals('1440px', $imported['--container-max-width']);
+        $this->assertEquals('.hero { min-height: 90vh; }', $imported['custom_css']);
+    }
+
+    /**
+     * Test compilation includes header, footer, card, and button universal token bindings.
+     */
+    public function test_compiles_header_footer_card_and_button_bindings(): void
+    {
+        $tokens = [
+            '--header-bg' => '#ffffff',
+            '--header-text' => '#111827',
+            '--footer-bg' => '#0f172a',
+            '--footer-text' => '#94a3b8',
+            '--card-radius' => '1.25rem',
+            '--btn-radius' => '0.75rem',
+        ];
+
+        $css = $this->compiler->compile($tokens);
+
+        $this->assertStringContainsString('.portal-header, header[data-portal-header]', $css);
+        $this->assertStringContainsString('background-color: var(--header-bg, var(--bg-surface)) !important;', $css);
+        $this->assertStringContainsString('color: var(--header-text, var(--text-primary)) !important;', $css);
+
+        $this->assertStringContainsString('.portal-footer, footer[data-portal-footer]', $css);
+        $this->assertStringContainsString('background-color: var(--footer-bg, var(--bg-surface-elevated)) !important;', $css);
+        $this->assertStringContainsString('color: var(--footer-text, var(--text-secondary)) !important;', $css);
+
+        $this->assertStringContainsString('.portal-card, [data-portal-card]', $css);
+        $this->assertStringContainsString('border-radius: var(--card-radius, 1rem) !important;', $css);
+
+        $this->assertStringContainsString('.btn-primary, .primary-button', $css);
+        $this->assertStringContainsString('border-radius: var(--btn-radius, 0.5rem) !important;', $css);
+
+        $this->assertStringContainsString('input[type="text"], input[type="email"]', $css);
+    }
 }
