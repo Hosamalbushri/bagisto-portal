@@ -55,15 +55,6 @@ class PortalServiceProvider extends ServiceProvider
             return new TokenCompilerService;
         });
 
-        $this->mergeConfigFrom(
-            dirname(__DIR__).'/Config/design-tokens.php',
-            'design-tokens'
-        );
-
-        $this->app->singleton(TokenCompilerService::class, function () {
-            return new TokenCompilerService;
-        });
-
         // Bind ThemeManager singleton & auto-discover themes cleanly
         $this->app->singleton(ThemeManager::class, function () {
             return new ThemeManager;

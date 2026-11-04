@@ -35,6 +35,7 @@ class CacheResponse
             $ttl = (int) config('portal.cache.response_ttl', 300);
 
             $response->headers->set('Cache-Control', "public, max-age={$ttl}, stale-while-revalidate=60");
+            $response->headers->set('Vary', 'Cookie, Accept-Language, Accept-Encoding');
         }
 
         return $response;

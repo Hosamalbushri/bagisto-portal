@@ -65,8 +65,17 @@ class SubscriptionController extends Controller
     /**
      * Unsubscribe from the subscription list.
      */
-    public function destroy(string $token): RedirectResponse
+    public function destroy(Request $request, string $token): RedirectResponse
     {
+        // Ignore automated email preview and prefetch bot scanners
+        if (
+            $request->header('X-Purpose') === 'preview'
+            || $request->header('Purpose') === 'prefetch'
+            || $request->header('X-Moz') === 'prefetch'
+        ) {
+            return redirect()->route('portal.home');
+        }
+
         $this->subscriptionRepository->deleteWhere(['token' => $token]);
 
         session()->flash('success', trans('portal::app.subscription.unsubscribe-success'));

@@ -110,11 +110,6 @@ class ThemeController extends Controller
             'theme' => $code,
         ]);
 
-        $previewUrl = URL::temporarySignedRoute('portal.appearance.preview', now()->addHours(4), [
-            'channel' => $currentChannel->code,
-            'theme' => $code,
-        ]);
-
         return view('portal::admin.themes.customize-tokens', [
             'themeCode' => $code,
             'currentChannel' => $currentChannel,
@@ -178,6 +173,12 @@ class ThemeController extends Controller
      */
     public function activate(Request $request): JsonResponse
     {
+        abort_unless(
+            bouncer()->hasPermission('appearance.themes')
+            || bouncer()->hasPermission('portal.customize.themes'),
+            403
+        );
+
         $validated = $request->validate([
             'theme_code' => 'required|string',
             'channel_ids' => 'required|array',
@@ -201,6 +202,13 @@ class ThemeController extends Controller
      */
     public function getTokens(Request $request): JsonResponse
     {
+        abort_unless(
+            bouncer()->hasPermission('appearance.themes')
+            || bouncer()->hasPermission('portal.customize.themes')
+            || bouncer()->hasPermission('portal.pages.customize'),
+            403
+        );
+
         $channelId = (int) $request->input('channel_id', core()->getCurrentChannel()?->id ?? 1);
         $themeCode = (string) $request->input('theme_code', 'portal');
 
@@ -216,6 +224,13 @@ class ThemeController extends Controller
      */
     public function getPresets(): JsonResponse
     {
+        abort_unless(
+            bouncer()->hasPermission('appearance.themes')
+            || bouncer()->hasPermission('portal.customize.themes')
+            || bouncer()->hasPermission('portal.pages.customize'),
+            403
+        );
+
         $presets = $this->tokenCompiler->getPresets();
 
         $formatted = [];
@@ -238,6 +253,13 @@ class ThemeController extends Controller
      */
     public function applyPreset(Request $request): JsonResponse|RedirectResponse
     {
+        abort_unless(
+            bouncer()->hasPermission('appearance.themes')
+            || bouncer()->hasPermission('portal.customize.themes')
+            || bouncer()->hasPermission('portal.pages.customize'),
+            403
+        );
+
         $validated = $request->validate([
             'channel_id' => 'required|integer',
             'theme_code' => 'required|string',
@@ -291,6 +313,13 @@ class ThemeController extends Controller
      */
     public function importTokens(Request $request): JsonResponse
     {
+        abort_unless(
+            bouncer()->hasPermission('appearance.themes')
+            || bouncer()->hasPermission('portal.customize.themes')
+            || bouncer()->hasPermission('portal.pages.customize'),
+            403
+        );
+
         $validated = $request->validate([
             'channel_id' => 'required|integer',
             'theme_code' => 'required|string',
@@ -339,6 +368,13 @@ class ThemeController extends Controller
      */
     public function exportTokens(Request $request): JsonResponse
     {
+        abort_unless(
+            bouncer()->hasPermission('appearance.themes')
+            || bouncer()->hasPermission('portal.customize.themes')
+            || bouncer()->hasPermission('portal.pages.customize'),
+            403
+        );
+
         $channelId = (int) $request->input('channel_id', core()->getCurrentChannel()?->id ?? 1);
         $themeCode = (string) $request->input('theme_code', 'portal');
 
@@ -353,6 +389,13 @@ class ThemeController extends Controller
      */
     public function customizeTokens(Request $request): JsonResponse|RedirectResponse
     {
+        abort_unless(
+            bouncer()->hasPermission('appearance.themes')
+            || bouncer()->hasPermission('portal.customize.themes')
+            || bouncer()->hasPermission('portal.pages.customize'),
+            403
+        );
+
         $validated = $request->validate([
             'channel_id' => 'required|integer',
             'theme_code' => 'required|string',
@@ -384,6 +427,13 @@ class ThemeController extends Controller
      */
     public function resetTokens(Request $request): JsonResponse|RedirectResponse
     {
+        abort_unless(
+            bouncer()->hasPermission('appearance.themes')
+            || bouncer()->hasPermission('portal.customize.themes')
+            || bouncer()->hasPermission('portal.pages.customize'),
+            403
+        );
+
         $validated = $request->validate([
             'channel_id' => 'required|integer',
             'theme_code' => 'required|string',

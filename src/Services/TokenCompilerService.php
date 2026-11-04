@@ -175,11 +175,20 @@ class TokenCompilerService
                 continue;
             }
 
-            $cleanKey = preg_replace('/[^a-zA-Z0-9\-_]/', '', $key);
+            if (! preg_match('/^--[a-zA-Z0-9\-_]+$/', $key)) {
+                continue;
+            }
+
+            $cleanKey = $key;
             $cleanValue = strip_tags(trim((string) $value));
 
             // Prevent break out of CSS rule
             $cleanValue = str_replace([';', '{', '}', '<', '>'], '', $cleanValue);
+
+            // Block CSS injection, CSS exfiltration, external resource loading, and escaping
+            if (preg_match('/url\s*\(|expression\s*\(|@import|\\\|\/\*|\*\//i', $cleanValue)) {
+                continue;
+            }
 
             if (filled($cleanKey) && filled($cleanValue)) {
                 $sanitized[$cleanKey] = $cleanValue;

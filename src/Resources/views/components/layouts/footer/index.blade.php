@@ -16,11 +16,11 @@
 
     $copyrightText = data_get($footerSettings, 'copyright.text');
     if (! empty($copyrightText)) {
-        $formattedCopyright = str_replace(
+        $formattedCopyright = strip_tags(str_replace(
             ['{year}', '{channel}'],
             [$currentYear, $channelName],
             $copyrightText
-        );
+        ), '<a><strong><em><span>');
     } else {
         $formattedCopyright = "&copy; {$currentYear} {$channelName}. " . trans('portal::app.footer.all-rights-reserved');
     }

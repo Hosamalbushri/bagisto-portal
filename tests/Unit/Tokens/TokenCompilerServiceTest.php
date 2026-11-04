@@ -103,22 +103,39 @@ class TokenCompilerServiceTest extends TestCase
     /**
      * Test sanitization strips harmful CSS and invalid keys.
      */
+    /**
+     * Test token sanitization rejects malicious CSS injection and XSS attempts.
+     */
     public function test_sanitizes_tokens_strictly(): void
     {
         $raw = [
             'invalid_no_dashes' => '#fff',
+            '--invalid;key' => '#111',
             '--brand-primary' => '#1c66f6; background: red;',
             '--brand-accent' => '<script>alert(1)</script>#fe8312',
             '--bg-surface' => '   #ffffff   ',
+            '--malicious-url' => 'url("https://attacker.com/leak.png")',
+            '--malicious-expression' => 'expression(alert(1))',
+            '--malicious-import' => '@import "evil.css"',
+            '--malicious-comment' => '/* comment */ #000',
+            '--malicious-escape' => '\\00002a',
         ];
 
         $clean = $this->compiler->sanitizeTokens($raw);
 
         $this->assertArrayNotHasKey('invalid_no_dashes', $clean);
+        $this->assertArrayNotHasKey('--invalid;key', $clean);
         $this->assertArrayHasKey('--brand-primary', $clean);
         $this->assertStringNotContainsString(';', $clean['--brand-primary']);
         $this->assertStringNotContainsString('<script>', $clean['--brand-accent']);
         $this->assertEquals('#ffffff', $clean['--bg-surface']);
+
+        // Assert dangerous patterns are completely rejected
+        $this->assertArrayNotHasKey('--malicious-url', $clean);
+        $this->assertArrayNotHasKey('--malicious-expression', $clean);
+        $this->assertArrayNotHasKey('--malicious-import', $clean);
+        $this->assertArrayNotHasKey('--malicious-comment', $clean);
+        $this->assertArrayNotHasKey('--malicious-escape', $clean);
     }
 
     /**
@@ -176,59 +193,69 @@ class TokenCompilerServiceTest extends TestCase
      */
     public function test_theme_controller_preset_and_export_endpoints(): void
     {
-        $controller = app(ThemeController::class);
+        if (property_exists(bouncer(), 'allowsAll')) {
+            bouncer()::$allowsAll = true;
+        }
 
-        // 1. Get Presets
-        $presetsResponse = $controller->getPresets();
-        $this->assertEquals(200, $presetsResponse->getStatusCode());
-        $presetsData = json_decode($presetsResponse->getContent(), true);
-        $this->assertArrayHasKey('presets', $presetsData);
-        $this->assertArrayHasKey('emerald_tech', $presetsData['presets']);
+        try {
+            $controller = app(ThemeController::class);
 
-        // 2. Apply Preset
-        $applyRequest = Request::create('/admin/portal/themes/tokens/apply-preset', 'POST', [
-            'channel_id' => 1,
-            'theme_code' => 'portal',
-            'preset' => 'emerald_tech',
-        ]);
-        $applyResponse = $controller->applyPreset($applyRequest);
-        $this->assertEquals(200, $applyResponse->getStatusCode());
-        $applyData = json_decode($applyResponse->getContent(), true);
-        $this->assertEquals('#059669', $applyData['tokens']['--brand-primary']);
+            // 1. Get Presets
+            $presetsResponse = $controller->getPresets();
+            $this->assertEquals(200, $presetsResponse->getStatusCode());
+            $presetsData = json_decode($presetsResponse->getContent(), true);
+            $this->assertArrayHasKey('presets', $presetsData);
+            $this->assertArrayHasKey('emerald_tech', $presetsData['presets']);
 
-        // Verify stored in repository
-        $stored = app(PortalLayoutSettingRepository::class)->getSettings('theme_tokens', 1, 'portal');
-        $this->assertEquals('#059669', $stored['--brand-primary']);
+            // 2. Apply Preset
+            $applyRequest = Request::create('/admin/portal/themes/tokens/apply-preset', 'POST', [
+                'channel_id' => 1,
+                'theme_code' => 'portal',
+                'preset' => 'emerald_tech',
+            ]);
+            $applyResponse = $controller->applyPreset($applyRequest);
+            $this->assertEquals(200, $applyResponse->getStatusCode());
+            $applyData = json_decode($applyResponse->getContent(), true);
+            $this->assertEquals('#059669', $applyData['tokens']['--brand-primary']);
 
-        // 3. Export DTCG JSON
-        $exportRequest = Request::create('/admin/portal/themes/tokens/export', 'GET', [
-            'channel_id' => 1,
-            'theme_code' => 'portal',
-        ]);
-        $exportResponse = $controller->exportTokens($exportRequest);
-        $this->assertEquals(200, $exportResponse->getStatusCode());
-        $exportData = json_decode($exportResponse->getContent(), true);
-        $this->assertEquals('#059669', $exportData['color']['brand-primary']['$value']);
+            // Verify stored in repository
+            $stored = app(PortalLayoutSettingRepository::class)->getSettings('theme_tokens', 1, 'portal');
+            $this->assertEquals('#059669', $stored['--brand-primary']);
 
-        // 4. Import JSON payload
-        $importPayload = json_encode([
-            'color' => [
-                'brand-primary' => ['$value' => '#0284c7'],
-            ],
-            'dimension' => [
-                'radius-base' => ['$value' => '20px'],
-            ],
-        ]);
-        $importRequest = Request::create('/admin/portal/themes/tokens/import', 'POST', [
-            'channel_id' => 1,
-            'theme_code' => 'portal',
-            'json' => $importPayload,
-        ]);
-        $importResponse = $controller->importTokens($importRequest);
-        $this->assertEquals(200, $importResponse->getStatusCode());
-        $importData = json_decode($importResponse->getContent(), true);
-        $this->assertEquals('#0284c7', $importData['tokens']['--brand-primary']);
-        $this->assertEquals('20px', $importData['tokens']['--radius-base']);
+            // 3. Export DTCG JSON
+            $exportRequest = Request::create('/admin/portal/themes/tokens/export', 'GET', [
+                'channel_id' => 1,
+                'theme_code' => 'portal',
+            ]);
+            $exportResponse = $controller->exportTokens($exportRequest);
+            $this->assertEquals(200, $exportResponse->getStatusCode());
+            $exportData = json_decode($exportResponse->getContent(), true);
+            $this->assertEquals('#059669', $exportData['color']['brand-primary']['$value']);
+
+            // 4. Import JSON payload
+            $importPayload = json_encode([
+                'color' => [
+                    'brand-primary' => ['$value' => '#0284c7'],
+                ],
+                'dimension' => [
+                    'radius-base' => ['$value' => '20px'],
+                ],
+            ]);
+            $importRequest = Request::create('/admin/portal/themes/tokens/import', 'POST', [
+                'channel_id' => 1,
+                'theme_code' => 'portal',
+                'json' => $importPayload,
+            ]);
+            $importResponse = $controller->importTokens($importRequest);
+            $this->assertEquals(200, $importResponse->getStatusCode());
+            $importData = json_decode($importResponse->getContent(), true);
+            $this->assertEquals('#0284c7', $importData['tokens']['--brand-primary']);
+            $this->assertEquals('20px', $importData['tokens']['--radius-base']);
+        } finally {
+            if (property_exists(bouncer(), 'allowsAll')) {
+                bouncer()::$allowsAll = false;
+            }
+        }
     }
 
     /**

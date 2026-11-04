@@ -68,7 +68,8 @@ Route::get('manifest.json', [ManifestController::class, 'index'])
  * Search portal pages and content.
  */
 Route::get('search', [SearchController::class, 'index'])
-    ->name('portal.search.index');
+    ->name('portal.search.index')
+    ->middleware('throttle:30,1');
 
 /**
  * Newsletter subscription.

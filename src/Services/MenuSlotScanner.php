@@ -2,6 +2,7 @@
 
 namespace Platform\Portal\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\Finder;
 
@@ -15,13 +16,28 @@ class MenuSlotScanner
     protected const DIRECTIVE_PATTERN = '/@portalMenuSlot\s*\(\s*[\'"]([a-zA-Z0-9_\-]+)[\'"](?:\s*,\s*[\'"]([^\'"]+)[\'"])?(?:\s*,\s*[\'"]([a-zA-Z]+)[\'"])?\s*\)/i';
 
     /**
+     * Clear cached menu slots.
+     */
+    public static function clearCache(?string $themePath = null): void
+    {
+        Cache::forget('portal_menu_slots_'.md5((string) $themePath));
+    }
+
+    /**
      * Scan layout files for menu slots.
      *
      * @param  string|null  $themePath  Optional specific theme root path
+     * @param  bool  $fresh  Force fresh disk scan bypass cache
      * @return array<string, array<string, array<string, mixed>>> Grouped by location ('header', 'footer', 'other')
      */
-    public function scan(?string $themePath = null): array
+    public function scan(?string $themePath = null, bool $fresh = false): array
     {
+        $cacheKey = 'portal_menu_slots_'.md5((string) $themePath);
+
+        if (! $fresh && Cache::has($cacheKey)) {
+            return Cache::get($cacheKey);
+        }
+
         $directories = $this->getSearchDirectories($themePath);
 
         $slots = [
@@ -68,6 +84,8 @@ class MenuSlotScanner
                 ];
             }
         }
+
+        Cache::put($cacheKey, $slots, 86400);
 
         return $slots;
     }

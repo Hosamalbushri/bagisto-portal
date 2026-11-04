@@ -24,24 +24,25 @@ class SearchController extends Controller
      */
     public function index(Request $request): View|JsonResponse
     {
-        $query = trim((string) $request->input('query', ''));
+        $query = Str::limit(trim((string) $request->input('query', '')), 100, '');
 
         $results = collect();
 
         if (strlen($query) >= 2) {
             $channel = core()->getCurrentChannel();
+            $escapedQuery = addcslashes($query, '%_\\');
 
             // 1. Search Portal Modular Pages
             $portalPages = PortalPage::query()
                 ->where('channel_id', $channel->id)
                 ->where('status', 1)
-                ->where(function ($builder) use ($query) {
-                    $builder->where('slug', 'like', "%{$query}%")
-                        ->orWhereHas('translations', function ($q) use ($query) {
-                            $q->where('title', 'like', "%{$query}%")
-                                ->orWhere('meta_title', 'like', "%{$query}%")
-                                ->orWhere('meta_description', 'like', "%{$query}%")
-                                ->orWhere('meta_keywords', 'like', "%{$query}%");
+                ->where(function ($builder) use ($escapedQuery) {
+                    $builder->where('slug', 'like', "%{$escapedQuery}%")
+                        ->orWhereHas('translations', function ($q) use ($escapedQuery) {
+                            $q->where('title', 'like', "%{$escapedQuery}%")
+                                ->orWhere('meta_title', 'like', "%{$escapedQuery}%")
+                                ->orWhere('meta_description', 'like', "%{$escapedQuery}%")
+                                ->orWhere('meta_keywords', 'like', "%{$escapedQuery}%");
                         });
                 })
                 ->get()
@@ -61,10 +62,10 @@ class SearchController extends Controller
                 try {
                     $cmsPages = $this->cmsPageRepository->getModel()
                         ->whereHas('channels', fn ($q) => $q->where('channels.id', $channel->id))
-                        ->where(function ($builder) use ($query) {
-                            $builder->whereTranslationLike('page_title', "%{$query}%")
-                                ->orWhereTranslationLike('url_key', "%{$query}%")
-                                ->orWhereTranslationLike('html_content', "%{$query}%");
+                        ->where(function ($builder) use ($escapedQuery) {
+                            $builder->whereTranslationLike('page_title', "%{$escapedQuery}%")
+                                ->orWhereTranslationLike('url_key', "%{$escapedQuery}%")
+                                ->orWhereTranslationLike('html_content', "%{$escapedQuery}%");
                         })
                         ->get()
                         ->map(fn ($page) => [
