@@ -11,6 +11,7 @@ use Platform\Portal\Http\Controllers\Controller;
 use Platform\Portal\Repositories\PortalLayoutSettingRepository;
 use Platform\Portal\Repositories\PortalPageRepository;
 use Platform\Portal\Services\ThemeManager;
+use Platform\Portal\Services\ThemeTokenService;
 use Platform\Portal\Services\TokenCompilerService;
 use Platform\Portal\Themes\ThemeManifest;
 
@@ -23,7 +24,8 @@ class ThemeController extends Controller
         protected ThemeManager $themeManager,
         protected PortalLayoutSettingRepository $layoutSettingRepository,
         protected PortalPageRepository $portalPageRepository,
-        protected TokenCompilerService $tokenCompiler
+        protected TokenCompilerService $tokenCompiler,
+        protected ThemeTokenService $themeTokenService
     ) {}
 
     /**
@@ -101,7 +103,7 @@ class ThemeController extends Controller
 
         $currentChannel = $channels->firstWhere('id', $channelId) ?? $channels->first();
 
-        $tokens = $this->layoutSettingRepository->getSettings('theme_tokens', $currentChannel->id, $code) ?: [];
+        $tokens = $this->themeTokenService->getTokens($currentChannel->id, $code);
         $customCss = $tokens['custom_css'] ?? '';
 
         $presets = $this->tokenCompiler->getPresets();
@@ -214,7 +216,7 @@ class ThemeController extends Controller
         $channelId = (int) $request->input('channel_id', core()->getCurrentChannel()?->id ?? 1);
         $themeCode = (string) $request->input('theme_code', 'portal');
 
-        $tokens = $this->layoutSettingRepository->getSettings('theme_tokens', $channelId, $themeCode);
+        $tokens = $this->themeTokenService->getTokens($channelId, $themeCode);
 
         return new JsonResponse([
             'tokens' => $tokens,
@@ -268,9 +270,13 @@ class ThemeController extends Controller
             'preset' => 'required|string',
         ]);
 
-        $preset = $this->tokenCompiler->getPreset($validated['preset']);
+        $tokens = $this->themeTokenService->applyPreset(
+            (int) $validated['channel_id'],
+            $validated['theme_code'],
+            $validated['preset']
+        );
 
-        if (! $preset) {
+        if ($tokens === null) {
             if ($request->wantsJson() || $request->ajax() || ! $request->hasSession()) {
                 return new JsonResponse([
                     'message' => trans('portal::app.admin.themes.preset-not-found'),
@@ -281,22 +287,6 @@ class ThemeController extends Controller
 
             return redirect()->back();
         }
-
-        $rawTokens = $preset['tokens'] ?? [];
-        if (isset($preset['dark']) && is_array($preset['dark'])) {
-            foreach ($preset['dark'] as $k => $v) {
-                $rawTokens['--dark-'.ltrim($k, '-')] = $v;
-            }
-        }
-
-        $tokens = $this->tokenCompiler->sanitizeTokens($rawTokens);
-
-        $this->layoutSettingRepository->saveSettings(
-            'theme_tokens',
-            $tokens,
-            (int) $validated['channel_id'],
-            $validated['theme_code']
-        );
 
         if ($request->wantsJson() || $request->ajax() || ! $request->hasSession()) {
             return new JsonResponse([
@@ -344,20 +334,17 @@ class ThemeController extends Controller
             ], 422);
         }
 
-        $tokens = $this->tokenCompiler->importDtcg($payload);
+        $tokens = $this->themeTokenService->importDtcg(
+            (int) $validated['channel_id'],
+            $validated['theme_code'],
+            $payload
+        );
 
         if (empty($tokens)) {
             return new JsonResponse([
                 'message' => trans('portal::app.admin.tokens.no-valid-tokens'),
             ], 422);
         }
-
-        $this->layoutSettingRepository->saveSettings(
-            'theme_tokens',
-            $tokens,
-            (int) $validated['channel_id'],
-            $validated['theme_code']
-        );
 
         return new JsonResponse([
             'message' => trans('portal::app.admin.tokens.import-success'),
@@ -380,7 +367,7 @@ class ThemeController extends Controller
         $channelId = (int) $request->input('channel_id', core()->getCurrentChannel()?->id ?? 1);
         $themeCode = (string) $request->input('theme_code', 'portal');
 
-        $tokens = $this->layoutSettingRepository->getSettings('theme_tokens', $channelId, $themeCode);
+        $tokens = $this->themeTokenService->getTokens($channelId, $themeCode);
         $dtcg = $this->tokenCompiler->exportDtcg($tokens);
 
         return new JsonResponse($dtcg);
@@ -405,20 +392,13 @@ class ThemeController extends Controller
             'custom_css' => 'nullable|string|max:50000',
         ]);
 
-        $sanitizedTokens = $this->tokenCompiler->sanitizeTokens($validated['tokens'] ?? []);
+        $customCss = array_key_exists('custom_css', $validated) ? ($validated['custom_css'] ?? '') : null;
 
-        if (array_key_exists('custom_css', $validated)) {
-            $cleanCustomCss = $this->tokenCompiler->sanitizeCustomCss($validated['custom_css'] ?? '');
-            if (filled($cleanCustomCss)) {
-                $sanitizedTokens['custom_css'] = $cleanCustomCss;
-            }
-        }
-
-        $this->layoutSettingRepository->saveSettings(
-            'theme_tokens',
-            $sanitizedTokens,
+        $this->themeTokenService->customizeTokens(
             (int) $validated['channel_id'],
-            $validated['theme_code']
+            $validated['theme_code'],
+            $validated['tokens'] ?? [],
+            $customCss
         );
 
         if ($request->wantsJson() || $request->ajax()) {
@@ -449,9 +429,7 @@ class ThemeController extends Controller
             'theme_code' => 'required|string',
         ]);
 
-        $this->layoutSettingRepository->saveSettings(
-            'theme_tokens',
-            [],
+        $this->themeTokenService->resetTokens(
             (int) $validated['channel_id'],
             $validated['theme_code']
         );

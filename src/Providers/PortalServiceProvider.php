@@ -19,6 +19,13 @@ use Platform\Portal\Sections\SectionTypeRegistry;
 use Platform\Portal\Services\ExtendedThemeCatalog;
 use Platform\Portal\Services\ThemeManager;
 use Platform\Portal\Services\TokenCompilerService;
+use Platform\Portal\Services\Tokens\ComponentBindingRegistry;
+use Platform\Portal\Services\Tokens\DtcgExporter;
+use Platform\Portal\Services\Tokens\DtcgImporter;
+use Platform\Portal\Services\Tokens\TokenCompiler;
+use Platform\Portal\Services\Tokens\TokenDefaultResolver;
+use Platform\Portal\Services\Tokens\TokenDeriver;
+use Platform\Portal\Services\Tokens\TokenSanitizer;
 use Spatie\ResponseCache\ResponseCache;
 use Webkul\Core\Repositories\ChannelRepository;
 use Webkul\Theme\Repositories\SectionRepository;
@@ -51,8 +58,49 @@ class PortalServiceProvider extends ServiceProvider
             'design-tokens'
         );
 
-        $this->app->singleton(TokenCompilerService::class, function () {
-            return new TokenCompilerService;
+        $this->app->singleton(TokenSanitizer::class, function () {
+            return new TokenSanitizer;
+        });
+
+        $this->app->singleton(TokenDefaultResolver::class, function () {
+            return new TokenDefaultResolver;
+        });
+
+        $this->app->singleton(TokenDeriver::class, function ($app) {
+            return new TokenDeriver(
+                $app->make(TokenDefaultResolver::class)
+            );
+        });
+
+        $this->app->singleton(ComponentBindingRegistry::class, function () {
+            return new ComponentBindingRegistry;
+        });
+
+        $this->app->singleton(TokenCompiler::class, function ($app) {
+            return new TokenCompiler(
+                $app->make(ComponentBindingRegistry::class)
+            );
+        });
+
+        $this->app->singleton(DtcgExporter::class, function () {
+            return new DtcgExporter;
+        });
+
+        $this->app->singleton(DtcgImporter::class, function ($app) {
+            return new DtcgImporter(
+                $app->make(TokenSanitizer::class)
+            );
+        });
+
+        $this->app->singleton(TokenCompilerService::class, function ($app) {
+            return new TokenCompilerService(
+                $app->make(TokenCompiler::class),
+                $app->make(TokenSanitizer::class),
+                $app->make(TokenDeriver::class),
+                $app->make(DtcgExporter::class),
+                $app->make(DtcgImporter::class),
+                $app->make(TokenDefaultResolver::class)
+            );
         });
 
         // Bind ThemeManager singleton & auto-discover themes cleanly
@@ -180,6 +228,7 @@ class PortalServiceProvider extends ServiceProvider
             'portal.page.deleted',
             'portal.theme.activated',
             'portal.menu.updated',
+            'portal.tokens.updated',
         ], function () {
             if (class_exists(ResponseCache::class) && app()->bound(ResponseCache::class)) {
                 try {

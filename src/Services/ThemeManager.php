@@ -156,20 +156,28 @@ class ThemeManager
             }
         }
 
-        // Merge customized live tokens if stored in layout settings
-        try {
-            if (class_exists(PortalLayoutSettingRepository::class)) {
+        // 1. Retrieve customized live tokens if stored in layout settings
+        $tokens = [];
+
+        if (class_exists(PortalLayoutSettingRepository::class)) {
+            try {
                 $customTokens = app(PortalLayoutSettingRepository::class)->getSettings('theme_tokens', $channelId, $themeCode);
-                if (! empty($customTokens)) {
-                    $tokenCompiler = app(TokenCompilerService::class);
-                    $compiledCss = $tokenCompiler->compile($customTokens, $themeCode);
-                    if (filled($compiledCss)) {
-                        $css = $compiledCss."\n".($css ?? '');
-                    }
-                }
+                $tokens = is_array($customTokens) ? $customTokens : [];
+            } catch (\Throwable $e) {
+                report($e);
+                $tokens = [];
             }
-        } catch (\Throwable) {
-            // Graceful fallback if table is unavailable
+        }
+
+        // 2. Compile design tokens into live CSS (with in-memory defaults fallback)
+        try {
+            $tokenCompiler = app(TokenCompilerService::class);
+            $compiledCss = $tokenCompiler->compile($tokens, $themeCode);
+            if (filled($compiledCss)) {
+                $css = $compiledCss."\n".($css ?? '');
+            }
+        } catch (\Throwable $e) {
+            report($e);
         }
 
         return $css;
