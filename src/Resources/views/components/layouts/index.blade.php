@@ -80,7 +80,7 @@
     {!! view_render_event('bagisto.portal.layout.head.after') !!}
 </head>
 
-<body class="antialiased min-h-screen flex flex-col justify-between overflow-x-hidden transition-colors duration-200" style="background-color: var(--bg-app); color: var(--text-primary);">
+<body class="antialiased min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200" style="background-color: var(--bg-app); color: var(--text-primary);">
     {!! view_render_event('bagisto.portal.layout.body.before') !!}
 
     <a
@@ -90,7 +90,7 @@
         @lang('portal::app.components.layouts.index.skip-to-main-content')
     </a>
 
-    <div id="app" class="flex min-h-screen flex-col justify-between">
+    <div id="app" class="flex min-h-screen flex-col">
         <x-portal::flash-group />
 
         <x-portal::modal.confirm />

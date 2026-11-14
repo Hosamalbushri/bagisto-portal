@@ -357,6 +357,5 @@
             </div>
         </x-slot>
     </x-portal::drawer>
-</div>
 
 {!! view_render_event('bagisto.portal.layout.header.mobile.after') !!}

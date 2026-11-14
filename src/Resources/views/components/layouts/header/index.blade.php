@@ -52,18 +52,21 @@
         type="text/x-template"
         id="v-dark-template"
     >
-        <button
-            type="button"
-            class="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)]/80 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--brand-primary)]/40 hover:bg-[var(--bg-surface-elevated)] transition-all focus:outline-none shadow-2xs"
-            :title="isDarkMode ? '@lang('portal::app.home.theme.light-mode')' : '@lang('portal::app.home.theme.dark-mode')'"
-            @click="toggle"
-            aria-label="Toggle theme"
-        >
-            <span
-                class="text-lg transition-transform"
-                :class="[isDarkMode ? 'icon-light text-amber-400' : 'icon-dark text-[var(--text-secondary)]']"
-            ></span>
-        </button>
+        <div @click="toggle" class="inline-flex cursor-pointer">
+            <slot>
+                <button
+                    type="button"
+                    class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+                    :title="isDarkMode ? '@lang('portal::app.home.theme.light-mode')' : '@lang('portal::app.home.theme.dark-mode')'"
+                    aria-label="Toggle theme"
+                >
+                    <span
+                        class="text-xl transition-transform"
+                        :class="[isDarkMode ? 'icon-light text-amber-400' : 'icon-dark text-[var(--text-secondary)]']"
+                    ></span>
+                </button>
+            </slot>
+        </div>
     </script>
 
     <script type="module">

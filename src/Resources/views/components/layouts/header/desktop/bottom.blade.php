@@ -314,6 +314,4 @@
             {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.profile.after') !!}
         </div>
     </div>
-</div>
-
 {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.after') !!}

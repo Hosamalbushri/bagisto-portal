@@ -6,7 +6,7 @@
 
 <v-drawer
     {{ $attributes }}
-    is-active="{{ $isActive }}"
+    :is-active="{{ $isActive ? 'true' : 'false' }}"
     position="{{ $position }}"
     width="{{ $width }}"
 >
@@ -136,7 +136,7 @@
 
             data() {
                 return {
-                    isOpen: this.isActive,
+                    isOpen: Boolean(this.isActive),
                 };
             },
 
