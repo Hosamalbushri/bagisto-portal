@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ==========================================================================
    {{ themeTitle }} — Theme Design Tokens
    Override these variables to change the visual identity without altering code.

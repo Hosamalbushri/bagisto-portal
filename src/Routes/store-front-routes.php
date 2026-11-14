@@ -94,21 +94,24 @@ Route::get('currency/{code}', [CurrencyController::class, 'switch'])
     ->name('portal.currency.switch');
 
 /**
- * Portal Authentication Routes (Available when enabled).
+ * Portal Authentication Routes (Available when enabled in config/portal.php).
+ * Prevents hijacking core Bagisto customer authentication when Shop is installed.
  */
-Route::get('login', [LoginController::class, 'showLoginForm'])
-    ->name('portal.auth.login');
+if (config('portal.auth.enabled', false)) {
+    Route::get('login', [LoginController::class, 'showLoginForm'])
+        ->name('portal.auth.login');
 
-Route::post('login', [LoginController::class, 'login'])
-    ->name('portal.auth.login.store')
-    ->middleware('throttle:5,1');
+    Route::post('login', [LoginController::class, 'login'])
+        ->name('portal.auth.login.store')
+        ->middleware('throttle:5,1');
 
-Route::post('logout', [LoginController::class, 'logout'])
-    ->name('portal.auth.logout');
+    Route::post('logout', [LoginController::class, 'logout'])
+        ->name('portal.auth.logout');
 
-Route::get('register', [RegisterController::class, 'showRegistrationForm'])
-    ->name('portal.auth.register');
+    Route::get('register', [RegisterController::class, 'showRegistrationForm'])
+        ->name('portal.auth.register');
 
-Route::post('register', [RegisterController::class, 'register'])
-    ->name('portal.auth.register.store')
-    ->middleware('throttle:5,1');
+    Route::post('register', [RegisterController::class, 'register'])
+        ->name('portal.auth.register.store')
+        ->middleware('throttle:5,1');
+}

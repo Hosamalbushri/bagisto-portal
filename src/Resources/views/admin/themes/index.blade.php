@@ -138,14 +138,6 @@
                                     >
                                         @lang('admin::app.appearance.themes.index.customize-btn')
                                     </a>
-
-                                    <a
-                                        class="secondary-button"
-                                        :href="'{{ route('admin.portal.themes.tokens.customize', '__CODE__') }}'.replace('__CODE__', theme.code)"
-                                        v-if="theme.status === 'active'"
-                                    >
-                                        @lang('portal::app.admin.themes.customize-tokens-btn')
-                                    </a>
                                 </div>
                             </div>
                         </div>

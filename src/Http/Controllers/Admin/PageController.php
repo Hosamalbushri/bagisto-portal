@@ -8,6 +8,7 @@ use Illuminate\View\View;
 use Platform\Portal\DataGrids\PortalPageDataGrid;
 use Platform\Portal\Http\Controllers\Controller;
 use Platform\Portal\Repositories\PortalPageRepository;
+use Platform\Portal\Services\Tokens\TokenSanitizer;
 use Webkul\Core\Repositories\ChannelRepository;
 
 class PageController extends Controller
@@ -55,7 +56,27 @@ class PageController extends Controller
 
         $locale = request('locale', core()->getRequestedLocaleCode());
 
-        $this->validate(request(), [
+        $tokenRule = function ($attribute, $value, $fail) {
+            if (is_array($value)) {
+                return;
+            }
+
+            if (is_string($value)) {
+                $decoded = json_decode($value, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    return;
+                }
+            }
+
+            $msg = trans('validation.json', ['attribute' => $attribute]);
+            if ($msg === 'validation.json') {
+                $msg = "The {$attribute} field must be a valid JSON object or array.";
+            }
+
+            $fail($msg);
+        };
+
+        $rules = [
             'slug' => [
                 'required',
                 'alpha_dash',
@@ -66,7 +87,13 @@ class PageController extends Controller
                 },
             ],
             'channel_id' => ['required', 'exists:channels,id'],
-        ]);
+        ];
+
+        if (request()->has('tokens')) {
+            $rules['tokens'] = [$tokenRule];
+        }
+
+        $this->validate(request(), $rules);
 
         $status = request()->has('status') ? (request()->boolean('status') ? 1 : 0) : 0;
         $isHomePage = request()->boolean('is_home_page') ? 1 : 0;
@@ -132,6 +159,16 @@ class PageController extends Controller
             }
         }
 
+        if (request()->has('tokens')) {
+            $rawTokens = request('tokens');
+            if (is_string($rawTokens)) {
+                $rawTokens = json_decode($rawTokens, true);
+            }
+
+            $normalized = app(TokenSanitizer::class)->normalizeTokens($rawTokens);
+            $data['tokens'] = empty($normalized) ? null : $normalized;
+        }
+
         $page = $this->portalPageRepository->create($data);
 
         $successMsg = trans('portal::app.admin.pages.create-success');
@@ -171,7 +208,27 @@ class PageController extends Controller
 
         $locale = request('locale', core()->getRequestedLocaleCode());
 
-        $this->validate(request(), [
+        $tokenRule = function ($attribute, $value, $fail) {
+            if (is_array($value)) {
+                return;
+            }
+
+            if (is_string($value)) {
+                $decoded = json_decode($value, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    return;
+                }
+            }
+
+            $msg = trans('validation.json', ['attribute' => $attribute]);
+            if ($msg === 'validation.json') {
+                $msg = "The {$attribute} field must be a valid JSON object or array.";
+            }
+
+            $fail($msg);
+        };
+
+        $rules = [
             'slug' => [
                 'required',
                 'alpha_dash',
@@ -182,7 +239,13 @@ class PageController extends Controller
                 },
             ],
             'channel_id' => ['required', 'exists:channels,id'],
-        ]);
+        ];
+
+        if (request()->has('tokens')) {
+            $rules['tokens'] = [$tokenRule];
+        }
+
+        $this->validate(request(), $rules);
 
         $status = request()->has('status') ? (request()->boolean('status') ? 1 : 0) : 0;
         $isHomePage = request()->boolean('is_home_page') ? 1 : 0;
@@ -244,6 +307,16 @@ class PageController extends Controller
                     $data[$loc->code] = $otherData;
                 }
             }
+        }
+
+        if (request()->has('tokens')) {
+            $rawTokens = request('tokens');
+            if (is_string($rawTokens)) {
+                $rawTokens = json_decode($rawTokens, true);
+            }
+
+            $normalized = app(TokenSanitizer::class)->normalizeTokens($rawTokens);
+            $data['tokens'] = empty($normalized) ? null : $normalized;
         }
 
         $page = $this->portalPageRepository->update($data, $id);

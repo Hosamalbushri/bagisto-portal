@@ -51,7 +51,7 @@
                 @click="$refs.mobileMenuDrawer.open()"
                 aria-label="Open navigation menu"
             >
-                <span class="icon-menu text-xl"></span>
+                <span class="icon-hamburger text-xl"></span>
             </button>
 
             <!-- Brand Logo & Roa Geometric Monogram -->

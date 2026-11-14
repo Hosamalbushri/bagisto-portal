@@ -2,29 +2,23 @@
 
 namespace Platform\Portal\Sections;
 
-use Illuminate\Support\Collection;
+use Platform\PortalSectionsApi\SectionTypeRegistry as BaseSectionTypeRegistry;
 
-class SectionTypeRegistry
+class SectionTypeRegistry extends BaseSectionTypeRegistry
 {
-    /**
-     * Registered section types.
-     *
-     * @var array<string, SectionType>
-     */
-    protected array $types = [];
-
     /**
      * Create registry and load defaults.
      */
     public function __construct()
     {
+        parent::__construct();
         $this->registerDefaults();
     }
 
     /**
      * Register default built-in section types.
      */
-    protected function registerDefaults(): void
+    public function registerDefaults(): void
     {
         $this->register(new HeroScaffold);
         $this->register(new BentoGrid);
@@ -36,70 +30,5 @@ class SectionTypeRegistry
         $this->register(new RichContent);
         $this->register(new ContactSection);
     }
-
-    /**
-     * Register a new section type (by class name or instance).
-     */
-    public function register(string|SectionType $type): self
-    {
-        if (is_string($type)) {
-            if (! is_subclass_of($type, SectionType::class)) {
-                throw new \InvalidArgumentException("Class [{$type}] must extend ".SectionType::class);
-            }
-
-            $type = app($type);
-        }
-
-        $this->types[$type->getCode()] = $type;
-
-        event('portal.section.registered', [$type]);
-
-        return $this;
-    }
-
-    /**
-     * Unregister a section type by its code.
-     */
-    public function unregister(string $code): self
-    {
-        unset($this->types[$code]);
-
-        return $this;
-    }
-
-    /**
-     * Get all registered section type codes.
-     *
-     * @return array<int, string>
-     */
-    public function codes(): array
-    {
-        return array_keys($this->types);
-    }
-
-    /**
-     * Get all registered section types.
-     *
-     * @return Collection<string, SectionType>
-     */
-    public function all(): Collection
-    {
-        return collect($this->types);
-    }
-
-    /**
-     * Get a section type by its code.
-     */
-    public function get(string $code): ?SectionType
-    {
-        return $this->types[$code] ?? null;
-    }
-
-    /**
-     * Check if a section type exists.
-     */
-    public function has(string $code): bool
-    {
-        return isset($this->types[$code]);
-    }
 }
+

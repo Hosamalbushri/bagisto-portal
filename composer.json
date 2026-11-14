@@ -23,12 +23,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Platform\\Portal\\": "src/"
+            "Platform\\Portal\\": "src/",
+            "Platform\\PortalSectionsApi\\": "packages/portal-sections-api/src/",
+            "Platform\\PortalTokens\\": "packages/portal-tokens/src/",
+            "Platform\\PortalUi\\": "packages/portal-ui/src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Platform\\Portal\\Tests\\": "tests/"
+            "Platform\\Portal\\Tests\\": "tests/",
+            "Platform\\PortalSectionsApi\\Tests\\": "packages/portal-sections-api/tests/"
         }
     },
     "extra": {

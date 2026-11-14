@@ -121,6 +121,11 @@ namespace Webkul\Core {
                 return [];
             }
 
+            public function getAllLocales()
+            {
+                return collect([(object) ['code' => 'en', 'name' => 'English']]);
+            }
+
             public function getRequestedLocaleCode(string $param = 'locale', bool $fallback = true)
             {
                 return 'en';

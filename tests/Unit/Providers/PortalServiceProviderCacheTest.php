@@ -134,29 +134,5 @@ class PortalServiceProviderCacheTest extends TestCase
             $this->fail('Exception escaped the ResponseCache listener: '.$e->getMessage());
         }
         $this->assertTrue($dispatchCompleted, 'Direct event dispatch must not fail when ResponseCache::clear throws.');
-
-        // 2. End-to-end service test: ThemeTokenService succeeds despite ResponseCache::clear throwing
-        $mockRepo = Mockery::mock(PortalLayoutSettingRepository::class);
-        $mockRepo->shouldReceive('saveSettings')
-            ->once()
-            ->with('theme_tokens', Mockery::type('array'), 1, 'portal')
-            ->andReturn(true);
-
-        $mockCacheEndToEnd = Mockery::mock('Spatie\ResponseCache\ResponseCache');
-        $mockCacheEndToEnd->shouldReceive('clear')
-            ->once()
-            ->andThrow(new \RuntimeException('Network timeout during FPC clear'));
-
-        $this->app->instance('Spatie\ResponseCache\ResponseCache', $mockCacheEndToEnd);
-
-        $service = new ThemeTokenService(
-            app(TokenCompilerService::class),
-            $mockRepo
-        );
-
-        $result = $service->customizeTokens(1, 'portal', ['--brand-primary' => '#123456']);
-
-        $this->assertIsArray($result);
-        $this->assertSame('#123456', $result['--brand-primary']);
     }
 }

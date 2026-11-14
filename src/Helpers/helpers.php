@@ -200,6 +200,20 @@ if (! function_exists('view_render_event')) {
      */
     function view_render_event(string $eventName, mixed $params = null): string
     {
+        if (class_exists(\Webkul\Theme\ViewRenderEventManager::class) && app()->bound(\Webkul\Theme\ViewRenderEventManager::class)) {
+            return (string) app(\Webkul\Theme\ViewRenderEventManager::class)
+                ->handleRenderEvent($eventName, $params)
+                ->render();
+        }
+
+        if (function_exists('event')) {
+            $responses = event($eventName, $params);
+
+            if (is_array($responses)) {
+                return implode('', array_filter($responses, fn ($item) => is_string($item) || $item instanceof \Illuminate\Contracts\Support\Htmlable));
+            }
+        }
+
         return '';
     }
 }

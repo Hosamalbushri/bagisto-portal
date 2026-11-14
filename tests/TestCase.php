@@ -31,6 +31,7 @@ abstract class TestCase extends BaseTestCase
             BladeHeroiconsServiceProvider::class,
             BladeIconsServiceProvider::class,
             PortalServiceProvider::class,
+            \Platform\PortalTokens\Providers\TokensServiceProvider::class,
         ];
     }
 

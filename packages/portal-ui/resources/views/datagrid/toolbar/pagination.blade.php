@@ -1,0 +1,17 @@
+<x-portal::dropdown position="bottom-left">
+    <x-slot:toggle>
+        <button class="flex w-full max-w-[200px] cursor-pointer items-center justify-between gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] py-2 text-sm text-[var(--text-primary)] transition-all hover:border-[var(--border-strong)] max-md:py-2 max-sm:py-1.5 ltr:pl-4 ltr:pr-3 max-md:ltr:pl-2.5 max-md:ltr:pr-2.5 rtl:pl-3 rtl:pr-4 max-md:rtl:pl-2.5 max-md:rtl:pr-2.5">
+            <span v-text="applied.pagination.perPage"></span>
+
+            <span class="icon-arrow-down text-2xl text-[var(--text-muted)]"></span>
+        </button>
+    </x-slot>
+
+    <x-slot:menu class="max-md:!py-0">
+        <x-portal::dropdown.menu.item
+            v-for="perPageOption in available.meta.per_page_options"
+            v-text="perPageOption"
+            @click="changePerPageOption(perPageOption)"
+        />
+    </x-slot>
+</x-portal::dropdown>

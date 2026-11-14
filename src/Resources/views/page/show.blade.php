@@ -25,18 +25,22 @@
     </x-slot>
 
     <!-- Loop over the storefront sections -->
+    {!! view_render_event('bagisto.portal.page.sections.before', ['page' => $page]) !!}
+
     @if ($sections->isNotEmpty())
         @foreach ($sections as $section)
             @php
                 $data = $section->options ?? [];
                 event('portal.section.rendering', [$section, &$data]);
-                $marks = ($preview ?? false) && ! $section->getTypeInstance()?->rendersInLayout();
+                $rendersInBody = ! $section->getTypeInstance()?->rendersInLayout();
             @endphp
 
-            @if ($marks)
+            {!! view_render_event('bagisto.portal.page.section.before', ['section' => $section, 'page' => $page]) !!}
+
+            @if ($rendersInBody)
                 <div
                     data-section-id="{{ $section->id }}"
-                    data-section-name="{{ $section->name }}"
+                    @if ($preview ?? false) data-section-name="{{ $section->name }}" @endif
                 >
             @endif
 
@@ -118,9 +122,11 @@
                     @endif
             @endswitch
 
-            @if ($marks)
+            @if ($rendersInBody)
                 </div>
             @endif
+
+            {!! view_render_event('bagisto.portal.page.section.after', ['section' => $section, 'page' => $page]) !!}
         @endforeach
     @else
         <div class="py-24 text-center">
@@ -134,6 +140,8 @@
             </div>
         </div>
     @endif
+
+    {!! view_render_event('bagisto.portal.page.sections.after', ['page' => $page]) !!}
 
     @if ($preview ?? false)
         @include('portal::home.preview-bridge')

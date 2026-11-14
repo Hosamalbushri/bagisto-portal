@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Platform\Portal\Contracts\PortalPageSection as PortalPageSectionContract;
+use Platform\Portal\Services\Tokens\TokenSanitizer;
 use Webkul\Core\Eloquent\Repository;
 
 class PortalPageSectionRepository extends Repository
@@ -55,6 +56,10 @@ class PortalPageSectionRepository extends Repository
                 $section->sort_order = $section->draft_sort_order;
             }
 
+            if (! is_null($section->draft_tokens)) {
+                $section->tokens = $section->draft_tokens;
+            }
+
             return $section;
         })
             ->filter(fn ($s) => (bool) $s->status)
@@ -69,7 +74,29 @@ class PortalPageSectionRepository extends Repository
     {
         return ! is_null($section->draft_status)
             || ! is_null($section->draft_sort_order)
+            || ! is_null($section->draft_tokens)
             || $section->translations->contains(fn ($trans) => ! is_null($trans->draft_options));
+    }
+
+    /**
+     * Save draft tokens for a section.
+     *
+     * @param  array<string, mixed>  $tokens
+     */
+    public function saveDraftTokens(int $id, array $tokens): PortalPageSectionContract
+    {
+        $section = $this->findOrFail($id);
+
+        $sanitizer = function_exists('app') && app()->bound(TokenSanitizer::class)
+            ? app(TokenSanitizer::class)
+            : null;
+
+        $normalized = $sanitizer ? $sanitizer->normalizeTokens($tokens) : $tokens;
+
+        $section->draft_tokens = $normalized;
+        $section->save();
+
+        return $section->refresh();
     }
 
     /**
@@ -134,6 +161,7 @@ class PortalPageSectionRepository extends Repository
         $duplicate->sort_order = $maxSort + 1;
         $duplicate->draft_status = null;
         $duplicate->draft_sort_order = null;
+        $duplicate->draft_tokens = null;
         $duplicate->save();
 
         foreach ($section->translations as $trans) {
@@ -165,6 +193,14 @@ class PortalPageSectionRepository extends Repository
                     $section->draft_sort_order = null;
                 }
 
+                if (! is_null($section->draft_tokens)) {
+                    $section->tokens = empty($section->draft_tokens)
+                        ? null
+                        : $section->draft_tokens;
+
+                    $section->draft_tokens = null;
+                }
+
                 $section->save();
 
                 foreach ($section->translations as $trans) {
@@ -191,6 +227,7 @@ class PortalPageSectionRepository extends Repository
             foreach ($sections as $section) {
                 $section->draft_status = null;
                 $section->draft_sort_order = null;
+                $section->draft_tokens = null;
                 $section->save();
 
                 foreach ($section->translations as $trans) {

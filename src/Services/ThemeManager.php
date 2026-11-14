@@ -156,28 +156,16 @@ class ThemeManager
             }
         }
 
-        // 1. Retrieve customized live tokens if stored in layout settings
-        $tokens = [];
-
+        // Retrieve custom CSS if stored in layout settings
         if (class_exists(PortalLayoutSettingRepository::class)) {
             try {
-                $customTokens = app(PortalLayoutSettingRepository::class)->getSettings('theme_tokens', $channelId, $themeCode);
-                $tokens = is_array($customTokens) ? $customTokens : [];
-            } catch (\Throwable $e) {
-                report($e);
-                $tokens = [];
+                $customSettings = app(PortalLayoutSettingRepository::class)->getSettings('theme_tokens', $channelId, $themeCode);
+                if (! empty($customSettings['custom_css'])) {
+                    $css = $customSettings['custom_css']."\n".($css ?? '');
+                }
+            } catch (\Throwable) {
+                // Graceful fallback
             }
-        }
-
-        // 2. Compile design tokens into live CSS (with in-memory defaults fallback)
-        try {
-            $tokenCompiler = app(TokenCompilerService::class);
-            $compiledCss = $tokenCompiler->compile($tokens, $themeCode);
-            if (filled($compiledCss)) {
-                $css = $compiledCss."\n".($css ?? '');
-            }
-        } catch (\Throwable $e) {
-            report($e);
         }
 
         return $css;

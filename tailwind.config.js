@@ -37,7 +37,6 @@ module.exports = {
                 darkBlue: '#0044F2',
                 darkPink: '#F85156',
 
-                // Roa Soft Design System Tokens
                 brand: {
                     primary: 'var(--brand-primary, #1c66f6)',
                     'primary-hover': 'var(--brand-primary-hover, #1551c6)',

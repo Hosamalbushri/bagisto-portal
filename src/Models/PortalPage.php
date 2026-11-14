@@ -5,6 +5,7 @@ namespace Platform\Portal\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Platform\Portal\Contracts\PortalPage as PortalPageContract;
+use Platform\Portal\Services\Tokens\TokenSanitizer;
 use Webkul\Core\Eloquent\TranslatableModel;
 use Webkul\Core\Models\ChannelProxy;
 
@@ -33,6 +34,7 @@ class PortalPage extends TranslatableModel implements PortalPageContract
         'slug',
         'template',
         'theme_code',
+        'tokens',
         'status',
         'is_home_page',
         'sort_order',
@@ -74,7 +76,37 @@ class PortalPage extends TranslatableModel implements PortalPageContract
         'status' => 'boolean',
         'is_home_page' => 'boolean',
         'sort_order' => 'integer',
+        'tokens' => 'array',
     ];
+
+    /**
+     * Set the tokens attribute with normalization.
+     */
+    public function setTokensAttribute($value): void
+    {
+        if (is_null($value)) {
+            $this->attributes['tokens'] = null;
+
+            return;
+        }
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
+                return;
+            }
+            $value = $decoded;
+        }
+
+        if (is_array($value)) {
+            $sanitizer = function_exists('app') && app()->bound(TokenSanitizer::class)
+                ? app(TokenSanitizer::class)
+                : null;
+
+            $normalized = $sanitizer ? $sanitizer->normalizeTokens($value) : $value;
+            $this->attributes['tokens'] = empty($normalized) ? null : json_encode($normalized);
+        }
+    }
 
     /**
      * Get the channel that owns the page.

@@ -54,7 +54,7 @@
     @bagistoVite(['src/Resources/assets/css/app.css', 'src/Resources/assets/js/app.js'])
 
     @if ($customThemeCss = portal_theme_css())
-        <style id="portal-theme-custom-tokens">
+        <style id="portal-theme-custom-css">
             {!! $customThemeCss !!}
         </style>
     @endif

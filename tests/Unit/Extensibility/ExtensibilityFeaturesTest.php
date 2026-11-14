@@ -185,4 +185,63 @@ class ExtensibilityFeaturesTest extends TestCase
         Event::assertDispatched('portal.theme.activating');
         Event::assertDispatched('portal.theme.activated');
     }
+
+    /**
+     * Test developers can unregister built-in sections and override them with custom implementations.
+     */
+    public function test_section_unregister_and_override(): void
+    {
+        $registry = app(SectionTypeRegistry::class);
+
+        $this->assertTrue($registry->has('hero_scaffold'));
+
+        // Unregister built-in section
+        $registry->unregister('hero_scaffold');
+        $this->assertFalse($registry->has('hero_scaffold'));
+        $this->assertNotContains('hero_scaffold', $registry->codes());
+
+        // Register custom override
+        $customHero = new class extends SectionType
+        {
+            protected string $code = 'hero_scaffold';
+            protected ?string $title = 'Overridden Hero Scaffold';
+
+            public function getFields(): array
+            {
+                return [
+                    ['name' => 'custom_field', 'type' => 'text', 'label' => 'Custom Field'],
+                ];
+            }
+
+            public function getDefaultOptions(): array
+            {
+                return ['custom_field' => 'custom value'];
+            }
+        };
+
+        $registry->register($customHero);
+        $this->assertTrue($registry->has('hero_scaffold'));
+        $this->assertSame('Overridden Hero Scaffold', $registry->get('hero_scaffold')->getTitle());
+        $this->assertSame(['custom_field' => 'custom value'], $registry->get('hero_scaffold')->getDefaultOptions());
+    }
+
+    /**
+     * Test Bagisto view_render_event hooks allow injecting external content into page templates.
+     */
+    public function test_view_render_event_hooks_allow_injecting_content(): void
+    {
+        Event::listen('bagisto.portal.page.sections.before', function ($params) {
+            return '<div id="injected-before-sections">Injected Content</div>';
+        });
+
+        Event::listen('bagisto.portal.page.section.before', function ($params) {
+            return '<div class="injected-section-marker">Before Section</div>';
+        });
+
+        $outputBefore = view_render_event('bagisto.portal.page.sections.before', ['page' => null]);
+        $outputSection = view_render_event('bagisto.portal.page.section.before', ['section' => null]);
+
+        $this->assertStringContainsString('Injected Content', (string) $outputBefore);
+        $this->assertStringContainsString('Before Section', (string) $outputSection);
+    }
 }

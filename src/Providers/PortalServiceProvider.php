@@ -18,14 +18,6 @@ use Platform\Portal\Http\Middleware\Theme;
 use Platform\Portal\Sections\SectionTypeRegistry;
 use Platform\Portal\Services\ExtendedThemeCatalog;
 use Platform\Portal\Services\ThemeManager;
-use Platform\Portal\Services\TokenCompilerService;
-use Platform\Portal\Services\Tokens\ComponentBindingRegistry;
-use Platform\Portal\Services\Tokens\DtcgExporter;
-use Platform\Portal\Services\Tokens\DtcgImporter;
-use Platform\Portal\Services\Tokens\TokenCompiler;
-use Platform\Portal\Services\Tokens\TokenDefaultResolver;
-use Platform\Portal\Services\Tokens\TokenDeriver;
-use Platform\Portal\Services\Tokens\TokenSanitizer;
 use Spatie\ResponseCache\ResponseCache;
 use Webkul\Core\Repositories\ChannelRepository;
 use Webkul\Theme\Repositories\SectionRepository;
@@ -52,56 +44,6 @@ class PortalServiceProvider extends ServiceProvider
             dirname(__DIR__).'/Config/bagisto-vite.php',
             'bagisto-vite.viters'
         );
-
-        $this->mergeConfigFrom(
-            dirname(__DIR__).'/Config/design-tokens.php',
-            'design-tokens'
-        );
-
-        $this->app->singleton(TokenSanitizer::class, function () {
-            return new TokenSanitizer;
-        });
-
-        $this->app->singleton(TokenDefaultResolver::class, function () {
-            return new TokenDefaultResolver;
-        });
-
-        $this->app->singleton(TokenDeriver::class, function ($app) {
-            return new TokenDeriver(
-                $app->make(TokenDefaultResolver::class)
-            );
-        });
-
-        $this->app->singleton(ComponentBindingRegistry::class, function () {
-            return new ComponentBindingRegistry;
-        });
-
-        $this->app->singleton(TokenCompiler::class, function ($app) {
-            return new TokenCompiler(
-                $app->make(ComponentBindingRegistry::class)
-            );
-        });
-
-        $this->app->singleton(DtcgExporter::class, function () {
-            return new DtcgExporter;
-        });
-
-        $this->app->singleton(DtcgImporter::class, function ($app) {
-            return new DtcgImporter(
-                $app->make(TokenSanitizer::class)
-            );
-        });
-
-        $this->app->singleton(TokenCompilerService::class, function ($app) {
-            return new TokenCompilerService(
-                $app->make(TokenCompiler::class),
-                $app->make(TokenSanitizer::class),
-                $app->make(TokenDeriver::class),
-                $app->make(DtcgExporter::class),
-                $app->make(DtcgImporter::class),
-                $app->make(TokenDefaultResolver::class)
-            );
-        });
 
         // Bind ThemeManager singleton & auto-discover themes cleanly
         $this->app->singleton(ThemeManager::class, function () {
@@ -175,27 +117,13 @@ class PortalServiceProvider extends ServiceProvider
 
             // Seamlessly resolve missing core Bagisto named routes (e.g. admin header's "visit-shop" link)
             if (method_exists($this->app['url'], 'resolveMissingNamedRoutesUsing')) {
-                $existingResolver = null;
-                try {
-                    $prop = new \ReflectionProperty($this->app['url'], 'missingNamedRouteResolver');
-                    $existingResolver = $prop->getValue($this->app['url']);
-                } catch (\Throwable) {
-                    // Ignore reflection issues
-                }
-
-                $this->app['url']->resolveMissingNamedRoutesUsing(function ($name, $parameters, $absolute) use ($existingResolver) {
-                    $resolved = match ($name) {
+                $this->app['url']->resolveMissingNamedRoutesUsing(function ($name, $parameters = [], $absolute = true) {
+                    return match ($name) {
                         'shop.home.index' => Route::has('portal.home') ? route('portal.home', $parameters, $absolute) : url('/'),
                         'shop.cms.page' => Route::has('portal.page.show') ? route('portal.page.show', $parameters, $absolute) : url('/pages/'.(is_array($parameters) ? ($parameters['slug'] ?? reset($parameters)) : $parameters)),
                         'shop.appearance.preview' => Route::has('portal.appearance.preview') ? route('portal.appearance.preview', $parameters, $absolute) : url('/appearance-preview'),
                         default => null,
                     };
-
-                    if ($resolved !== null) {
-                        return $resolved;
-                    }
-
-                    return is_callable($existingResolver) ? $existingResolver($name, $parameters, $absolute) : null;
                 });
             }
         });
@@ -226,6 +154,7 @@ class PortalServiceProvider extends ServiceProvider
             'portal.page.created',
             'portal.page.updated',
             'portal.page.deleted',
+            'portal.page.published',
             'portal.theme.activated',
             'portal.menu.updated',
             'portal.tokens.updated',
@@ -253,7 +182,6 @@ class PortalServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->commands([
-                InstallPortalCommand::class,
                 InstallPortalCommand::class,
                 MakeSectionCommand::class,
                 MakeThemeCommand::class,

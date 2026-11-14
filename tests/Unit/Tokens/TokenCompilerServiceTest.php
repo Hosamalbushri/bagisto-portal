@@ -143,6 +143,16 @@ class TokenCompilerServiceTest extends TestCase
      */
     public function test_retrieves_curated_presets(): void
     {
+        config(['design-tokens.presets' => [
+            'default' => [],
+            'emerald_tech' => ['tokens' => ['--brand-primary' => '#059669']],
+            'minimal_slate' => [],
+            'cyber_violet' => [],
+            'royal_gold' => [],
+            'crimson_passion' => [],
+            'nordic_ocean' => [],
+        ]]);
+
         $presets = $this->compiler->getPresets();
 
         $this->assertIsArray($presets);
@@ -186,95 +196,6 @@ class TokenCompilerServiceTest extends TestCase
         $this->assertEquals('#1c66f6', $imported['--brand-primary']);
         $this->assertEquals('16px', $imported['--radius-base']);
         $this->assertEquals("'Cairo', sans-serif", $imported['--font-arabic']);
-    }
-
-    /**
-     * Test ThemeController preset, export, and import endpoints.
-     */
-    public function test_theme_controller_preset_and_export_endpoints(): void
-    {
-        if (property_exists(bouncer(), 'allowsAll')) {
-            bouncer()::$allowsAll = true;
-        }
-
-        try {
-            $controller = app(ThemeController::class);
-
-            // 1. Get Presets
-            $presetsResponse = $controller->getPresets();
-            $this->assertEquals(200, $presetsResponse->getStatusCode());
-            $presetsData = json_decode($presetsResponse->getContent(), true);
-            $this->assertArrayHasKey('presets', $presetsData);
-            $this->assertArrayHasKey('emerald_tech', $presetsData['presets']);
-
-            // 2. Apply Preset
-            $applyRequest = Request::create('/admin/portal/themes/tokens/apply-preset', 'POST', [
-                'channel_id' => 1,
-                'theme_code' => 'portal',
-                'preset' => 'emerald_tech',
-            ]);
-            $applyResponse = $controller->applyPreset($applyRequest);
-            $this->assertEquals(200, $applyResponse->getStatusCode());
-            $applyData = json_decode($applyResponse->getContent(), true);
-            $this->assertEquals('#059669', $applyData['tokens']['--brand-primary']);
-
-            // Verify stored in repository
-            $stored = app(PortalLayoutSettingRepository::class)->getSettings('theme_tokens', 1, 'portal');
-            $this->assertEquals('#059669', $stored['--brand-primary']);
-
-            // 3. Export DTCG JSON
-            $exportRequest = Request::create('/admin/portal/themes/tokens/export', 'GET', [
-                'channel_id' => 1,
-                'theme_code' => 'portal',
-            ]);
-            $exportResponse = $controller->exportTokens($exportRequest);
-            $this->assertEquals(200, $exportResponse->getStatusCode());
-            $exportData = json_decode($exportResponse->getContent(), true);
-            $this->assertEquals('#059669', $exportData['color']['brand-primary']['$value']);
-
-            // 4. Import JSON payload
-            $importPayload = json_encode([
-                'color' => [
-                    'brand-primary' => ['$value' => '#0284c7'],
-                ],
-                'dimension' => [
-                    'radius-base' => ['$value' => '20px'],
-                ],
-            ]);
-            $importRequest = Request::create('/admin/portal/themes/tokens/import', 'POST', [
-                'channel_id' => 1,
-                'theme_code' => 'portal',
-                'json' => $importPayload,
-            ]);
-            $importResponse = $controller->importTokens($importRequest);
-            $this->assertEquals(200, $importResponse->getStatusCode());
-            $importData = json_decode($importResponse->getContent(), true);
-            $this->assertEquals('#0284c7', $importData['tokens']['--brand-primary']);
-            $this->assertEquals('20px', $importData['tokens']['--radius-base']);
-        } finally {
-            if (property_exists(bouncer(), 'allowsAll')) {
-                bouncer()::$allowsAll = false;
-            }
-        }
-    }
-
-    /**
-     * Test ThemeManager integrates TokenCompilerService in resolveThemeCss.
-     */
-    public function test_theme_manager_uses_token_compiler(): void
-    {
-        app(PortalLayoutSettingRepository::class)->saveSettings('theme_tokens', [
-            '--brand-primary' => '#10b981',
-        ], 1, 'portal');
-
-        $css = app(ThemeManager::class)->resolveThemeCss('portal', 1);
-
-        $this->assertNotNull($css);
-        $this->assertStringContainsString(':root {', $css);
-        $this->assertStringContainsString('--brand-primary: #10b981;', $css);
-        $this->assertStringContainsString('--brand-primary-hover:', $css);
-        $this->assertStringContainsString('--on-brand-primary:', $css);
-        $this->assertStringContainsString('--brand-primary-50:', $css);
     }
 
     /**
@@ -389,42 +310,6 @@ class TokenCompilerServiceTest extends TestCase
         $this->assertStringContainsString('max-width: var(--container-max-width, 1280px);', $css);
         $this->assertStringContainsString('/* Additional Custom CSS */', $css);
         $this->assertStringContainsString('.custom-badge { border-radius: 9999px; }', $css);
-    }
-
-    /**
-     * Test ThemeController saves custom_css alongside tokens.
-     */
-    public function test_theme_controller_saves_custom_css(): void
-    {
-        if (property_exists(bouncer(), 'allowsAll')) {
-            bouncer()::$allowsAll = true;
-        }
-
-        try {
-            $controller = app(ThemeController::class);
-
-            $request = Request::create('/admin/portal/themes/tokens', 'POST', [
-                'channel_id' => 1,
-                'theme_code' => 'portal',
-                'tokens' => [
-                    '--brand-primary' => '#0284c7',
-                    '--container-max-width' => '1600px',
-                ],
-                'custom_css' => '.header-glow { filter: drop-shadow(0 0 10px blue); }',
-            ]);
-
-            $response = $controller->customizeTokens($request);
-            $this->assertEquals(302, $response->getStatusCode());
-
-            $saved = app(PortalLayoutSettingRepository::class)->getSettings('theme_tokens', 1, 'portal');
-            $this->assertEquals('#0284c7', $saved['--brand-primary']);
-            $this->assertEquals('1600px', $saved['--container-max-width']);
-            $this->assertEquals('.header-glow { filter: drop-shadow(0 0 10px blue); }', $saved['custom_css']);
-        } finally {
-            if (property_exists(bouncer(), 'allowsAll')) {
-                bouncer()::$allowsAll = false;
-            }
-        }
     }
 
     /**

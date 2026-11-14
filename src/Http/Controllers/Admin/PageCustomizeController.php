@@ -78,6 +78,7 @@ class PageCustomizeController extends Controller
             'status' => route('admin.portal.pages.sections.status', ['id' => $page->id, 'sectionId' => '__ID__']),
             'fields' => route('admin.portal.pages.sections.fields', ['id' => $page->id, 'sectionId' => '__ID__']),
             'draft' => route('admin.portal.pages.sections.draft', ['id' => $page->id, 'sectionId' => '__ID__']),
+            'tokens' => route('admin.portal.pages.sections.tokens', ['id' => $page->id, 'sectionId' => '__ID__']),
             'media' => route('admin.portal.pages.sections.media', ['id' => $page->id, 'sectionId' => '__ID__']),
             'delete' => route('admin.portal.pages.sections.delete', ['id' => $page->id, 'sectionId' => '__ID__']),
         ];
@@ -161,6 +162,7 @@ class PageCustomizeController extends Controller
         return new JsonResponse([
             'schema' => $type?->getFields() ?? [],
             'options' => ($type?->prepareForEditor($options) ?? $options) ?: (object) [],
+            'tokens' => $section->draft_tokens ?? $section->tokens ?? (object) [],
         ]);
     }
 
@@ -181,8 +183,63 @@ class PageCustomizeController extends Controller
         $locale = core()->getRequestedLocaleCode();
         $section = $this->portalPageSectionRepository->saveDraft($sectionId, $locale, request()->input('options'));
 
+        if (request()->has('tokens')) {
+            $tokens = request()->input('tokens');
+            if (is_array($tokens)) {
+                $section = $this->portalPageSectionRepository->saveDraftTokens($sectionId, $tokens);
+            }
+        }
+
         return new JsonResponse([
             'has_draft' => $this->portalPageSectionRepository->hasDraft($section),
+        ]);
+    }
+
+    /**
+     * Store unpublished token edits for a section.
+     */
+    public function saveDraftTokens(int $id, int $sectionId): JsonResponse
+    {
+        abort_unless(bouncer()->hasPermission('portal.pages.customize') || bouncer()->hasPermission('pages.customize'), 403);
+
+        $this->validate(request(), [
+            'tokens' => [
+                'present',
+                function ($attribute, $value, $fail) {
+                    if (is_array($value)) {
+                        return;
+                    }
+
+                    if (is_string($value)) {
+                        $decoded = json_decode($value, true);
+                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                            return;
+                        }
+                    }
+
+                    $msg = trans('validation.json', ['attribute' => $attribute]);
+                    if ($msg === 'validation.json') {
+                        $msg = "The {$attribute} field must be a valid JSON object or array.";
+                    }
+
+                    $fail($msg);
+                },
+            ],
+        ]);
+
+        $section = $this->portalPageSectionRepository->findOrFail($sectionId);
+        abort_if((int) $section->portal_page_id !== (int) $id, 404);
+
+        $tokens = request()->input('tokens');
+        if (is_string($tokens)) {
+            $tokens = json_decode($tokens, true);
+        }
+
+        $section = $this->portalPageSectionRepository->saveDraftTokens($sectionId, $tokens ?? []);
+
+        return new JsonResponse([
+            'has_draft' => $this->portalPageSectionRepository->hasDraft($section),
+            'tokens' => $section->draft_tokens,
         ]);
     }
 
