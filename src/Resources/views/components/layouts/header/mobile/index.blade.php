@@ -111,7 +111,7 @@
                 </v-dark>
             </div>
 
-            @if (\Platform\Portal\Helpers\PortalAuth::isEnabled())
+            @if (\Platform\Portal\Helpers\PortalAuth::isEnabled() && Route::has('portal.auth.login'))
                 @php($portalGuard = \Platform\Portal\Helpers\PortalAuth::guard())
 
                 @if (auth()->guard($portalGuard)->check())
@@ -120,32 +120,38 @@
                             {{ auth()->guard($portalGuard)->user()->name ?? auth()->guard($portalGuard)->user()->first_name ?? 'User' }}
                         </span>
 
-                        <form method="POST" action="{{ route('portal.auth.logout') }}">
-                            @csrf
-                            <button
-                                type="submit"
-                                class="text-xs font-semibold text-red-600 dark:text-red-400 cursor-pointer"
-                            >
-                                @lang('portal::app.auth.logout.title')
-                            </button>
-                        </form>
+                        @if (Route::has('portal.auth.logout'))
+                            <form method="POST" action="{{ route('portal.auth.logout') }}">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="text-xs font-semibold text-red-600 dark:text-red-400 cursor-pointer"
+                                >
+                                    @lang('portal::app.auth.logout.title')
+                                </button>
+                            </form>
+                        @endif
                     </div>
                 @else
                     <div class="grid grid-cols-2 gap-2">
-                        <a
-                            href="{{ route('portal.auth.login') }}"
-                            class="flex items-center justify-center px-4 py-2.5 rounded-xl text-sm font-semibold text-[var(--text-primary)] bg-[var(--bg-surface-elevated)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] transition-colors"
-                        >
-                            @lang('portal::app.auth.login.title')
-                        </a>
+                        @if (Route::has('portal.auth.login'))
+                            <a
+                                href="{{ route('portal.auth.login') }}"
+                                class="flex items-center justify-center px-4 py-2.5 rounded-xl text-sm font-semibold text-[var(--text-primary)] bg-[var(--bg-surface-elevated)] hover:bg-[var(--bg-surface-muted)] border border-[var(--border-subtle)] transition-colors"
+                            >
+                                @lang('portal::app.auth.login.title')
+                            </a>
+                        @endif
 
-                        <a
-                            href="{{ route('portal.auth.register') }}"
-                            class="btn-primary flex items-center justify-center px-4 py-2.5 text-sm font-semibold shadow-sm"
-                            style="border-radius: var(--btn-radius, 0.5rem);"
-                        >
-                            @lang('portal::app.auth.register.title')
-                        </a>
+                        @if (Route::has('portal.auth.register'))
+                            <a
+                                href="{{ route('portal.auth.register') }}"
+                                class="btn-primary flex items-center justify-center px-4 py-2.5 text-sm font-semibold shadow-sm"
+                                style="border-radius: var(--btn-radius, 0.5rem);"
+                            >
+                                @lang('portal::app.auth.register.title')
+                            </a>
+                        @endif
                     </div>
                 @endif
             @endif

@@ -100,7 +100,7 @@
             </a>
 
             <!-- Optional Storefront Authentication -->
-            @if ($showAuth && \Platform\Portal\Helpers\PortalAuth::isEnabled())
+            @if ($showAuth && \Platform\Portal\Helpers\PortalAuth::isEnabled() && Route::has('portal.auth.login'))
                 @php($portalGuard = \Platform\Portal\Helpers\PortalAuth::guard())
 
                 @if (auth()->guard($portalGuard)->check())
@@ -117,33 +117,39 @@
                         </x-slot>
 
                         <x-slot:content class="portal-card !p-1.5 min-w-[140px] shadow-[var(--shadow-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)]" style="border-radius: var(--card-radius, 0.75rem);">
-                            <form method="POST" action="{{ route('portal.auth.logout') }}">
-                                @csrf
-                                <button
-                                    type="submit"
-                                    class="w-full flex items-center px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer text-start"
-                                >
-                                    @lang('portal::app.auth.logout.title')
-                                </button>
-                            </form>
+                            @if (Route::has('portal.auth.logout'))
+                                <form method="POST" action="{{ route('portal.auth.logout') }}">
+                                    @csrf
+                                    <button
+                                        type="submit"
+                                        class="w-full flex items-center px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer text-start"
+                                    >
+                                        @lang('portal::app.auth.logout.title')
+                                    </button>
+                                </form>
+                            @endif
                         </x-slot:content>
                     </x-portal::dropdown>
                 @else
                     <div class="flex items-center gap-1 ltr:ml-1 rtl:mr-1">
-                        <a
-                            href="{{ route('portal.auth.login') }}"
-                            class="px-3 py-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--brand-primary)] rounded-full hover:bg-[var(--bg-surface-elevated)] transition-colors"
-                        >
-                            @lang('portal::app.auth.login.title')
-                        </a>
+                        @if (Route::has('portal.auth.login'))
+                            <a
+                                href="{{ route('portal.auth.login') }}"
+                                class="px-3 py-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--brand-primary)] rounded-full hover:bg-[var(--bg-surface-elevated)] transition-colors"
+                            >
+                                @lang('portal::app.auth.login.title')
+                            </a>
+                        @endif
 
-                        <a
-                            href="{{ route('portal.auth.register') }}"
-                            class="btn-primary !px-3.5 !py-1.5 !text-xs font-semibold shadow-xs"
-                            style="border-radius: var(--btn-radius, 0.5rem);"
-                        >
-                            @lang('portal::app.auth.register.title')
-                        </a>
+                        @if (Route::has('portal.auth.register'))
+                            <a
+                                href="{{ route('portal.auth.register') }}"
+                                class="btn-primary !px-3.5 !py-1.5 !text-xs font-semibold shadow-xs"
+                                style="border-radius: var(--btn-radius, 0.5rem);"
+                            >
+                                @lang('portal::app.auth.register.title')
+                            </a>
+                        @endif
                     </div>
                 @endif
             @endif
