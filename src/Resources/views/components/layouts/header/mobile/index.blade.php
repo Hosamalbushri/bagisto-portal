@@ -35,104 +35,134 @@
     $currenciesCount = count($channelCurrencies);
 @endphp
 
-<div class="flex flex-wrap gap-4 px-4 pt-4 pb-4 shadow-sm lg:hidden bg-white dark:bg-zinc-900 border-b border-[var(--border-subtle)]">
-    <!-- Top Row: Hamburger + Logo + Right Utility Icons -->
-    <div class="flex w-full items-center justify-between">
-        <!-- Left Navigation: Hamburger & Logo -->
-        <div class="flex items-center gap-x-3">
-            {!! view_render_event('bagisto.portal.layout.header.mobile.drawer.before') !!}
+<div class="flex items-center justify-between px-4 py-3 shadow-xs lg:hidden bg-white dark:bg-zinc-900 border-b border-[var(--border-subtle)]">
+    <!-- Left Navigation: Hamburger & Logo -->
+    <div class="flex items-center gap-x-2.5">
+        {!! view_render_event('bagisto.portal.layout.header.mobile.drawer.before') !!}
 
-            <button
-                type="button"
-                class="flex items-center justify-center cursor-pointer text-2xl text-[var(--text-primary)] focus:outline-none"
-                @click="$refs.mobileMenuDrawer.open()"
-                aria-label="Open navigation menu"
-            >
-                <span class="icon-hamburger text-2xl"></span>
-            </button>
+        <button
+            type="button"
+            class="flex items-center justify-center w-9 h-9 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+            @click="$refs.mobileMenuDrawer.open()"
+            aria-label="Open navigation menu"
+        >
+            <span class="icon-hamburger text-lg"></span>
+        </button>
 
-            {!! view_render_event('bagisto.portal.layout.header.mobile.drawer.after') !!}
+        {!! view_render_event('bagisto.portal.layout.header.mobile.drawer.after') !!}
 
-            <a
-                href="{{ portal_home_url() }}"
-                class="flex max-h-[30px] items-center gap-2 focus:outline-none"
-                aria-label="{{ $channelName }}"
-            >
-                @if ($logo = $channel->logo_url)
-                    <img class="block h-7 w-auto" src="{{ $logo }}" alt="{{ $channelName }}" />
-                @else
-                    <span class="text-base font-bold text-[var(--text-primary)] font-cairo">
-                        {{ $channelName }}
-                    </span>
-                @endif
-            </a>
-        </div>
-
-        <!-- Right Navigation Icons -->
-        <div class="flex items-center gap-x-4">
-            <!-- Dark Mode Switcher -->
-            <v-dark>
-                <button
-                    type="button"
-                    class="text-2xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] focus:outline-none"
-                    aria-label="Toggle theme"
-                >
-                    <span class="{{ request()->cookie('portal_dark_mode') ? 'icon-light text-amber-400' : 'icon-dark' }}"></span>
-                </button>
-            </v-dark>
-
-            <!-- Compare Icon (Shop) -->
-            @if ($showCompare && Route::has('shop.compare.index'))
-                <a href="{{ route('shop.compare.index') }}" aria-label="@lang('portal::app.components.layouts.header.mobile.compare', [], false) ?: 'Compare'">
-                    <span class="text-2xl cursor-pointer icon-compare text-[var(--text-secondary)]"></span>
-                </a>
+        <a
+            href="{{ portal_home_url() }}"
+            class="flex max-h-[30px] items-center gap-2 focus:outline-none"
+            aria-label="{{ $channelName }}"
+        >
+            @if ($logo = $channel->logo_url)
+                <img class="block h-7 w-auto" src="{{ $logo }}" alt="{{ $channelName }}" />
+            @else
+                <span class="text-base font-bold text-[var(--text-primary)] font-cairo">
+                    {{ $channelName }}
+                </span>
             @endif
-
-            <!-- Mini Cart (Shop) -->
-            @if ($showMiniCart)
-                @if (view()->exists('shop::checkout.cart.mini-cart'))
-                    @include('shop::checkout.cart.mini-cart')
-                @elseif (Route::has('shop.checkout.cart.index'))
-                    <a href="{{ route('shop.checkout.cart.index') }}" aria-label="Shopping Cart">
-                        <span class="text-2xl cursor-pointer icon-cart text-[var(--text-secondary)]"></span>
-                    </a>
-                @endif
-            @endif
-
-            <!-- User Profile Drawer Trigger -->
-            <button
-                type="button"
-                class="text-2xl cursor-pointer icon-users text-[var(--text-secondary)] focus:outline-none"
-                @click="$refs.mobileMenuDrawer.open()"
-                aria-label="User Account"
-            ></button>
-        </div>
+        </a>
     </div>
 
-    <!-- Bottom Row: Search Bar Full Width (Webkul Shop exact design) -->
-    @if ($searchRoute)
-        <div class="flex w-full items-center">
-            <div class="relative w-full">
-                <form action="{{ $searchRoute }}" method="GET" class="relative flex items-center" role="search">
-                    <label for="mobile-search" class="sr-only">
-                        @lang('portal::app.components.layouts.header.desktop.bottom.search')
-                    </label>
-
-                    <div class="icon-search pointer-events-none absolute top-3 flex items-center text-xl text-gray-400 ltr:left-3 rtl:right-3"></div>
-
-                    <input
-                        type="text"
-                        id="mobile-search"
-                        name="query"
-                        value="{{ request('query') }}"
-                        class="block w-full rounded-xl border border-transparent bg-zinc-100 dark:bg-zinc-800 py-3 px-11 text-xs font-medium text-gray-900 dark:text-gray-100 hover:border-gray-400 focus:border-gray-400 focus:outline-none max-md:rounded-lg transition-colors"
-                        placeholder="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
-                        aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
+    <!-- Right Navigation: Unified Action Icons (Search, Dark Mode, Shop Actions, User) -->
+    <div class="flex items-center gap-x-2">
+        <!-- Search Icon with Dropdown Popover -->
+        @if ($searchRoute)
+            <x-portal::dropdown
+                position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}"
+                ::close-on-click="false"
+            >
+                <x-slot:toggle>
+                    <button
+                        type="button"
+                        class="flex items-center justify-center w-9 h-9 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+                        aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.search')"
                     >
-                </form>
-            </div>
-        </div>
-    @endif
+                        <span class="icon-search text-lg"></span>
+                    </button>
+                </x-slot>
+
+                <x-slot:content class="!p-2.5 min-w-[280px] max-w-[calc(100vw-32px)]">
+                    <form action="{{ $searchRoute }}" method="GET" class="relative flex items-center" role="search">
+                        <label for="mobile-dropdown-search" class="sr-only">
+                            @lang('portal::app.components.layouts.header.desktop.bottom.search')
+                        </label>
+
+                        <div class="icon-search pointer-events-none absolute top-2.5 flex items-center text-base text-gray-400 ltr:left-3 rtl:right-3"></div>
+
+                        <input
+                            type="text"
+                            id="mobile-dropdown-search"
+                            name="query"
+                            value="{{ request('query') }}"
+                            class="block w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/90 py-2 ltr:pl-9 ltr:pr-16 rtl:pr-9 rtl:pl-16 text-xs font-medium text-gray-900 dark:text-gray-100 placeholder-zinc-400 hover:border-gray-400 focus:border-navyBlue focus:outline-none transition-colors"
+                            placeholder="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
+                            autofocus
+                        >
+
+                        <button
+                            type="submit"
+                            class="absolute ltr:right-1 rtl:left-1 px-2.5 py-1 rounded-md bg-navyBlue text-white text-[11px] font-semibold hover:bg-navyBlue/90 transition-colors cursor-pointer"
+                        >
+                            @lang('portal::app.components.layouts.header.desktop.bottom.search')
+                        </button>
+                    </form>
+                </x-slot>
+            </x-portal::dropdown>
+        @endif
+
+        <!-- Dark Mode Switcher -->
+        <v-dark>
+            <button
+                type="button"
+                class="flex items-center justify-center w-9 h-9 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+                aria-label="Toggle theme"
+            >
+                <span class="{{ request()->cookie('portal_dark_mode') ? 'icon-light text-amber-400' : 'icon-dark' }} text-lg"></span>
+            </button>
+        </v-dark>
+
+        <!-- Compare Icon (Shop) -->
+        @if ($showCompare && Route::has('shop.compare.index'))
+            <a
+                href="{{ route('shop.compare.index') }}"
+                class="flex items-center justify-center w-9 h-9 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+                aria-label="@lang('portal::app.components.layouts.header.mobile.compare', [], false) ?: 'Compare'"
+            >
+                <span class="icon-compare text-lg"></span>
+            </a>
+        @endif
+
+        <!-- Mini Cart (Shop) -->
+        @if ($showMiniCart)
+            @if (view()->exists('shop::checkout.cart.mini-cart'))
+                <div class="flex items-center justify-center w-9 h-9 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all">
+                    @include('shop::checkout.cart.mini-cart')
+                </div>
+            @elseif (Route::has('shop.checkout.cart.index'))
+                <a
+                    href="{{ route('shop.checkout.cart.index') }}"
+                    class="flex items-center justify-center w-9 h-9 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+                    aria-label="Shopping Cart"
+                >
+                    <span class="icon-cart text-lg"></span>
+                </a>
+            @endif
+        @endif
+
+        <!-- User Profile Drawer Trigger -->
+        <button
+            type="button"
+            class="flex items-center justify-center w-9 h-9 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+            @click="$refs.mobileMenuDrawer.open()"
+            aria-label="User Account"
+        >
+            <span class="icon-users text-lg"></span>
+        </button>
+    </div>
+</div>
 
     <!-- Mobile Navigation & User Drawer -->
     <x-portal::drawer

@@ -119,88 +119,119 @@
         {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.category.after') !!}
     </div>
 
-    <!-- Right Navigation Section: Search Bar + Profile & Preferences -->
-    <div class="flex items-center gap-x-9 max-[1100px]:gap-x-6 max-lg:gap-x-8">
+    <!-- Right Navigation Section: Unified Action Icons (Search, Dark Mode, Profile, Shop Actions) -->
+    <div class="flex items-center gap-2.5">
         {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.search_bar.before') !!}
 
-        <!-- Search Bar Container (Sleek Webkul Shop design adapted for Portal content) -->
+        <!-- Search Icon with Dropdown Popover -->
         @if ($searchRoute)
-            <div class="relative w-full max-w-[445px] min-w-[260px]">
-                <form action="{{ $searchRoute }}" class="flex max-w-[445px] items-center" role="search">
-                    <label for="desktop-search" class="sr-only">
-                        @lang('portal::app.components.layouts.header.desktop.bottom.search')
-                    </label>
-
-                    <div class="icon-search pointer-events-none absolute top-2.5 flex items-center text-xl text-gray-400 ltr:left-3 rtl:right-3"></div>
-
-                    <input
-                        type="text"
-                        id="desktop-search"
-                        name="query"
-                        value="{{ request('query') }}"
-                        class="block w-full py-2.5 text-xs font-medium text-gray-900 dark:text-gray-100 transition-all border border-transparent rounded-lg bg-zinc-100 dark:bg-zinc-800 px-11 hover:border-gray-400 focus:border-gray-400 focus:outline-none"
-                        placeholder="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
-                        aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
+            <x-portal::dropdown
+                position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}"
+                ::close-on-click="false"
+            >
+                <x-slot:toggle>
+                    <button
+                        type="button"
+                        class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+                        aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.search')"
                     >
-                </form>
-            </div>
+                        <span class="icon-search text-xl"></span>
+                    </button>
+                </x-slot>
+
+                <x-slot:content class="!p-3 min-w-[340px] sm:min-w-[420px]">
+                    <form action="{{ $searchRoute }}" method="GET" class="relative flex items-center" role="search">
+                        <label for="desktop-search-input" class="sr-only">
+                            @lang('portal::app.components.layouts.header.desktop.bottom.search')
+                        </label>
+
+                        <div class="icon-search pointer-events-none absolute top-3 flex items-center text-lg text-gray-400 ltr:left-3.5 rtl:right-3.5"></div>
+
+                        <input
+                            type="text"
+                            id="desktop-search-input"
+                            name="query"
+                            value="{{ request('query') }}"
+                            class="block w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/90 py-2.5 ltr:pl-10 ltr:pr-20 rtl:pr-10 rtl:pl-20 text-xs font-medium text-gray-900 dark:text-gray-100 placeholder-zinc-400 hover:border-gray-400 focus:border-navyBlue focus:outline-none transition-colors"
+                            placeholder="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
+                            autofocus
+                        >
+
+                        <button
+                            type="submit"
+                            class="absolute ltr:right-1.5 rtl:left-1.5 px-3 py-1.5 rounded-lg bg-navyBlue text-white text-xs font-semibold hover:bg-navyBlue/90 transition-colors cursor-pointer"
+                        >
+                            @lang('portal::app.components.layouts.header.desktop.bottom.search')
+                        </button>
+                    </form>
+                </x-slot>
+            </x-portal::dropdown>
         @endif
 
         {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.search_bar.after') !!}
 
-        <!-- Right Utility Controls -->
-        <div class="mt-1.5 flex items-center gap-x-7 max-[1100px]:gap-x-5 max-lg:gap-x-6">
-            <!-- Dark Mode Switcher -->
-            <v-dark>
-                <button
-                    type="button"
-                    class="inline-block text-2xl cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors focus:outline-none"
-                    title="{{ request()->cookie('portal_dark_mode') ? trans('portal::app.home.theme.light-mode') : trans('portal::app.home.theme.dark-mode') }}"
-                    aria-label="Toggle theme"
-                >
-                    <span class="{{ request()->cookie('portal_dark_mode') ? 'icon-light text-amber-400' : 'icon-dark' }}"></span>
-                </button>
-            </v-dark>
+        <!-- Dark Mode Switcher -->
+        <v-dark>
+            <button
+                type="button"
+                class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+                title="{{ request()->cookie('portal_dark_mode') ? trans('portal::app.home.theme.light-mode') : trans('portal::app.home.theme.dark-mode') }}"
+                aria-label="Toggle theme"
+            >
+                <span class="{{ request()->cookie('portal_dark_mode') ? 'icon-light text-amber-400' : 'icon-dark' }} text-xl"></span>
+            </button>
+        </v-dark>
 
-            <!-- Compare (Shop Mode Only) -->
-            @if ($showCompare && Route::has('shop.compare.index'))
-                <a href="{{ route('shop.compare.index') }}" aria-label="@lang('shop::app.components.layouts.header.desktop.bottom.compare')">
-                    <span class="inline-block text-2xl cursor-pointer icon-compare text-[var(--text-secondary)]" role="presentation"></span>
+        <!-- Compare (Shop Mode Only) -->
+        @if ($showCompare && Route::has('shop.compare.index'))
+            <a
+                href="{{ route('shop.compare.index') }}"
+                class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+                aria-label="@lang('shop::app.components.layouts.header.desktop.bottom.compare')"
+            >
+                <span class="icon-compare text-xl" role="presentation"></span>
+            </a>
+        @endif
+
+        <!-- Mini Cart (Shop Mode Only) -->
+        @if ($showMiniCart)
+            @if (view()->exists('shop::checkout.cart.mini-cart'))
+                <div class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all">
+                    @include('shop::checkout.cart.mini-cart')
+                </div>
+            @elseif (Route::has('shop.checkout.cart.index'))
+                <a
+                    href="{{ route('shop.checkout.cart.index') }}"
+                    class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+                    aria-label="Shopping Cart"
+                >
+                    <span class="icon-cart text-xl"></span>
                 </a>
             @endif
+        @endif
 
-            <!-- Mini Cart (Shop Mode Only) -->
-            @if ($showMiniCart)
-                @if (view()->exists('shop::checkout.cart.mini-cart'))
-                    @include('shop::checkout.cart.mini-cart')
-                @elseif (Route::has('shop.checkout.cart.index'))
-                    <a href="{{ route('shop.checkout.cart.index') }}" aria-label="Shopping Cart">
-                        <span class="inline-block text-2xl cursor-pointer icon-cart text-[var(--text-secondary)]"></span>
-                    </a>
-                @endif
-            @endif
+        {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.profile.before') !!}
 
-            {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.profile.before') !!}
+        <!-- User Account / Preferences Dropdown (Webkul Shop exact dropdown styled for Portal) -->
+        @php
+            $hasCustomerGuard = array_key_exists('customer', config('auth.guards', []));
+            $isCustomerAuth = $hasCustomerGuard && auth()->guard('customer')->check();
+            $portalGuard = \Platform\Portal\Helpers\PortalAuth::guard();
+            $hasPortalGuard = array_key_exists($portalGuard, config('auth.guards', []));
+            $isPortalAuth = \Platform\Portal\Helpers\PortalAuth::isEnabled() && $hasPortalGuard && auth()->guard($portalGuard)->check();
+            $currentUser = $isCustomerAuth ? auth()->guard('customer')->user() : ($isPortalAuth ? auth()->guard($portalGuard)->user() : null);
+        @endphp
 
-            <!-- User Account / Preferences Dropdown (Webkul Shop exact dropdown styled for Portal) -->
-            @php
-                $hasCustomerGuard = array_key_exists('customer', config('auth.guards', []));
-                $isCustomerAuth = $hasCustomerGuard && auth()->guard('customer')->check();
-                $portalGuard = \Platform\Portal\Helpers\PortalAuth::guard();
-                $hasPortalGuard = array_key_exists($portalGuard, config('auth.guards', []));
-                $isPortalAuth = \Platform\Portal\Helpers\PortalAuth::isEnabled() && $hasPortalGuard && auth()->guard($portalGuard)->check();
-                $currentUser = $isCustomerAuth ? auth()->guard('customer')->user() : ($isPortalAuth ? auth()->guard($portalGuard)->user() : null);
-            @endphp
-
-            <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
-                <x-slot:toggle>
-                    <span
-                        class="inline-block text-2xl cursor-pointer icon-users text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
-                        role="button"
-                        aria-label="Account"
-                        tabindex="0"
-                    ></span>
-                </x-slot>
+        <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
+            <x-slot:toggle>
+                <button
+                    type="button"
+                    class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+                    aria-label="Account"
+                >
+                    <span class="icon-users text-xl"></span>
+                </button>
+            </x-slot>
 
                 @if ($currentUser)
                     <!-- Authenticated Dropdown -->
