@@ -194,6 +194,17 @@ if (! function_exists('portal_asset')) {
     }
 }
 
+if (! function_exists('portal_shop_enabled')) {
+    /**
+     * Check if the portal operates in e-commerce / shop mode.
+     */
+    function portal_shop_enabled(): bool
+    {
+        return (bool) config('portal.shop.enabled', false)
+            && (class_exists(\Webkul\Shop\Providers\ShopServiceProvider::class) || class_exists(\Webkul\Product\Providers\ProductServiceProvider::class));
+    }
+}
+
 if (! function_exists('view_render_event')) {
     /**
      * Fallback for view_render_event when testing standalone without Bagisto Core.

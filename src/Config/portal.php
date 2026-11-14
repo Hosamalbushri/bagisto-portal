@@ -23,6 +23,19 @@ return [
     ],
 
     /*
+     * Portal Shop / E-Commerce Integration.
+     *
+     * When enabled, the portal operates in e-commerce mode, integrating with Bagisto Shop:
+     * - Adds mini-cart and cart counter to header.
+     * - Adds customer account navigation and session links.
+     * - Enables Product & Category carousel sections in page customizer.
+     * - Coexists seamlessly with Bagisto catalog and checkout routes.
+     */
+    'shop' => [
+        'enabled' => env('PORTAL_SHOP_ENABLED', false),
+    ],
+
+    /*
      * Dynamic Menu Slots Configuration.
      *
      * Define custom menu locations without modifying core package layout files.

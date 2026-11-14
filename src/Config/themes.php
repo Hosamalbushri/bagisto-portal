@@ -21,6 +21,8 @@ return [
         'customize' => [
             'sections' => [
                 SectionTypeEnum::IMAGE_CAROUSEL,
+                SectionTypeEnum::PRODUCT_CAROUSEL,
+                SectionTypeEnum::CATEGORY_CAROUSEL,
                 SectionTypeEnum::SERVICES_CONTENT,
                 SectionTypeEnum::STATIC_CONTENT,
                 SectionTypeEnum::FOOTER_LINKS,
@@ -52,6 +54,8 @@ return [
         'customize' => [
             'sections' => [
                 SectionTypeEnum::IMAGE_CAROUSEL,
+                SectionTypeEnum::PRODUCT_CAROUSEL,
+                SectionTypeEnum::CATEGORY_CAROUSEL,
                 SectionTypeEnum::SERVICES_CONTENT,
                 SectionTypeEnum::STATIC_CONTENT,
                 SectionTypeEnum::FOOTER_LINKS,

@@ -116,15 +116,22 @@ class PortalServiceProvider extends ServiceProvider
             Route::middleware(['web'])->group(__DIR__.'/../Routes/web.php');
 
             // Seamlessly resolve missing core Bagisto named routes (e.g. admin header's "visit-shop" link)
-            if (method_exists($this->app['url'], 'resolveMissingNamedRoutesUsing')) {
-                $this->app['url']->resolveMissingNamedRoutesUsing(function ($name, $parameters = [], $absolute = true) {
-                    return match ($name) {
-                        'shop.home.index' => Route::has('portal.home') ? route('portal.home', $parameters, $absolute) : url('/'),
-                        'shop.cms.page' => Route::has('portal.page.show') ? route('portal.page.show', $parameters, $absolute) : url('/pages/'.(is_array($parameters) ? ($parameters['slug'] ?? reset($parameters)) : $parameters)),
-                        'shop.appearance.preview' => Route::has('portal.appearance.preview') ? route('portal.appearance.preview', $parameters, $absolute) : url('/appearance-preview'),
-                        default => null,
-                    };
-                });
+            if ($this->app->bound('url')) {
+                try {
+                    $url = $this->app['url'];
+                    if (method_exists($url, 'resolveMissingNamedRoutesUsing')) {
+                        $url->resolveMissingNamedRoutesUsing(function ($name, $parameters = [], $absolute = true) {
+                            return match ($name) {
+                                'shop.home.index' => Route::has('portal.home') ? route('portal.home', $parameters, $absolute) : url('/'),
+                                'shop.cms.page' => Route::has('portal.page.show') ? route('portal.page.show', $parameters, $absolute) : url('/pages/'.(is_array($parameters) ? ($parameters['slug'] ?? reset($parameters)) : $parameters)),
+                                'shop.appearance.preview' => Route::has('portal.appearance.preview') ? route('portal.appearance.preview', $parameters, $absolute) : url('/appearance-preview'),
+                                default => null,
+                            };
+                        });
+                    }
+                } catch (\Throwable) {
+                    // Ignore if url generator is not resolvable during early non-HTTP bootstrap
+                }
             }
         });
 

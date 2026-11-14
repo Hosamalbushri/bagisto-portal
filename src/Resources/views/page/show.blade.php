@@ -85,6 +85,28 @@
                     <x-portal::carousel :options="$data" />
                     @break
 
+                @case (\Webkul\Theme\Enums\SectionTypeEnum::PRODUCT_CAROUSEL->value)
+                @case ('product_carousel')
+                    @if (view()->exists('shop::components.products.carousel'))
+                        @include('shop::components.products.carousel', [
+                            'title' => $data['title'] ?? '',
+                            'src' => Route::has('shop.api.products.index') ? route('shop.api.products.index', $data['filters'] ?? []) : '',
+                            'navigationLink' => $data['link'] ?? '',
+                        ])
+                    @endif
+                    @break
+
+                @case (\Webkul\Theme\Enums\SectionTypeEnum::CATEGORY_CAROUSEL->value)
+                @case ('category_carousel')
+                    @if (view()->exists('shop::components.categories.carousel'))
+                        @include('shop::components.categories.carousel', [
+                            'title' => $data['title'] ?? '',
+                            'src' => Route::has('shop.api.categories.index') ? route('shop.api.categories.index', $data['filters'] ?? []) : '',
+                            'navigationLink' => $data['link'] ?? '',
+                        ])
+                    @endif
+                    @break
+
                 @case (\Webkul\Theme\Enums\SectionTypeEnum::STATIC_CONTENT->value)
                     @if (! empty($data['css']))
                         @push ('styles')

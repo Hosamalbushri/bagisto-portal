@@ -210,6 +210,89 @@
                     </div>
                 @endif
             @endif
+
+            <!-- Seamless Bagisto E-Commerce / Shop Integration -->
+            @if (function_exists('portal_shop_enabled') && portal_shop_enabled())
+                <!-- Mini-Cart Drawer Trigger -->
+                @if (view()->exists('shop::checkout.cart.mini-cart'))
+                    <div class="flex items-center">
+                        @include('shop::checkout.cart.mini-cart')
+                    </div>
+                @elseif (Route::has('shop.checkout.cart.index'))
+                    <a
+                        href="{{ route('shop.checkout.cart.index') }}"
+                        class="relative flex items-center justify-center w-9 h-9 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)]/80 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--brand-primary)]/40 hover:bg-[var(--bg-surface-elevated)] transition-all focus:outline-none shadow-2xs"
+                        aria-label="Shopping Cart"
+                    >
+                        <span class="icon-cart text-lg"></span>
+                    </a>
+                @endif
+
+                <!-- Customer Account Navigation -->
+                @if (auth()->guard('customer')->check())
+                    <x-portal::dropdown position="bottom-right">
+                        <x-slot:toggle>
+                            <button
+                                type="button"
+                                class="flex items-center gap-1.5 h-9 px-3 text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] rounded-full transition-all shadow-2xs focus:outline-none"
+                            >
+                                <span class="icon-avatar text-base"></span>
+                                <span class="truncate max-w-[100px]">{{ auth()->guard('customer')->user()->first_name ?? 'Account' }}</span>
+                                <span class="icon-arrow-down text-xs opacity-70"></span>
+                            </button>
+                        </x-slot>
+
+                        <x-slot:content class="portal-card !p-1.5 min-w-[160px] shadow-[var(--shadow-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)]" style="border-radius: var(--card-radius, 0.75rem);">
+                            @if (Route::has('customer.account.profile.index'))
+                                <a
+                                    href="{{ route('customer.account.profile.index') }}"
+                                    class="flex items-center px-3.5 py-2 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] rounded-lg transition-colors"
+                                >
+                                    @lang('shop::app.components.layouts.header.desktop.top.profile')
+                                </a>
+                            @endif
+
+                            @if (Route::has('customer.account.orders.index'))
+                                <a
+                                    href="{{ route('customer.account.orders.index') }}"
+                                    class="flex items-center px-3.5 py-2 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] rounded-lg transition-colors"
+                                >
+                                    @lang('shop::app.components.layouts.header.desktop.top.orders')
+                                </a>
+                            @endif
+
+                            @if (Route::has('customer.account.wishlist.index'))
+                                <a
+                                    href="{{ route('customer.account.wishlist.index') }}"
+                                    class="flex items-center px-3.5 py-2 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] rounded-lg transition-colors"
+                                >
+                                    @lang('shop::app.components.layouts.header.desktop.top.wishlist')
+                                </a>
+                            @endif
+
+                            @if (Route::has('customer.session.destroy'))
+                                <form method="POST" action="{{ route('customer.session.destroy') }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button
+                                        type="submit"
+                                        class="w-full flex items-center px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer text-start"
+                                    >
+                                        @lang('shop::app.components.layouts.header.desktop.top.logout')
+                                    </button>
+                                </form>
+                            @endif
+                        </x-slot:content>
+                    </x-portal::dropdown>
+                @elseif (Route::has('customer.session.index'))
+                    <a
+                        href="{{ route('customer.session.index') }}"
+                        class="px-3 py-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--brand-primary)] rounded-full hover:bg-[var(--bg-surface-elevated)] transition-colors"
+                    >
+                        @lang('shop::app.components.layouts.header.desktop.top.sign-in')
+                    </a>
+                @endif
+            @endif
         </div>
     </div>
 </header>

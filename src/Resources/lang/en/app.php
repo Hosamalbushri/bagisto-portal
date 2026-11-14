@@ -604,6 +604,21 @@ return [
         'no-sections' => 'No sections published on this page yet.',
     ],
     'sections' => [
+        'product_carousel' => [
+            'title' => 'Product Carousel',
+            'description' => 'A dynamic strip of catalog products filtered by featured, new, or category.',
+            'title_label' => 'Carousel Title',
+            'view_all_link' => 'View All Link (Optional)',
+            'filters_label' => 'Product Filters',
+            'add_filter_btn' => 'Add Filter',
+        ],
+        'category_carousel' => [
+            'title' => 'Category Carousel',
+            'description' => 'A dynamic strip of catalog categories.',
+            'title_label' => 'Carousel Title',
+            'filters_label' => 'Category Filters',
+            'add_filter_btn' => 'Add Filter',
+        ],
         'hero_scaffold' => [
             'title' => 'Architectural Hero Scaffold',
             'description' => 'Architectural hero banner with blueprint grid, multi-point glows, and system metrics.',

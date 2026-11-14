@@ -29,6 +29,26 @@ class SectionTypeRegistry extends BaseSectionTypeRegistry
         $this->register(new Testimonials);
         $this->register(new RichContent);
         $this->register(new ContactSection);
+
+        if (function_exists('portal_shop_enabled') && portal_shop_enabled()) {
+            $this->registerShopSections();
+        }
+    }
+
+    /**
+     * Register e-commerce shop sections when shop mode is enabled.
+     */
+    public function registerShopSections(): self
+    {
+        if (! $this->has('product_carousel')) {
+            $this->register(new ProductCarouselSection);
+        }
+
+        if (! $this->has('category_carousel')) {
+            $this->register(new CategoryCarouselSection);
+        }
+
+        return $this;
     }
 }
 

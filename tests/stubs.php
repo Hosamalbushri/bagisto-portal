@@ -546,6 +546,8 @@ namespace Webkul\Theme\Enums {
         enum SectionTypeEnum: string
         {
             case IMAGE_CAROUSEL = 'image_carousel';
+            case PRODUCT_CAROUSEL = 'product_carousel';
+            case CATEGORY_CAROUSEL = 'category_carousel';
             case STATIC_CONTENT = 'static_content';
             case SERVICES_CONTENT = 'services_content';
             case FOOTER_LINKS = 'footer_links';

@@ -563,6 +563,21 @@ return [
         'no-sections' => 'لا توجد أقسام منشورة في هذه الصفحة حتى الآن.',
     ],
     'sections' => [
+        'product_carousel' => [
+            'title' => 'شريط المنتجات (Product Carousel)',
+            'description' => 'شريط تفاعلي لعرض منتجات المتجر وتصفيتها حسب المميزة أو الجديدة أو القسم.',
+            'title_label' => 'عنوان الشريط',
+            'view_all_link' => 'رابط عرض الكل (اختياري)',
+            'filters_label' => 'تصفية المنتجات',
+            'add_filter_btn' => 'إضافة فلتر',
+        ],
+        'category_carousel' => [
+            'title' => 'شريط التصنيفات (Category Carousel)',
+            'description' => 'شريط تفاعلي لعرض تصنيفات المتجر.',
+            'title_label' => 'عنوان الشريط',
+            'filters_label' => 'تصفية التصنيفات',
+            'add_filter_btn' => 'إضافة فلتر',
+        ],
         'hero_scaffold' => [
             'title' => 'واجهة معمارية تفاعلية (Hero Scaffold)',
             'description' => 'واجهة معمارية متقدمة بشبكة المخطط وتوهج نقطي ومؤشرات الأداء.',
