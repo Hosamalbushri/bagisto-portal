@@ -1,8 +1,10 @@
 @props([
     'id',
+    'location' => null,
     'label' => null,
     'class' => '',
     'itemClass' => '',
+    'activeClass' => 'text-[var(--brand-primary)] font-semibold',
     'direction' => null,
     'maxDepth' => 3,
 ])
@@ -37,9 +39,12 @@
             :menu="$menu"
             :class="$class"
             :item-class="$itemClass"
+            :active-class="$activeClass"
             :direction="$direction"
             :max-depth="$maxDepth"
             {{ $attributes }}
         />
     </div>
+@elseif (isset($slot) && $slot->isNotEmpty())
+    {{ $slot }}
 @endif

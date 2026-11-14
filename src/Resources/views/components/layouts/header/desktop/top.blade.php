@@ -1,13 +1,13 @@
 {!! view_render_event('bagisto.portal.layout.header.desktop.top.before') !!}
 
-<div class="relative z-[60] flex w-full items-center justify-between border-b border-[var(--border-subtle)] px-[60px] max-1180:px-8 text-xs bg-white dark:bg-zinc-900 text-[var(--text-secondary)]">
+<div class="relative z-[60] flex w-full items-center justify-between border-b border-[var(--border-subtle)] px-4 sm:px-8 lg:px-[60px] text-xs bg-zinc-50/70 dark:bg-zinc-900/90 text-[var(--text-secondary)]">
     {!! view_render_event('bagisto.portal.layout.header.desktop.top.currency_switcher.before') !!}
 
     <!-- Left: Currency Switcher -->
     @if (core()->getCurrentChannel()->currencies->count() > 1)
         <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'left' : 'right' }}">
             <x-slot:toggle>
-                <div class="flex cursor-pointer items-center gap-2 py-3 hover:text-[var(--text-primary)] transition-colors" role="button" tabindex="0">
+                <div class="flex cursor-pointer items-center gap-2 py-2 hover:text-[var(--text-primary)] transition-colors" role="button" tabindex="0">
                     <span>
                         {{ core()->getCurrentCurrency()->symbol . ' ' . core()->getCurrentCurrencyCode() }}
                     </span>
@@ -27,7 +27,7 @@
             </x-slot>
         </x-portal::dropdown>
     @else
-        <div class="text-[11px] font-mono text-[var(--text-muted)] py-3">
+        <div class="text-[11px] font-medium text-[var(--text-muted)] py-2">
             {{ core()->getCurrentChannel()->name }}
         </div>
     @endif
@@ -49,7 +49,7 @@
     @endphp
 
     @if ($announcementText)
-        <p class="py-3 text-xs font-medium text-[var(--text-primary)]">
+        <p class="py-2 text-xs font-medium text-[var(--text-primary)]">
             {{ $announcementText }}
 
             @if ($announcementLink)
@@ -68,7 +68,7 @@
     @if (core()->getCurrentChannel()->locales->count() > 1)
         <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
             <x-slot:toggle>
-                <div class="flex cursor-pointer items-center gap-2 py-3 hover:text-[var(--text-primary)] transition-colors" role="button" tabindex="0">
+                <div class="flex cursor-pointer items-center gap-2 py-2 hover:text-[var(--text-primary)] transition-colors" role="button" tabindex="0">
                     @if (! empty(core()->getCurrentLocale()->logo_url))
                         <img src="{{ core()->getCurrentLocale()->logo_url }}" class="h-4 w-4 rounded-full" alt="{{ core()->getCurrentLocale()->name }}">
                     @endif

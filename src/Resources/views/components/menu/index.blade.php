@@ -34,6 +34,7 @@
                         :item-class="$itemClass"
                         :active-class="$activeClass"
                         :dropdown-class="$dropdownClass"
+                        :direction="$direction"
                         :depth="0"
                     />
                 @endif

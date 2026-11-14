@@ -1,6 +1,7 @@
 @props([
     'item',
     'depth' => 0,
+    'direction' => 'row',
     'itemClass' => '',
     'activeClass' => 'text-[var(--brand-primary)] font-semibold',
     'dropdownClass' => '',
@@ -14,13 +15,13 @@
     $url = $item->getUrl();
 @endphp
 
-<li class="relative group {{ $depth > 0 ? 'w-full' : '' }}">
-    <div class="flex items-center justify-between {{ $depth > 0 ? 'w-full' : '' }}">
+<li class="relative group {{ ($depth > 0 || $direction === 'column') ? 'w-full' : '' }}">
+    <div class="flex items-center justify-between {{ ($depth > 0 || $direction === 'column') ? 'w-full' : '' }}">
         <a
             href="{{ $url }}"
             target="{{ $item->target ?: '_self' }}"
             @if ($item->target === '_blank') rel="noopener noreferrer" @endif
-            class="flex items-center gap-1.5 transition-colors duration-150 {{ $depth === 0 ? 'py-2 px-1 text-[var(--text-secondary)] hover:text-[var(--brand-primary)] text-sm font-medium' : 'px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-surface-muted)] hover:text-[var(--brand-primary)] w-full' }} {{ $active ? $activeClass : '' }} {{ $itemClass }}"
+            class="flex items-center gap-1.5 transition-colors duration-150 {{ $direction === 'column' ? 'w-full justify-between py-2 px-3 text-sm font-medium rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800' : ($depth === 0 ? 'py-2 px-1 text-[var(--text-secondary)] hover:text-[var(--brand-primary)] text-sm font-medium' : 'px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-surface-muted)] hover:text-[var(--brand-primary)] w-full') }} {{ $active ? $activeClass : '' }} {{ $itemClass }}"
         >
             @if (! empty($item->icon))
                 <i class="{{ $item->icon }} text-xs"></i>
@@ -29,7 +30,9 @@
             <span>{{ $title }}</span>
 
             @if ($hasChildren)
-                @if ($depth === 0)
+                @if ($direction === 'column')
+                    <span class="icon-arrow-down text-xs opacity-60"></span>
+                @elseif ($depth === 0)
                     <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
@@ -44,7 +47,7 @@
 
     @if ($hasChildren)
         <ul
-            class="hidden group-hover:block {{ $depth === 0 ? 'absolute start-0 top-full mt-1 min-w-[200px] bg-[var(--bg-surface)] rounded-xl shadow-[var(--shadow-card)] border border-[var(--border-subtle)] py-1.5 z-50' : 'absolute start-full top-0 min-w-[200px] bg-[var(--bg-surface)] rounded-xl shadow-[var(--shadow-card)] border border-[var(--border-subtle)] py-1.5 z-50' }} {{ $dropdownClass }}"
+            class="{{ $direction === 'column' ? 'ps-4 py-1 space-y-0.5 border-s border-zinc-200 dark:border-zinc-700 ms-3' : 'hidden group-hover:block ' . ($depth === 0 ? 'absolute start-0 top-full mt-1 min-w-[200px] bg-[var(--bg-surface)] rounded-xl shadow-[var(--shadow-card)] border border-[var(--border-subtle)] py-1.5 z-50' : 'absolute start-full top-0 min-w-[200px] bg-[var(--bg-surface)] rounded-xl shadow-[var(--shadow-card)] border border-[var(--border-subtle)] py-1.5 z-50') }} {{ $dropdownClass }}"
         >
             @foreach ($children as $child)
                 <x-portal::menu.item
@@ -52,6 +55,7 @@
                     :item-class="$itemClass"
                     :active-class="$activeClass"
                     :dropdown-class="$dropdownClass"
+                    :direction="$direction"
                     :depth="$depth + 1"
                 />
             @endforeach

@@ -16,9 +16,9 @@
     $showWishlist = $isShopMode && (bool) core()->getConfigData('customer.settings.wishlist.wishlist_option');
 @endphp
 
-<div class="flex min-h-[78px] w-full items-center justify-between border-b border-[var(--border-subtle)] px-[60px] max-1180:px-8 bg-white dark:bg-zinc-900 transition-colors">
+<div class="flex min-h-[72px] lg:min-h-[76px] w-full items-center justify-between px-4 sm:px-8 lg:px-[60px] bg-white dark:bg-zinc-900 transition-colors">
     <!-- Left Navigation Section: Logo + Categories / Menus -->
-    <div class="flex items-center gap-x-10 max-[1180px]:gap-x-5">
+    <div class="flex items-center gap-x-8 max-[1180px]:gap-x-4">
         {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.logo.before') !!}
 
         <!-- Logo -->
@@ -48,73 +48,37 @@
 
         {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.category.before') !!}
 
-        <!-- Navigation Items (Preserving Webkul Shop layout & hover styling) -->
-        <nav class="flex items-center" aria-label="Main Navigation">
-            @if ($hasAssignedMenuItems)
-                @foreach ($assignedMenu->rootItems as $item)
-                    @if (filled($item->getTitle()))
-                        @php
-                            $children = $item->children ? $item->children->where('status', 1)->filter(fn ($c) => filled($c->getTitle())) : collect();
-                            $hasChildren = $children->isNotEmpty();
-                            $active = $item->isActive();
-                        @endphp
-
-                        <div class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue dark:hover:border-blue-500 transition-all">
-                            <a
-                                href="{{ $item->getUrl() }}"
-                                target="{{ $item->target ?: '_self' }}"
-                                @if ($item->target === '_blank') rel="noopener noreferrer" @endif
-                                class="inline-block px-4 font-semibold text-sm uppercase text-[var(--text-primary)] hover:text-navyBlue dark:hover:text-blue-400 transition-colors {{ $active ? '!text-[var(--brand-primary)]' : '' }}"
-                            >
-                                <span class="flex items-center gap-1.5">
-                                    @if (! empty($item->icon))
-                                        <i class="{{ $item->icon }} text-xs"></i>
-                                    @endif
-                                    {{ $item->getTitle() }}
-                                    @if ($hasChildren)
-                                        <span class="icon-arrow-down text-xs opacity-70 transition-transform group-hover:rotate-180"></span>
-                                    @endif
-                                </span>
-                            </a>
-
-                            @if ($hasChildren)
-                                <div class="pointer-events-none absolute top-[77px] z-50 min-w-[220px] max-w-[500px] translate-y-1 rounded-b-xl border border-t-0 border-[var(--border-subtle)] bg-white dark:bg-zinc-900 p-4 opacity-0 shadow-xl transition-all duration-200 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 ltr:left-0 rtl:right-0">
-                                    <div class="grid gap-1">
-                                        @foreach ($children as $child)
-                                            <a
-                                                href="{{ $child->getUrl() }}"
-                                                target="{{ $child->target ?: '_self' }}"
-                                                class="block px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
-                                            >
-                                                {{ $child->getTitle() }}
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    @endif
-                @endforeach
-            @else
-                <div class="flex items-center">
-                    <div class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue dark:hover:border-blue-500">
-                        <a href="{{ portal_home_url() }}" class="inline-block px-4 font-semibold text-sm uppercase text-[var(--text-primary)] hover:text-navyBlue">
-                            @lang('portal::app.home.nav.home')
-                        </a>
-                    </div>
-                    <div class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue dark:hover:border-blue-500">
-                        <a href="#services" class="inline-block px-4 font-semibold text-sm uppercase text-[var(--text-primary)] hover:text-navyBlue">
-                            @lang('portal::app.home.nav.services')
-                        </a>
-                    </div>
-                    <div class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue dark:hover:border-blue-500">
-                        <a href="#contact" class="inline-block px-4 font-semibold text-sm uppercase text-[var(--text-primary)] hover:text-navyBlue">
-                            @lang('portal::app.home.nav.contact-us')
-                        </a>
-                    </div>
-                </div>
-            @endif
-        </nav>
+        <!-- Navigation Items (Using Portal Menu Slot System) -->
+        <div class="flex items-center">
+            <x-portal::menu-slot
+                id="header_main"
+                location="header"
+                class="flex items-center gap-1 xl:gap-2"
+                item-class="px-3 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                active-class="!text-[var(--brand-primary)] font-bold bg-zinc-100 dark:bg-zinc-800"
+            >
+                <nav class="flex items-center gap-1 xl:gap-2" aria-label="Main Navigation">
+                    <a
+                        href="{{ portal_home_url() }}"
+                        class="px-3.5 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors {{ request()->routeIs('portal.home') ? '!text-[var(--brand-primary)] font-bold bg-zinc-100 dark:bg-zinc-800' : '' }}"
+                    >
+                        @lang('portal::app.home.nav.home')
+                    </a>
+                    <a
+                        href="{{ portal_home_url() }}#services"
+                        class="px-3.5 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                    >
+                        @lang('portal::app.home.nav.services')
+                    </a>
+                    <a
+                        href="{{ portal_home_url() }}#contact"
+                        class="px-3.5 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                    >
+                        @lang('portal::app.home.nav.contact-us')
+                    </a>
+                </nav>
+            </x-portal::menu-slot>
+        </div>
 
         {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.category.after') !!}
     </div>

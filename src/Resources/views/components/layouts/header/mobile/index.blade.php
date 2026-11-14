@@ -259,59 +259,39 @@
                     </div>
                 @endif
 
-                <!-- Navigation Links -->
+                <!-- Navigation Links (Portal Menu Slot System) -->
                 <nav class="grid gap-1 pt-2">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] px-2 mb-1">
                         @lang('portal::app.components.layouts.header.desktop.bottom.categories')
                     </span>
 
-                    @if ($hasAssignedMenuItems)
-                        @foreach ($assignedMenu->rootItems as $item)
-                            @if (filled($item->getTitle()))
-                                @php
-                                    $children = $item->children ? $item->children->where('status', 1)->filter(fn ($c) => filled($c->getTitle())) : collect();
-                                    $hasChildren = $children->isNotEmpty();
-                                @endphp
-
-                                <div>
-                                    <a
-                                        href="{{ $item->getUrl() }}"
-                                        target="{{ $item->target ?: '_self' }}"
-                                        class="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors {{ $item->isActive() ? 'bg-zinc-100 dark:bg-zinc-800 font-bold text-[var(--brand-primary)]' : '' }}"
-                                    >
-                                        <span>{{ $item->getTitle() }}</span>
-                                        @if ($hasChildren)
-                                            <span class="icon-arrow-down text-xs opacity-60"></span>
-                                        @endif
-                                    </a>
-
-                                    @if ($hasChildren)
-                                        <div class="ltr:pl-4 rtl:pr-4 py-1 space-y-0.5 border-s border-zinc-200 dark:border-zinc-700 ltr:ml-3 rtl:mr-3">
-                                            @foreach ($children as $child)
-                                                <a
-                                                    href="{{ $child->getUrl() }}"
-                                                    target="{{ $child->target ?: '_self' }}"
-                                                    class="block px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                                                >
-                                                    {{ $child->getTitle() }}
-                                                </a>
-                                            @endforeach
-                                        </div>
-                                    @endif
-                                </div>
-                            @endif
-                        @endforeach
-                    @else
-                        <a href="{{ portal_home_url() }}" class="px-3.5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                            @lang('portal::app.home.nav.home')
-                        </a>
-                        <a href="#services" class="px-3.5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                            @lang('portal::app.home.nav.services')
-                        </a>
-                        <a href="#contact" class="px-3.5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                            @lang('portal::app.home.nav.contact-us')
-                        </a>
-                    @endif
+                    <x-portal::menu-slot
+                        id="header_mobile"
+                        location="header"
+                        direction="column"
+                        class="space-y-1"
+                        item-class="px-3.5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                        active-class="!text-[var(--brand-primary)] font-bold bg-zinc-100 dark:bg-zinc-800"
+                    >
+                        <x-portal::menu-slot
+                            id="header_main"
+                            location="header"
+                            direction="column"
+                            class="space-y-1"
+                            item-class="px-3.5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                            active-class="!text-[var(--brand-primary)] font-bold bg-zinc-100 dark:bg-zinc-800"
+                        >
+                            <a href="{{ portal_home_url() }}" class="px-3.5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                @lang('portal::app.home.nav.home')
+                            </a>
+                            <a href="{{ portal_home_url() }}#services" class="px-3.5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                @lang('portal::app.home.nav.services')
+                            </a>
+                            <a href="{{ portal_home_url() }}#contact" class="px-3.5 py-2.5 rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                @lang('portal::app.home.nav.contact-us')
+                            </a>
+                        </x-portal::menu-slot>
+                    </x-portal::menu-slot>
                 </nav>
 
                 <!-- Currencies & Languages Pickers in Drawer -->

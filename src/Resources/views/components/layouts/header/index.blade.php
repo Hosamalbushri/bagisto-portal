@@ -26,13 +26,14 @@
         || ! empty(data_get(portal_layout_settings('header'), 'announcement.text'));
 @endphp
 
-@if ($hasTopBarContent)
-    <div class="max-lg:hidden relative z-[60]">
-        <x-portal::layouts.header.desktop.top />
-    </div>
-@endif
+<header class="sticky top-0 z-40 w-full bg-white dark:bg-zinc-900 border-b border-[var(--border-subtle)] shadow-xs transition-all duration-300">
+    <!-- Desktop Top Bar -->
+    @if ($hasTopBarContent)
+        <div class="max-lg:hidden relative z-[60]">
+            <x-portal::layouts.header.desktop.top />
+        </div>
+    @endif
 
-<header class="shadow-gray sticky top-0 z-40 bg-white dark:bg-zinc-900 border-b border-[var(--border-subtle)] shadow-xs max-lg:shadow-none transition-all duration-300">
     <!-- Desktop Header -->
     <div class="max-lg:hidden">
         <x-portal::layouts.header.desktop.bottom />
