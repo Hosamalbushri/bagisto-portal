@@ -1,11 +1,47 @@
 {!! view_render_event('bagisto.portal.layout.header.before') !!}
 
-<header class="portal-header sticky top-0 z-50 transition-all duration-300">
+@php
+    $channel = core()->getCurrentChannel();
+    $localesCount = 0;
+    if ($channel) {
+        if (isset($channel->locales)) {
+            $localesCount = is_countable($channel->locales) ? count($channel->locales) : 0;
+        } elseif (method_exists($channel, 'locales')) {
+            $localesCount = $channel->locales()->count();
+        }
+    }
+
+    $currenciesCount = 0;
+    if ($channel) {
+        if (isset($channel->currencies)) {
+            $currenciesCount = is_countable($channel->currencies) ? count($channel->currencies) : 0;
+        } elseif (method_exists($channel, 'currencies')) {
+            $currenciesCount = $channel->currencies()->count();
+        }
+    }
+
+    $hasTopBarContent = ($localesCount > 1)
+        || ($currenciesCount > 1)
+        || ! empty(core()->getConfigData('general.content.header_offer.title'))
+        || ! empty(data_get(portal_layout_settings('header'), 'announcement.text'));
+@endphp
+
+@if ($hasTopBarContent)
+    <div class="max-lg:hidden">
+        <x-portal::layouts.header.desktop.top />
+    </div>
+@endif
+
+<header class="shadow-gray sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-[var(--border-subtle)] shadow-xs max-lg:shadow-none transition-all duration-300">
     <!-- Desktop Header -->
-    <x-portal::layouts.header.desktop />
+    <div class="max-lg:hidden">
+        <x-portal::layouts.header.desktop.bottom />
+    </div>
 
     <!-- Mobile Header -->
-    <x-portal::layouts.header.mobile />
+    <div class="lg:hidden">
+        <x-portal::layouts.header.mobile />
+    </div>
 </header>
 
 {!! view_render_event('bagisto.portal.layout.header.after') !!}

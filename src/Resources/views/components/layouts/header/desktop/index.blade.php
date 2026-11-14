@@ -1,4 +1,3 @@
-<div class="hidden md:block">
-    <x-portal::layouts.header.desktop.top />
+<div class="flex flex-wrap max-lg:hidden">
     <x-portal::layouts.header.desktop.bottom />
 </div>

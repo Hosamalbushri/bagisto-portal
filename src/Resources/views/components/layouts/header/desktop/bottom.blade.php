@@ -1,269 +1,321 @@
-@php
-    $headerSettings = portal_layout_settings('header');
-    $isSticky = (bool) data_get($headerSettings, 'controls.sticky', true);
-    $showDarkMode = (bool) data_get($headerSettings, 'controls.show_dark_mode', true);
-    $showAuth = (bool) data_get($headerSettings, 'controls.show_auth', true);
-
-    $assignedMenu = portal_menu_slot('header_main');
-    $hasAssignedMenuItems = $assignedMenu && $assignedMenu->rootItems && $assignedMenu->rootItems->isNotEmpty();
-    $channelName = core()->getCurrentChannel()->name ?? config('app.name');
-@endphp
-
 {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.before') !!}
 
-<div
-    class="portal-header-bottom relative z-50 backdrop-blur-md border-b border-[var(--border-subtle)] shadow-[0_1px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300"
-    style="background-color: var(--header-bg, var(--bg-surface)); color: var(--header-text, var(--text-primary)); min-height: var(--header-height, 4rem);"
->
-    <div class="portal-container mx-auto flex items-center justify-between gap-4" style="max-width: var(--container-max-width, 1280px); min-height: var(--header-height, 4rem); padding-inline: var(--page-padding-x, 1rem);">
-        <!-- Left: Brand Logo & Monogram -->
-        <div class="flex items-center gap-3 sm:gap-4 shrink-0 min-w-0">
-            <a href="{{ portal_home_url() }}" class="flex items-center gap-3 group focus:outline-none select-none shrink-0" aria-label="{{ $channelName }}">
-                @if ($logo = core()->getCurrentChannel()->logo_url)
-                    <img id="logo-image" src="{{ $logo }}" class="h-8 w-auto transition-transform group-hover:scale-105" alt="{{ $channelName }}" />
-                @else
-                    <div class="w-9 h-9 rounded-[var(--btn-radius,0.5rem)] bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-center p-1.5 shadow-2xs group-hover:border-[var(--brand-primary)] transition-colors duration-200 shrink-0">
-                        <svg viewBox="0 0 64 64" fill="none" class="w-full h-full" aria-hidden="true">
-                            <path d="M18 44V20H32C36.4183 20 40 23.5817 40 28C40 32.4183 36.4183 36 32 36H24" stroke="#1c66f6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M30 36L44 44" stroke="#fe8312" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
-                            <circle cx="44" cy="24" r="4.5" fill="#fe8312" />
-                        </svg>
-                    </div>
+@php
+    $channel = core()->getCurrentChannel();
+    $channelName = $channel->name ?? config('app.name');
+    $assignedMenu = portal_menu_slot('header_main');
+    $hasAssignedMenuItems = $assignedMenu && $assignedMenu->rootItems && $assignedMenu->rootItems->isNotEmpty();
 
-                    <div class="flex flex-col">
-                        <span class="text-base sm:text-lg font-black tracking-tight text-[var(--text-primary)] leading-none font-cairo">
-                            {{ $channelName }}
-                        </span>
-                        <span class="text-[9px] font-mono uppercase tracking-wider text-[var(--text-muted)] leading-tight mt-1">
-                            Software Systems
-                        </span>
-                    </div>
-                @endif
-            </a>
-        </div>
+    $searchRoute = (function_exists('portal_shop_enabled') && portal_shop_enabled() && Route::has('shop.search.index'))
+        ? route('shop.search.index')
+        : (Route::has('portal.search.index') ? route('portal.search.index') : null);
 
-        <!-- Center: Floating Capsule Navigation Bar -->
-        <nav class="hidden md:flex items-center gap-1 px-3 py-1.5 rounded-full bg-[var(--bg-surface)]/80 backdrop-blur-sm border border-[var(--border-subtle)] shadow-xs" aria-label="Main Navigation">
-            @if ($hasAssignedMenuItems)
-                <x-portal::menu
-                    :menu="$assignedMenu"
-                    class="flex items-center"
-                    list-class="flex items-center gap-1 text-sm"
-                    item-class="!px-3.5 !py-1.5 !text-sm font-medium !text-[var(--text-secondary)] hover:!text-[var(--text-primary)] transition-colors !rounded-full hover:!bg-[var(--bg-surface-elevated)]"
-                    active-class="!bg-[var(--brand-primary-light)] !text-[var(--brand-primary)] !font-semibold"
-                />
+    $showCompare = (bool) core()->getConfigData('catalog.products.settings.compare_option');
+    $showMiniCart = (bool) core()->getConfigData('sales.checkout.shopping_cart.cart_page');
+    $showWishlist = (bool) core()->getConfigData('customer.settings.wishlist.wishlist_option');
+@endphp
+
+<div class="flex min-h-[78px] w-full items-center justify-between border-b border-[var(--border-subtle)] px-[60px] max-1180:px-8 bg-white dark:bg-zinc-900 transition-colors">
+    <!-- Left Navigation Section: Logo + Categories / Menus -->
+    <div class="flex items-center gap-x-10 max-[1180px]:gap-x-5">
+        {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.logo.before') !!}
+
+        <!-- Logo -->
+        <a
+            href="{{ portal_home_url() }}"
+            class="flex items-center gap-3 group focus:outline-none shrink-0"
+            aria-label="{{ $channelName }}"
+        >
+            @if ($logo = $channel->logo_url)
+                <img id="logo-image" src="{{ $logo }}" class="h-8 w-auto max-h-[36px]" alt="{{ $channelName }}" />
             @else
-                <div class="flex items-center gap-1">
-                    <a
-                        href="{{ portal_home_url() }}"
-                        class="px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors {{ request()->routeIs('portal.home') ? 'bg-[var(--brand-primary-light)] text-[var(--brand-primary)] font-semibold' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)]' }}"
-                    >
-                        @lang('portal::app.home.nav.home')
-                    </a>
-                    <a
-                        href="#services"
-                        class="px-3.5 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-full hover:bg-[var(--bg-surface-elevated)]"
-                    >
-                        @lang('portal::app.home.nav.services')
-                    </a>
-                    <a
-                        href="#contact"
-                        class="px-3.5 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-full hover:bg-[var(--bg-surface-elevated)]"
-                    >
-                        @lang('portal::app.home.nav.contact-us')
-                    </a>
+                <div class="w-9 h-9 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-center p-1.5 shadow-2xs group-hover:border-[var(--brand-primary)] transition-colors shrink-0">
+                    <svg viewBox="0 0 64 64" fill="none" class="w-full h-full" aria-hidden="true">
+                        <path d="M18 44V20H32C36.4183 20 40 23.5817 40 28C40 32.4183 36.4183 36 32 36H24" stroke="#1c66f6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M30 36L44 44" stroke="#fe8312" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+                        <circle cx="44" cy="24" r="4.5" fill="#fe8312" />
+                    </svg>
+                </div>
+
+                <span class="text-lg font-black tracking-tight text-[var(--text-primary)] font-cairo">
+                    {{ $channelName }}
+                </span>
+            @endif
+        </a>
+
+        {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.logo.after') !!}
+
+        {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.category.before') !!}
+
+        <!-- Category & Portal Navigation Items (Webkul Shop exact style) -->
+        <nav class="flex items-center" aria-label="Main Navigation">
+            @if ($hasAssignedMenuItems)
+                @foreach ($assignedMenu->rootItems as $item)
+                    @if (filled($item->getTitle()))
+                        @php
+                            $children = $item->children ? $item->children->where('status', 1)->filter(fn ($c) => filled($c->getTitle())) : collect();
+                            $hasChildren = $children->isNotEmpty();
+                            $active = $item->isActive();
+                        @endphp
+
+                        <div class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue dark:hover:border-blue-500 transition-all">
+                            <a
+                                href="{{ $item->getUrl() }}"
+                                target="{{ $item->target ?: '_self' }}"
+                                @if ($item->target === '_blank') rel="noopener noreferrer" @endif
+                                class="inline-block px-4 font-semibold text-sm uppercase text-[var(--text-primary)] hover:text-navyBlue dark:hover:text-blue-400 transition-colors {{ $active ? '!text-[var(--brand-primary)]' : '' }}"
+                            >
+                                <span class="flex items-center gap-1.5">
+                                    @if (! empty($item->icon))
+                                        <i class="{{ $item->icon }} text-xs"></i>
+                                    @endif
+                                    {{ $item->getTitle() }}
+                                    @if ($hasChildren)
+                                        <span class="icon-arrow-down text-xs opacity-70 transition-transform group-hover:rotate-180"></span>
+                                    @endif
+                                </span>
+                            </a>
+
+                            @if ($hasChildren)
+                                <div class="pointer-events-none absolute top-[77px] z-50 min-w-[220px] max-w-[500px] translate-y-1 rounded-b-xl border border-t-0 border-[var(--border-subtle)] bg-white dark:bg-zinc-900 p-4 opacity-0 shadow-xl transition-all duration-200 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 ltr:left-0 rtl:right-0">
+                                    <div class="grid gap-1">
+                                        @foreach ($children as $child)
+                                            <a
+                                                href="{{ $child->getUrl() }}"
+                                                target="{{ $child->target ?: '_self' }}"
+                                                class="block px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                            >
+                                                {{ $child->getTitle() }}
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                @endforeach
+            @else
+                <div class="flex items-center">
+                    <div class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue dark:hover:border-blue-500">
+                        <a href="{{ portal_home_url() }}" class="inline-block px-4 font-semibold text-sm uppercase text-[var(--text-primary)] hover:text-navyBlue">
+                            @lang('portal::app.home.nav.home')
+                        </a>
+                    </div>
+                    <div class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue dark:hover:border-blue-500">
+                        <a href="#services" class="inline-block px-4 font-semibold text-sm uppercase text-[var(--text-primary)] hover:text-navyBlue">
+                            @lang('portal::app.home.nav.services')
+                        </a>
+                    </div>
+                    <div class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue dark:hover:border-blue-500">
+                        <a href="#contact" class="inline-block px-4 font-semibold text-sm uppercase text-[var(--text-primary)] hover:text-navyBlue">
+                            @lang('portal::app.home.nav.contact-us')
+                        </a>
+                    </div>
                 </div>
             @endif
         </nav>
 
-        <!-- Search Bar Container (Desktop) -->
-        @php
-            $searchAction = (function_exists('portal_shop_enabled') && portal_shop_enabled() && Route::has('shop.search.index'))
-                ? route('shop.search.index')
-                : (Route::has('portal.search.index') ? route('portal.search.index') : null);
-        @endphp
+        {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.category.after') !!}
+    </div>
 
-        @if ($searchAction)
-            <div class="hidden lg:block relative w-48 xl:w-60">
-                <form action="{{ $searchAction }}" method="GET" class="relative flex items-center">
+    <!-- Right Navigation Section: Search Bar + Compare + Cart + Profile Dropdown -->
+    <div class="flex items-center gap-x-9 max-[1100px]:gap-x-6 max-lg:gap-x-8">
+        {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.search_bar.before') !!}
+
+        <!-- Search Bar Container (Webkul Shop exact styling) -->
+        @if ($searchRoute)
+            <div class="relative w-full max-w-[445px] min-w-[260px]">
+                <form action="{{ $searchRoute }}" class="flex max-w-[445px] items-center" role="search">
+                    <label for="desktop-search" class="sr-only">
+                        @lang('portal::app.components.layouts.header.desktop.bottom.search')
+                    </label>
+
+                    <div class="icon-search pointer-events-none absolute top-2.5 flex items-center text-xl text-gray-400 ltr:left-3 rtl:right-3"></div>
+
                     <input
                         type="text"
+                        id="desktop-search"
                         name="query"
                         value="{{ request('query') }}"
+                        class="block w-full py-2.5 text-xs font-medium text-gray-900 dark:text-gray-100 transition-all border border-transparent rounded-lg bg-zinc-100 dark:bg-zinc-800 px-11 hover:border-gray-400 focus:border-gray-400 focus:outline-none"
                         placeholder="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
-                        class="w-full py-1.5 px-3 ltr:pl-8 rtl:pr-8 text-xs rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors"
                         aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
                     >
-                    <span class="icon-search absolute ltr:left-2.5 rtl:right-2.5 text-xs text-[var(--text-muted)] pointer-events-none"></span>
                 </form>
             </div>
         @endif
 
-        <!-- Right Side: Utility Controls (Theme + CTA + Shop / Mini-Cart) -->
-        <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.search_bar.after') !!}
+
+        <!-- Right Navigation Links -->
+        <div class="mt-1.5 flex items-center gap-x-7 max-[1100px]:gap-x-5 max-lg:gap-x-6">
             <!-- Dark Mode Switcher -->
-            @if ($showDarkMode)
-                <v-dark>
-                    <button
-                        type="button"
-                        class="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)]/80 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--brand-primary)]/40 hover:bg-[var(--bg-surface-elevated)] transition-all focus:outline-none shadow-2xs"
-                        title="{{ request()->cookie('portal_dark_mode') ? trans('portal::app.home.theme.light-mode') : trans('portal::app.home.theme.dark-mode') }}"
-                        aria-label="Toggle theme"
-                    >
-                        <span class="{{ request()->cookie('portal_dark_mode') ? 'icon-light text-amber-400' : 'icon-dark text-[var(--text-secondary)]' }} text-lg"></span>
-                    </button>
-                </v-dark>
+            <v-dark>
+                <button
+                    type="button"
+                    class="inline-block text-2xl cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors focus:outline-none"
+                    title="{{ request()->cookie('portal_dark_mode') ? trans('portal::app.home.theme.light-mode') : trans('portal::app.home.theme.dark-mode') }}"
+                    aria-label="Toggle theme"
+                >
+                    <span class="{{ request()->cookie('portal_dark_mode') ? 'icon-light text-amber-400' : 'icon-dark' }}"></span>
+                </button>
+            </v-dark>
+
+            <!-- Compare (when enabled in Shop) -->
+            @if ($showCompare && Route::has('shop.compare.index'))
+                <a href="{{ route('shop.compare.index') }}" aria-label="@lang('shop::app.components.layouts.header.desktop.bottom.compare')">
+                    <span class="inline-block text-2xl cursor-pointer icon-compare" role="presentation"></span>
+                </a>
             @endif
 
-            <!-- Direct Consultation Primary CTA Button -->
-            <a
-                href="#contact"
-                class="btn-primary !px-4 !py-2 !text-xs hidden lg:inline-flex items-center gap-1.5 shadow-sm hover:shadow-[var(--shadow-glow)] transition-all"
-                style="border-radius: var(--btn-radius, 0.5rem);"
-            >
-                <span>@lang('portal::app.sections.hero_scaffold.default_primary_cta')</span>
-                <span class="icon-arrow-right rtl:rotate-180 text-xs"></span>
-            </a>
-
-            <!-- Optional Storefront Authentication -->
-            @if ($showAuth && \Platform\Portal\Helpers\PortalAuth::isEnabled() && Route::has('portal.auth.login'))
-                @php
-                    $portalGuard = \Platform\Portal\Helpers\PortalAuth::guard();
-                @endphp
-
-                @if (auth()->guard($portalGuard)->check())
-                    <x-portal::dropdown position="bottom-right">
-                        <x-slot:toggle>
-                            <button
-                                type="button"
-                                class="flex items-center gap-1.5 h-9 px-3 text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] rounded-full transition-all shadow-2xs focus:outline-none"
-                            >
-                                <span class="icon-avatar text-base"></span>
-                                <span class="truncate max-w-[100px]">{{ auth()->guard($portalGuard)->user()->name ?? auth()->guard($portalGuard)->user()->first_name ?? 'User' }}</span>
-                                <span class="icon-arrow-down text-xs opacity-70"></span>
-                            </button>
-                        </x-slot>
-
-                        <x-slot:content class="portal-card !p-1.5 min-w-[140px] shadow-[var(--shadow-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)]" style="border-radius: var(--card-radius, 0.75rem);">
-                            @if (Route::has('portal.auth.logout'))
-                                <form method="POST" action="{{ route('portal.auth.logout') }}">
-                                    @csrf
-                                    <button
-                                        type="submit"
-                                        class="w-full flex items-center px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer text-start"
-                                    >
-                                        @lang('portal::app.auth.logout.title')
-                                    </button>
-                                </form>
-                            @endif
-                        </x-slot:content>
-                    </x-portal::dropdown>
-                @else
-                    <div class="flex items-center gap-1 ltr:ml-1 rtl:mr-1">
-                        @if (Route::has('portal.auth.login'))
-                            <a
-                                href="{{ route('portal.auth.login') }}"
-                                class="px-3 py-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--brand-primary)] rounded-full hover:bg-[var(--bg-surface-elevated)] transition-colors"
-                            >
-                                @lang('portal::app.auth.login.title')
-                            </a>
-                        @endif
-
-                        @if (Route::has('portal.auth.register'))
-                            <a
-                                href="{{ route('portal.auth.register') }}"
-                                class="btn-primary !px-3.5 !py-1.5 !text-xs font-semibold shadow-xs"
-                                style="border-radius: var(--btn-radius, 0.5rem);"
-                            >
-                                @lang('portal::app.auth.register.title')
-                            </a>
-                        @endif
-                    </div>
-                @endif
-            @endif
-
-            <!-- Seamless Bagisto E-Commerce / Shop Integration -->
+            <!-- Mini Cart (when enabled) -->
             @if (function_exists('portal_shop_enabled') && portal_shop_enabled())
-                <!-- Mini-Cart Drawer Trigger -->
                 @if (view()->exists('shop::checkout.cart.mini-cart'))
-                    <div class="flex items-center">
-                        @include('shop::checkout.cart.mini-cart')
-                    </div>
+                    @include('shop::checkout.cart.mini-cart')
                 @elseif (Route::has('shop.checkout.cart.index'))
-                    <a
-                        href="{{ route('shop.checkout.cart.index') }}"
-                        class="relative flex items-center justify-center w-9 h-9 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)]/80 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--brand-primary)]/40 hover:bg-[var(--bg-surface-elevated)] transition-all focus:outline-none shadow-2xs"
-                        aria-label="Shopping Cart"
-                    >
-                        <span class="icon-cart text-lg"></span>
+                    <a href="{{ route('shop.checkout.cart.index') }}" aria-label="Shopping Cart">
+                        <span class="inline-block text-2xl cursor-pointer icon-cart"></span>
                     </a>
                 @endif
+            @endif
 
-                <!-- Customer Account Navigation -->
-                @if (auth()->guard('customer')->check())
-                    <x-portal::dropdown position="bottom-right">
-                        <x-slot:toggle>
-                            <button
-                                type="button"
-                                class="flex items-center gap-1.5 h-9 px-3 text-xs font-semibold text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] rounded-full transition-all shadow-2xs focus:outline-none"
-                            >
-                                <span class="icon-avatar text-base"></span>
-                                <span class="truncate max-w-[100px]">{{ auth()->guard('customer')->user()->first_name ?? 'Account' }}</span>
-                                <span class="icon-arrow-down text-xs opacity-70"></span>
-                            </button>
-                        </x-slot>
+            {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.profile.before') !!}
 
-                        <x-slot:content class="portal-card !p-1.5 min-w-[160px] shadow-[var(--shadow-card)] border border-[var(--border-subtle)] bg-[var(--bg-surface)]" style="border-radius: var(--card-radius, 0.75rem);">
+            <!-- User Profile Dropdown (Webkul Shop exact dropdown) -->
+            @php
+                $hasCustomerGuard = array_key_exists('customer', config('auth.guards', []));
+                $isCustomerAuth = $hasCustomerGuard && auth()->guard('customer')->check();
+                $portalGuard = \Platform\Portal\Helpers\PortalAuth::guard();
+                $hasPortalGuard = array_key_exists($portalGuard, config('auth.guards', []));
+                $isPortalAuth = \Platform\Portal\Helpers\PortalAuth::isEnabled() && $hasPortalGuard && auth()->guard($portalGuard)->check();
+                $currentUser = $isCustomerAuth ? auth()->guard('customer')->user() : ($isPortalAuth ? auth()->guard($portalGuard)->user() : null);
+            @endphp
+
+            <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
+                <x-slot:toggle>
+                    <span
+                        class="inline-block text-2xl cursor-pointer icon-users text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                        role="button"
+                        aria-label="Profile"
+                        tabindex="0"
+                    ></span>
+                </x-slot>
+
+                @if ($currentUser)
+                    <!-- Authenticated Dropdown -->
+                    <x-slot:content class="!p-0 min-w-[240px]">
+                        <div class="grid gap-2 p-5 pb-3">
+                            <p class="text-xl font-dmserif text-[var(--text-primary)]">
+                                @lang('shop::app.components.layouts.header.desktop.bottom.welcome')’
+                                {{ $currentUser->name ?? $currentUser->first_name ?? 'User' }}
+                            </p>
+                            <p class="text-xs text-[var(--text-muted)]">
+                                {{ $currentUser->email }}
+                            </p>
+                        </div>
+
+                        <p class="w-full border-b border-zinc-200 dark:border-zinc-800"></p>
+
+                        <div class="py-2 grid gap-0.5">
                             @if (Route::has('customer.account.profile.index'))
                                 <a
+                                    class="px-5 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                                     href="{{ route('customer.account.profile.index') }}"
-                                    class="flex items-center px-3.5 py-2 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] rounded-lg transition-colors"
                                 >
-                                    @lang('shop::app.components.layouts.header.desktop.top.profile')
+                                    @lang('shop::app.components.layouts.header.desktop.bottom.profile')
                                 </a>
                             @endif
 
                             @if (Route::has('customer.account.orders.index'))
                                 <a
+                                    class="px-5 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                                     href="{{ route('customer.account.orders.index') }}"
-                                    class="flex items-center px-3.5 py-2 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] rounded-lg transition-colors"
                                 >
-                                    @lang('shop::app.components.layouts.header.desktop.top.orders')
+                                    @lang('shop::app.components.layouts.header.desktop.bottom.orders')
                                 </a>
                             @endif
 
-                            @if (Route::has('customer.account.wishlist.index'))
+                            @if ($showWishlist && Route::has('customer.account.wishlist.index'))
                                 <a
+                                    class="px-5 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                                     href="{{ route('customer.account.wishlist.index') }}"
-                                    class="flex items-center px-3.5 py-2 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] rounded-lg transition-colors"
                                 >
-                                    @lang('shop::app.components.layouts.header.desktop.top.wishlist')
+                                    @lang('shop::app.components.layouts.header.desktop.bottom.wishlist')
                                 </a>
                             @endif
 
-                            @if (Route::has('customer.session.destroy'))
-                                <form method="POST" action="{{ route('customer.session.destroy') }}">
+                            <!-- Logout -->
+                            @if ($isCustomerAuth && Route::has('customer.session.destroy'))
+                                <form method="POST" action="{{ route('customer.session.destroy') }}" id="customerLogoutForm">
                                     @csrf
                                     @method('DELETE')
                                     <button
                                         type="submit"
-                                        class="w-full flex items-center px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer text-start"
+                                        class="w-full text-start px-5 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
                                     >
-                                        @lang('shop::app.components.layouts.header.desktop.top.logout')
+                                        @lang('shop::app.components.layouts.header.desktop.bottom.logout')
+                                    </button>
+                                </form>
+                            @elseif ($isPortalAuth && Route::has('portal.auth.logout'))
+                                <form method="POST" action="{{ route('portal.auth.logout') }}">
+                                    @csrf
+                                    <button
+                                        type="submit"
+                                        class="w-full text-start px-5 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
+                                    >
+                                        @lang('portal::app.auth.logout.title')
                                     </button>
                                 </form>
                             @endif
-                        </x-slot:content>
-                    </x-portal::dropdown>
-                @elseif (Route::has('customer.session.index'))
-                    <a
-                        href="{{ route('customer.session.index') }}"
-                        class="px-3 py-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--brand-primary)] rounded-full hover:bg-[var(--bg-surface-elevated)] transition-colors"
-                    >
-                        @lang('shop::app.components.layouts.header.desktop.top.sign-in')
-                    </a>
+                        </div>
+                    </x-slot>
+                @else
+                    <!-- Guest Dropdown -->
+                    <x-slot:content class="min-w-[280px] p-5">
+                        <div class="grid gap-2">
+                            <p class="text-xl font-dmserif text-[var(--text-primary)]">
+                                @lang('shop::app.components.layouts.header.desktop.bottom.welcome-guest')
+                            </p>
+                            <p class="text-xs text-[var(--text-secondary)]">
+                                @lang('shop::app.components.layouts.header.desktop.bottom.dropdown-text')
+                            </p>
+                        </div>
+
+                        <p class="w-full my-3 border-b border-zinc-200 dark:border-zinc-800"></p>
+
+                        @php
+                            $loginUrl = Route::has('customer.session.index')
+                                ? route('customer.session.index')
+                                : (Route::has('portal.auth.login') ? route('portal.auth.login') : null);
+                            $registerUrl = Route::has('customer.register.index')
+                                ? route('customer.register.index')
+                                : (Route::has('portal.auth.register') ? route('portal.auth.register') : null);
+                        @endphp
+
+                        <div class="flex gap-3 mt-3">
+                            @if ($loginUrl)
+                                <a
+                                    href="{{ $loginUrl }}"
+                                    class="flex-1 py-2 text-center text-sm font-semibold text-white bg-navyBlue hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 rounded-xl transition-colors"
+                                >
+                                    @lang('shop::app.components.layouts.header.desktop.bottom.sign-in')
+                                </a>
+                            @endif
+
+                            @if ($registerUrl)
+                                <a
+                                    href="{{ $registerUrl }}"
+                                    class="flex-1 py-2 text-center text-sm font-semibold border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors"
+                                >
+                                    @lang('shop::app.components.layouts.header.desktop.bottom.sign-up')
+                                </a>
+                            @endif
+                        </div>
+                    </x-slot>
                 @endif
-            @endif
+            </x-portal::dropdown>
+
+            {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.profile.after') !!}
         </div>
     </div>
 </div>
