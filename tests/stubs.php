@@ -101,6 +101,11 @@ namespace Webkul\Core {
                 ];
             }
 
+            public function getDefaultChannel()
+            {
+                return $this->getCurrentChannel();
+            }
+
             public function getAllChannels()
             {
                 return collect([$this->getCurrentChannel()]);

@@ -38,14 +38,14 @@ class Testimonials extends SectionType
             'subheading' => trans('portal::app.sections.testimonials.default_subheading'),
             'items' => [
                 [
-                    'name' => 'أحمد العتيبي',
-                    'role' => 'المدير التنفيذي، شركة أفق التقنية',
-                    'content' => 'تجربة استثنائية ونقلة نوعية في كفاءة أعمالنا وتجربة مستخدمينا.',
+                    'name' => trans('portal::app.sections.testimonials.item_1_name'),
+                    'role' => trans('portal::app.sections.testimonials.item_1_role'),
+                    'content' => trans('portal::app.sections.testimonials.item_1_content'),
                 ],
                 [
-                    'name' => 'سارة الشمري',
-                    'role' => 'مديرة العمليات، مؤسسة الريادة',
-                    'content' => 'المنصة تتميز بسهولة بالغة في التخصيص وسرعة لا مثيل لها.',
+                    'name' => trans('portal::app.sections.testimonials.item_2_name'),
+                    'role' => trans('portal::app.sections.testimonials.item_2_role'),
+                    'content' => trans('portal::app.sections.testimonials.item_2_content'),
                 ],
             ],
         ];

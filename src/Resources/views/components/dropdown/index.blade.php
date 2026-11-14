@@ -37,7 +37,7 @@
                 ref="toggleBlock"
                 @click="toggle()"
             >
-                <slot name="toggle">Toggle</slot>
+                <slot name="toggle"></slot>
             </div>
 
             <transition

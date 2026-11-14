@@ -118,7 +118,7 @@
             <button
                 type="button"
                 class="flex items-center justify-center w-9 h-9 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
-                aria-label="Toggle theme"
+                aria-label="@lang('portal::app.components.layouts.header.mobile.theme-toggle')"
             >
                 <span class="{{ request()->cookie('portal_dark_mode') ? 'icon-light text-amber-400' : 'icon-dark' }} text-lg"></span>
             </button>
@@ -190,8 +190,9 @@
                 @if ($currentUser)
                     <div class="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-[var(--border-subtle)]">
                         <p class="text-base font-bold text-[var(--text-primary)]">
-                            @lang('portal::app.components.layouts.header.mobile.welcome')،
-                            {{ $currentUser->name ?? $currentUser->first_name ?? 'User' }}
+                            @lang('portal::app.components.layouts.header.mobile.welcome', [
+                                'name' => $currentUser->name ?? $currentUser->first_name ?? trans('portal::app.components.layouts.header.mobile.default-user')
+                            ])
                         </p>
                         <p class="text-xs text-[var(--text-muted)] truncate mt-0.5">
                             {{ $currentUser->email }}

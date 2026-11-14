@@ -141,7 +141,7 @@
                 type="button"
                 class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
                 title="{{ request()->cookie('portal_dark_mode') ? trans('portal::app.home.theme.light-mode') : trans('portal::app.home.theme.dark-mode') }}"
-                aria-label="Toggle theme"
+                aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.theme-toggle')"
             >
                 <span class="{{ request()->cookie('portal_dark_mode') ? 'icon-light text-amber-400' : 'icon-dark' }} text-xl"></span>
             </button>
@@ -192,7 +192,7 @@
                 <button
                     type="button"
                     class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
-                    aria-label="Account"
+                    aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.account')"
                 >
                     <span class="icon-users text-xl"></span>
                 </button>
@@ -203,8 +203,9 @@
                     <x-slot:content class="!p-0 min-w-[240px]">
                         <div class="grid gap-1.5 p-5 pb-3">
                             <p class="text-lg font-bold text-[var(--text-primary)]">
-                                @lang('portal::app.components.layouts.header.desktop.bottom.welcome')،
-                                {{ $currentUser->name ?? $currentUser->first_name ?? 'User' }}
+                                @lang('portal::app.components.layouts.header.desktop.bottom.welcome', [
+                                    'name' => $currentUser->name ?? $currentUser->first_name ?? trans('portal::app.components.layouts.header.desktop.bottom.default-user')
+                                ])
                             </p>
                             <p class="text-xs text-[var(--text-muted)] truncate">
                                 {{ $currentUser->email }}

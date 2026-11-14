@@ -105,7 +105,9 @@ class ThemeController extends Controller
         $homePage = $this->portalPageRepository->findHomePage($targetChannel->id);
 
         if (! $homePage) {
-            $locale = app()->getLocale() ?: 'ar';
+            $currentLocale = core()->getCurrentLocale();
+            $locale = $currentLocale?->code ?? app()->getLocale() ?? 'ar';
+            $defaultTitle = trans('portal::app.themes.default_home_title', [], $locale);
 
             $homePage = $this->portalPageRepository->create([
                 'channel_id' => $targetChannel->id,
@@ -114,8 +116,8 @@ class ThemeController extends Controller
                 'status' => 1,
                 'sort_order' => 0,
                 $locale => [
-                    'title' => 'الصفحة الرئيسية',
-                    'meta_title' => 'الصفحة الرئيسية',
+                    'title' => $defaultTitle,
+                    'meta_title' => $defaultTitle,
                 ],
             ]);
         }

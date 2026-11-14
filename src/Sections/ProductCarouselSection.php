@@ -46,7 +46,7 @@ class ProductCarouselSection extends SectionType
     public function getDefaultOptions(): array
     {
         return [
-            'title' => 'Featured Products',
+            'title' => trans('portal::app.sections.product_carousel.default_title'),
             'link' => '',
             'filters' => [
                 'limit' => '8',

@@ -13,9 +13,7 @@
     $active = $item->isActive();
     $title = $item->getTitle();
     $url = $item->getUrl();
-    $viewAllText = trans()->has('portal::app.components.layouts.header.mobile.view-all')
-        ? trans('portal::app.components.layouts.header.mobile.view-all', ['title' => $title])
-        : "عرض: {$title}";
+    $viewAllText = trans('portal::app.components.layouts.header.mobile.view-all', ['title' => $title]);
 
     $rootActiveClass = $activeClass ?: '!text-[var(--brand-primary)] font-bold bg-[var(--brand-primary-light,#eef2ff)] dark:bg-[var(--brand-primary)]/15 shadow-xs border border-[var(--brand-primary)]/20';
     $subActiveClass = '!text-[var(--brand-primary)] font-bold bg-[var(--brand-primary-light,#eef2ff)] dark:bg-[var(--brand-primary)]/15 shadow-xs border-s-2 border-[var(--brand-primary)]';

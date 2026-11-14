@@ -2,22 +2,30 @@
     <nav class="flex items-center justify-between border-t border-[var(--border-subtle)] px-4 py-3 sm:px-6">
         <div class="flex flex-1 justify-between sm:hidden">
             @if ($paginator->onFirstPage())
-                <span class="relative inline-flex items-center rounded-xl border border-[var(--border-subtle)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] opacity-50 cursor-not-allowed">Previous</span>
+                <span class="relative inline-flex items-center rounded-xl border border-[var(--border-subtle)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] opacity-50 cursor-not-allowed">
+                    @lang('portal::app.pagination.previous')
+                </span>
             @else
-                <a href="{{ $paginator->previousPageUrl() }}" class="relative inline-flex items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-surface-elevated)] hover:text-[var(--text-primary)] transition-colors">Previous</a>
+                <a href="{{ $paginator->previousPageUrl() }}" class="relative inline-flex items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-surface-elevated)] hover:text-[var(--text-primary)] transition-colors">
+                    @lang('portal::app.pagination.previous')
+                </a>
             @endif
 
             @if ($paginator->hasMorePages())
-                <a href="{{ $paginator->nextPageUrl() }}" class="relative ml-3 inline-flex items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-surface-elevated)] hover:text-[var(--text-primary)] transition-colors">Next</a>
+                <a href="{{ $paginator->nextPageUrl() }}" class="relative ml-3 inline-flex items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-surface-elevated)] hover:text-[var(--text-primary)] transition-colors">
+                    @lang('portal::app.pagination.next')
+                </a>
             @else
-                <span class="relative ml-3 inline-flex items-center rounded-xl border border-[var(--border-subtle)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] opacity-50 cursor-not-allowed">Next</span>
+                <span class="relative ml-3 inline-flex items-center rounded-xl border border-[var(--border-subtle)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] opacity-50 cursor-not-allowed">
+                    @lang('portal::app.pagination.next')
+                </span>
             @endif
         </div>
 
         <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
             <div>
                 <p class="text-sm text-[var(--text-secondary)]">
-                    Showing <span class="font-medium text-[var(--text-primary)]">{{ $paginator->firstItem() }}</span> to <span class="font-medium text-[var(--text-primary)]">{{ $paginator->lastItem() }}</span> of <span class="font-medium text-[var(--text-primary)]">{{ $paginator->total() }}</span> results
+                    @lang('portal::app.pagination.showing') <span class="font-medium text-[var(--text-primary)]">{{ $paginator->firstItem() }}</span> @lang('portal::app.pagination.to') <span class="font-medium text-[var(--text-primary)]">{{ $paginator->lastItem() }}</span> @lang('portal::app.pagination.of') <span class="font-medium text-[var(--text-primary)]">{{ $paginator->total() }}</span> @lang('portal::app.pagination.results')
                 </p>
             </div>
 

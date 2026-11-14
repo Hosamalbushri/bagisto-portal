@@ -131,11 +131,16 @@ class PortalMenuSlotAssignmentRepository extends Repository
                 return $anyThemeAssignment;
             }
 
-            // Fallback Level 3: Fallback to default channel (channel_id = 1) if not already channel 1
-            if ($channelId !== 1) {
+            // Fallback Level 3: Fallback to default channel if not already default channel
+            $defaultChannel = method_exists(core(), 'getDefaultChannel')
+                ? core()->getDefaultChannel()
+                : (method_exists(core(), 'getCurrentChannel') ? core()->getCurrentChannel() : null);
+            $defaultChannelId = $defaultChannel?->id;
+
+            if ($defaultChannelId && $channelId !== $defaultChannelId) {
                 $defaultChannelAssignment = $this->findOneWhere([
                     'slot_id' => $slotId,
-                    'channel_id' => 1,
+                    'channel_id' => $defaultChannelId,
                     'status' => 1,
                 ]);
 

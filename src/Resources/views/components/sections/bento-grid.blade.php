@@ -197,7 +197,7 @@
                                 <span class="text-[10px] font-mono text-slate-400">LATIN // INTER</span>
                                 <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">AAA CONTRAST</span>
                             </div>
-                            <div class="text-base font-bold text-[var(--text-primary)]">Geometric Precision</div>
+                            <div class="text-base font-bold text-[var(--text-primary)]">@lang('portal::app.sections.bento_grid.typography_latin_sample')</div>
                             <div class="text-xs text-[var(--text-secondary)] font-mono">tracking-tight • 600 weight</div>
                         </div>
 
@@ -206,7 +206,7 @@
                                 <span class="text-[10px] font-mono text-slate-400">ARABIC // CAIRO</span>
                                 <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">AAA CONTRAST</span>
                             </div>
-                            <div class="text-base font-bold font-cairo text-[var(--text-primary)]">تناسق طباعي أصيل</div>
+                            <div class="text-base font-bold font-cairo text-[var(--text-primary)]">@lang('portal::app.sections.bento_grid.typography_arabic_sample')</div>
                             <div class="text-xs text-[var(--text-secondary)] font-mono">normal tracking • 1.35 leading</div>
                         </div>
                     </div>

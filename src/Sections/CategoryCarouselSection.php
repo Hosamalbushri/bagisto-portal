@@ -41,7 +41,7 @@ class CategoryCarouselSection extends SectionType
     public function getDefaultOptions(): array
     {
         return [
-            'title' => 'Top Categories',
+            'title' => trans('portal::app.sections.category_carousel.default_title'),
             'filters' => [
                 'limit' => '6',
                 'sort' => 'asc',

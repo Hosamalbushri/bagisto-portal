@@ -51,7 +51,7 @@
                         rules="required"
                         value="{{ old('name') }}"
                         :label="trans('portal::app.auth.register.name')"
-                        placeholder="John Doe"
+                        :placeholder="trans('portal::app.auth.register.name_placeholder')"
                         aria-required="true"
                     />
 

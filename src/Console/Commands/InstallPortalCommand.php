@@ -10,6 +10,7 @@ use Platform\Portal\Repositories\PortalMenuRepository;
 use Platform\Portal\Repositories\PortalMenuSlotAssignmentRepository;
 use Platform\Portal\Repositories\PortalPageRepository;
 use Platform\Portal\Repositories\PortalPageSectionRepository;
+use Platform\Portal\Sections\SectionTypeRegistry;
 use Platform\Portal\Services\ThemeManager;
 use Webkul\Core\Models\Channel;
 
@@ -122,7 +123,7 @@ class InstallPortalCommand extends Command
      */
     protected function seedSampleData(): void
     {
-        $channel = Channel::first() ?? (class_exists('Webkul\Core\Models\Channel') ? Channel::first() : null);
+        $channel = (class_exists('Webkul\Core\Models\Channel') ? Channel::first() : null);
         $channelId = $channel?->id ?? 1;
         $locale = app()->getLocale() ?: 'ar';
 
@@ -147,54 +148,39 @@ class InstallPortalCommand extends Command
                 'status' => 1,
                 'sort_order' => 0,
                 $locale => [
-                    'title' => 'الصفحة الرئيسية',
-                    'meta_title' => 'البوابة الرقمية الموحدة',
-                    'meta_description' => 'بوابة رقمية متطورة مصممة بأحدث تقنيات الويب.',
-                    'html_content' => '<p>مرحباً بك في البوابة المتطورة.</p>',
+                    'title' => trans('portal::app.installer.default_home_title', [], $locale),
+                    'meta_title' => trans('portal::app.installer.default_meta_title', [], $locale),
+                    'meta_description' => trans('portal::app.installer.default_meta_description', [], $locale),
+                    'html_content' => trans('portal::app.installer.default_content', [], $locale),
                 ],
             ]);
 
-            // Add Sections to Home Page
+            // Add Sections to Home Page using registered Section defaults
+            $registry = app(SectionTypeRegistry::class);
             $sampleSections = [
                 [
                     'type' => 'bento_grid',
                     'status' => 1,
                     'sort_order' => 1,
-                    'options' => json_encode([
-                        'badge' => 'القدرات الرقمية',
-                        'title' => 'منظومة حلول برمجية متكاملة',
-                        'subtitle' => 'نوفر لك كافة الأدوات والخدمات التي تحتاجها لإدارة حضورك الرقمي بكفاءة.',
-                        'features' => [
-                            ['title' => 'سرعة وأداء فائق', 'description' => 'بنية تحتية محسنة تضمن سرعة تحميل استثنائية لكافة الصفحات.'],
-                            ['title' => 'تصميم متجاوب ومتطور', 'description' => 'واجهات تدعم الوضع الليلي والنهاري وتتوافق مع مختلف الأجهزة.'],
-                            ['title' => 'تخصيص كامل بدون كود', 'description' => 'نظام أقسام ديناميكي يسمح ببناء الصفحات والتعديل عليها بلحظات.'],
-                        ],
-                    ]),
                 ],
                 [
                     'type' => 'features_grid',
                     'status' => 1,
                     'sort_order' => 2,
-                    'options' => json_encode([
-                        'title' => 'أبرز مميزات المنصة',
-                        'subtitle' => 'صُممت خصيصاً لتمنحك المرونة والتحكم الكامل في تصميم متجرك وموقعك.',
-                    ]),
                 ],
                 [
                     'type' => 'cta_banner',
                     'status' => 1,
                     'sort_order' => 3,
-                    'options' => json_encode([
-                        'heading' => 'هل أنت مستعد لبدء مشروعك القادم؟',
-                        'subheading' => 'انضم إلى آلاف العملاء واكتشف قوة وتطور بوابتنا الرقمية الآن.',
-                        'button_text' => 'تواصل معنا الآن',
-                        'button_url' => '/contact-us',
-                    ]),
                 ],
             ];
 
             foreach ($sampleSections as $secData) {
+                $sectionInstance = $registry->get($secData['type']);
+                $options = $sectionInstance ? $sectionInstance->getDefaultOptions() : [];
+
                 $sectionRepo->create(array_merge($secData, [
+                    'options' => json_encode($options),
                     'portal_page_id' => $homePage->id,
                     'channel_id' => $channelId,
                 ]));
@@ -211,16 +197,16 @@ class InstallPortalCommand extends Command
                 'slug' => 'main-nav',
                 'status' => 1,
                 $locale => [
-                    'name' => 'القائمة الرئيسية',
+                    'name' => trans('portal::app.installer.menu_main', [], $locale),
                 ],
             ]);
 
             // Add Menu Items
             $items = [
-                ['title' => 'الرئيسية', 'url' => '/', 'sort_order' => 1],
-                ['title' => 'عن البوابة', 'url' => '/#about', 'sort_order' => 2],
-                ['title' => 'خدماتنا', 'url' => '/#services', 'sort_order' => 3],
-                ['title' => 'اتصل بنا', 'url' => '/contact-us', 'sort_order' => 4],
+                ['title' => trans('portal::app.installer.menu_home', [], $locale), 'url' => '/', 'sort_order' => 1],
+                ['title' => trans('portal::app.installer.menu_about', [], $locale), 'url' => '/#about', 'sort_order' => 2],
+                ['title' => trans('portal::app.installer.menu_services', [], $locale), 'url' => '/#services', 'sort_order' => 3],
+                ['title' => trans('portal::app.installer.menu_contact', [], $locale), 'url' => '/contact-us', 'sort_order' => 4],
             ];
 
             foreach ($items as $item) {

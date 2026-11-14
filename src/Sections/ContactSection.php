@@ -30,7 +30,7 @@ class ContactSection extends SectionType
             'subheading' => trans('portal::app.sections.contact_section.default_subheading'),
             'email' => 'contact@example.com',
             'phone' => '+966 50 000 0000',
-            'address' => 'الرياض، المملكة العربية السعودية',
+            'address' => trans('portal::app.sections.contact_section.default_address'),
         ];
     }
 }
