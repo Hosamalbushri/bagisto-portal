@@ -1,6 +1,6 @@
 @php
     $headerSettings = portal_layout_settings('header');
-    $assignedMenu = portal_menu_slot('header_main');
+    $assignedMenu = portal_menu_slot('header_mobile') ?: portal_menu_slot('header_main');
     $hasAssignedMenuItems = $assignedMenu && $assignedMenu->rootItems && $assignedMenu->rootItems->isNotEmpty();
     $channelName = core()->getCurrentChannel()->name ?? config('app.name');
 @endphp
@@ -112,7 +112,9 @@
             </div>
 
             @if (\Platform\Portal\Helpers\PortalAuth::isEnabled() && Route::has('portal.auth.login'))
-                @php($portalGuard = \Platform\Portal\Helpers\PortalAuth::guard())
+                @php
+                    $portalGuard = \Platform\Portal\Helpers\PortalAuth::guard();
+                @endphp
 
                 @if (auth()->guard($portalGuard)->check())
                     <div class="px-4 py-3 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-between">
@@ -156,13 +158,38 @@
                 @endif
             @endif
 
+            <!-- Search Bar in Mobile Drawer -->
+            @php
+                $mobileSearchAction = (function_exists('portal_shop_enabled') && portal_shop_enabled() && Route::has('shop.search.index'))
+                    ? route('shop.search.index')
+                    : (Route::has('portal.search.index') ? route('portal.search.index') : null);
+            @endphp
+
+            @if ($mobileSearchAction)
+                <div class="relative w-full">
+                    <form action="{{ $mobileSearchAction }}" method="GET" class="relative flex items-center">
+                        <input
+                            type="text"
+                            name="query"
+                            value="{{ request('query') }}"
+                            placeholder="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
+                            class="w-full py-2 px-3.5 ltr:pl-9 rtl:pr-9 text-xs rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors"
+                        >
+                        <span class="icon-search absolute ltr:left-3 rtl:right-3 text-sm text-[var(--text-muted)] pointer-events-none"></span>
+                    </form>
+                </div>
+            @endif
+
             <!-- Mobile Navigation Links -->
             <nav class="grid gap-1 border-t border-[var(--border-subtle)] pt-3">
                 @if ($hasAssignedMenuItems)
-                    <x-portal::menu-slot
-                        id="header_mobile"
-                        location="header"
+                    <x-portal::menu
+                        :menu="$assignedMenu"
                         direction="column"
+                        class="w-full"
+                        list-class="flex flex-col space-y-1 text-sm"
+                        item-class="!px-3.5 !py-2 !rounded-xl !text-sm font-medium hover:!bg-[var(--bg-surface-elevated)] transition-colors w-full"
+                        active-class="!bg-[var(--brand-primary-light)] !text-[var(--brand-primary)] !font-semibold"
                     />
                 @else
                     <a

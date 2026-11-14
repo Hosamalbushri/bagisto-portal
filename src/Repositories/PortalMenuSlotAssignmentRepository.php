@@ -94,12 +94,54 @@ class PortalMenuSlotAssignmentRepository extends Repository
             $defaultLocaleCode = core()->getCurrentChannel()?->default_locale?->code;
 
             if ($defaultLocaleCode && $defaultLocaleCode !== $localeCode) {
-                return $this->findOneWhere([
+                $assignment = $this->findOneWhere([
                     'slot_id' => $slotId,
                     'channel_id' => $channelId,
                     'theme_code' => $themeCode,
                     'locale_code' => $defaultLocaleCode,
                 ]);
+
+                if ($assignment) {
+                    return $assignment;
+                }
+            }
+
+            // Fallback Level 1: Theme fallback to 'default' if current theme is not 'default'
+            if ($themeCode !== 'default') {
+                $defaultThemeAssignment = $this->findOneWhere([
+                    'slot_id' => $slotId,
+                    'channel_id' => $channelId,
+                    'theme_code' => 'default',
+                    'status' => 1,
+                ]);
+
+                if ($defaultThemeAssignment && $defaultThemeAssignment->portal_menu_id) {
+                    return $defaultThemeAssignment;
+                }
+            }
+
+            // Fallback Level 2: Any active assignment on this channel for this slot
+            $anyThemeAssignment = $this->findOneWhere([
+                'slot_id' => $slotId,
+                'channel_id' => $channelId,
+                'status' => 1,
+            ]);
+
+            if ($anyThemeAssignment && $anyThemeAssignment->portal_menu_id) {
+                return $anyThemeAssignment;
+            }
+
+            // Fallback Level 3: Fallback to default channel (channel_id = 1) if not already channel 1
+            if ($channelId !== 1) {
+                $defaultChannelAssignment = $this->findOneWhere([
+                    'slot_id' => $slotId,
+                    'channel_id' => 1,
+                    'status' => 1,
+                ]);
+
+                if ($defaultChannelAssignment && $defaultChannelAssignment->portal_menu_id) {
+                    return $defaultChannelAssignment;
+                }
             }
 
             return null;

@@ -47,31 +47,57 @@
             @if ($hasAssignedMenuItems)
                 <x-portal::menu
                     :menu="$assignedMenu"
-                    class="flex items-center gap-1"
+                    class="flex items-center"
+                    list-class="flex items-center gap-1 text-sm"
                     item-class="!px-3.5 !py-1.5 !text-sm font-medium !text-[var(--text-secondary)] hover:!text-[var(--text-primary)] transition-colors !rounded-full hover:!bg-[var(--bg-surface-elevated)]"
                     active-class="!bg-[var(--brand-primary-light)] !text-[var(--brand-primary)] !font-semibold"
                 />
             @else
-                <a
-                    href="{{ portal_home_url() }}"
-                    class="px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors {{ request()->routeIs('portal.home') ? 'bg-[var(--brand-primary-light)] text-[var(--brand-primary)] font-semibold' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)]' }}"
-                >
-                    @lang('portal::app.home.nav.home')
-                </a>
-                <a
-                    href="#services"
-                    class="px-3.5 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-full hover:bg-[var(--bg-surface-elevated)]"
-                >
-                    @lang('portal::app.home.nav.services')
-                </a>
-                <a
-                    href="#contact"
-                    class="px-3.5 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-full hover:bg-[var(--bg-surface-elevated)]"
-                >
-                    @lang('portal::app.home.nav.contact-us')
-                </a>
+                <div class="flex items-center gap-1">
+                    <a
+                        href="{{ portal_home_url() }}"
+                        class="px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors {{ request()->routeIs('portal.home') ? 'bg-[var(--brand-primary-light)] text-[var(--brand-primary)] font-semibold' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)]' }}"
+                    >
+                        @lang('portal::app.home.nav.home')
+                    </a>
+                    <a
+                        href="#services"
+                        class="px-3.5 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-full hover:bg-[var(--bg-surface-elevated)]"
+                    >
+                        @lang('portal::app.home.nav.services')
+                    </a>
+                    <a
+                        href="#contact"
+                        class="px-3.5 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-full hover:bg-[var(--bg-surface-elevated)]"
+                    >
+                        @lang('portal::app.home.nav.contact-us')
+                    </a>
+                </div>
             @endif
         </nav>
+
+        <!-- Search Bar Container (Desktop) -->
+        @php
+            $searchAction = (function_exists('portal_shop_enabled') && portal_shop_enabled() && Route::has('shop.search.index'))
+                ? route('shop.search.index')
+                : (Route::has('portal.search.index') ? route('portal.search.index') : null);
+        @endphp
+
+        @if ($searchAction)
+            <div class="hidden lg:block relative w-48 xl:w-60">
+                <form action="{{ $searchAction }}" method="GET" class="relative flex items-center">
+                    <input
+                        type="text"
+                        name="query"
+                        value="{{ request('query') }}"
+                        placeholder="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
+                        class="w-full py-1.5 px-3 ltr:pl-8 rtl:pr-8 text-xs rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors"
+                        aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
+                    >
+                    <span class="icon-search absolute ltr:left-2.5 rtl:right-2.5 text-xs text-[var(--text-muted)] pointer-events-none"></span>
+                </form>
+            </div>
+        @endif
 
         <!-- Right Side: Utility Controls (Theme + CTA + Shop / Mini-Cart) -->
         <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
@@ -101,7 +127,9 @@
 
             <!-- Optional Storefront Authentication -->
             @if ($showAuth && \Platform\Portal\Helpers\PortalAuth::isEnabled() && Route::has('portal.auth.login'))
-                @php($portalGuard = \Platform\Portal\Helpers\PortalAuth::guard())
+                @php
+                    $portalGuard = \Platform\Portal\Helpers\PortalAuth::guard();
+                @endphp
 
                 @if (auth()->guard($portalGuard)->check())
                     <x-portal::dropdown position="bottom-right">

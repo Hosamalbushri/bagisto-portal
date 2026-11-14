@@ -36,6 +36,34 @@ if (! function_exists('portal_menu_slot')) {
             return app(PortalMenuRepository::class)->getActiveTree($assignment->menu->slug, $channelId);
         }
 
+        // Header slot fallback to common convention slugs or first active menu
+        if (in_array($slotId, ['header_main', 'header_mobile', 'header'], true)) {
+            $menuRepo = app(PortalMenuRepository::class);
+
+            foreach (['main-nav', 'header-nav', 'header', 'primary'] as $slug) {
+                $tree = $menuRepo->getActiveTree($slug, $channelId);
+                if ($tree && $tree->status && $tree->rootItems && $tree->rootItems->isNotEmpty()) {
+                    return $tree;
+                }
+            }
+
+            $firstMenu = \Platform\Portal\Models\PortalMenu::where('status', 1)
+                ->where(function ($q) use ($channelId) {
+                    if ($channelId) {
+                        $q->where('channel_id', $channelId)->orWhereNull('channel_id');
+                    } else {
+                        $q->whereNull('channel_id');
+                    }
+                })
+                ->whereHas('items')
+                ->latest('id')
+                ->first();
+
+            if ($firstMenu) {
+                return $menuRepo->getActiveTree($firstMenu->slug, $channelId);
+            }
+        }
+
         return null;
     }
 }
