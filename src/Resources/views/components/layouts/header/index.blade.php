@@ -1,48 +1,9 @@
 {!! view_render_event('bagisto.portal.layout.header.before') !!}
 
-@php
-    $channel = core()->getCurrentChannel();
-    $localesCount = 0;
-    if ($channel) {
-        if (isset($channel->locales)) {
-            $localesCount = is_countable($channel->locales) ? count($channel->locales) : 0;
-        } elseif (method_exists($channel, 'locales')) {
-            $localesCount = $channel->locales()->count();
-        }
-    }
+<header class="sticky top-0 z-40 w-full bg-[var(--header-bg,var(--bg-surface))]/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-[var(--border-subtle)] shadow-xs transition-colors">
+    <x-portal::layouts.header.desktop />
 
-    $currenciesCount = 0;
-    if ($channel) {
-        if (isset($channel->currencies)) {
-            $currenciesCount = is_countable($channel->currencies) ? count($channel->currencies) : 0;
-        } elseif (method_exists($channel, 'currencies')) {
-            $currenciesCount = $channel->currencies()->count();
-        }
-    }
-
-    $hasTopBarContent = ($localesCount > 1)
-        || ($currenciesCount > 1)
-        || ! empty(core()->getConfigData('general.content.header_offer.title'))
-        || ! empty(data_get(portal_layout_settings('header'), 'announcement.text'));
-@endphp
-
-<header class="sticky top-0 z-40 w-full bg-white dark:bg-zinc-900 border-b border-[var(--border-subtle)] shadow-xs transition-all duration-300">
-    <!-- Desktop Top Bar -->
-    @if ($hasTopBarContent)
-        <div class="max-lg:hidden relative z-[60]">
-            <x-portal::layouts.header.desktop.top />
-        </div>
-    @endif
-
-    <!-- Desktop Header -->
-    <div class="max-lg:hidden">
-        <x-portal::layouts.header.desktop.bottom />
-    </div>
-
-    <!-- Mobile Header -->
-    <div class="lg:hidden">
-        <x-portal::layouts.header.mobile />
-    </div>
+    <x-portal::layouts.header.mobile />
 </header>
 
 {!! view_render_event('bagisto.portal.layout.header.after') !!}
@@ -56,14 +17,11 @@
             <slot>
                 <button
                     type="button"
-                    class="flex items-center justify-center w-10 h-10 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-zinc-100/80 hover:bg-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/90 border border-zinc-200/60 dark:border-zinc-700/60 transition-all cursor-pointer focus:outline-none"
+                    class="flex items-center justify-center w-9 h-9 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] transition-all cursor-pointer focus:outline-none"
                     :title="isDarkMode ? '@lang('portal::app.home.theme.light-mode')' : '@lang('portal::app.home.theme.dark-mode')'"
-                    aria-label="Toggle theme"
+                    :aria-label="isDarkMode ? '@lang('portal::app.home.theme.light-mode')' : '@lang('portal::app.home.theme.dark-mode')'"
                 >
-                    <span
-                        class="text-xl transition-transform"
-                        :class="[isDarkMode ? 'icon-light text-amber-400' : 'icon-dark text-[var(--text-secondary)]']"
-                    ></span>
+                    <span :class="isDarkMode ? 'icon-light text-amber-400' : 'icon-dark text-[var(--text-secondary)]'" class="text-lg"></span>
                 </button>
             </slot>
         </div>
@@ -74,61 +32,27 @@
             template: '#v-dark-template',
 
             data() {
+                const cookie = document.cookie.match(/(?:^|; )portal_dark_mode=([^;]*)/);
+                const manualPreference = cookie ? cookie[1] : localStorage.getItem('portal_dark_mode');
+                const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = manualPreference !== null ? manualPreference === '1' : systemPrefersDark;
+
                 return {
-                    isDarkMode: {{ request()->cookie('portal_dark_mode') ?? 0 }},
-
-                    logo: "{{ core()->getCurrentChannel()->logo_url ?? portal_asset('images/logo.svg', '') }}",
-
-                    dark_logo: "{{ portal_asset('images/dark-logo.svg', core()->getCurrentChannel()->logo_url ?? '') }}",
+                    isDarkMode: isDark,
                 };
-            },
-
-            mounted() {
-                if (this.$emitter) {
-                    this.$emitter.on('change-theme', (theme) => {
-                        this.isDarkMode = theme === 'dark' ? 1 : 0;
-                    });
-                }
             },
 
             methods: {
                 toggle() {
-                    this.isDarkMode = parseInt(this.isDarkModeCookie()) ? 0 : 1;
+                    this.isDarkMode = ! this.isDarkMode;
+                    document.cookie = 'portal_dark_mode=' + (this.isDarkMode ? '1' : '0') + '; path=/; max-age=31536000; SameSite=Lax';
+                    localStorage.setItem('portal_dark_mode', this.isDarkMode ? '1' : '0');
 
-                    var expiryDate = new Date();
-
-                    expiryDate.setMonth(expiryDate.getMonth() + 1);
-
-                    document.cookie = 'portal_dark_mode=' + this.isDarkMode + '; path=/; expires=' + expiryDate.toGMTString();
-
-                    document.documentElement.classList.toggle('dark', this.isDarkMode === 1);
-
-                    if (this.$emitter) {
-                        if (this.isDarkMode) {
-                            this.$emitter.emit('change-theme', 'dark');
-                        } else {
-                            this.$emitter.emit('change-theme', 'light');
-                        }
+                    if (this.isDarkMode) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
                     }
-
-                    const logoImg = document.getElementById('logo-image');
-                    if (logoImg && this.dark_logo) {
-                        logoImg.src = this.isDarkMode ? this.dark_logo : this.logo;
-                    }
-                },
-
-                isDarkModeCookie() {
-                    const cookies = document.cookie.split(';');
-
-                    for (const cookie of cookies) {
-                        const [name, value] = cookie.trim().split('=');
-
-                        if (name === 'portal_dark_mode') {
-                            return value;
-                        }
-                    }
-
-                    return 0;
                 },
             },
         });
