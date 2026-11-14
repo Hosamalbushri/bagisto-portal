@@ -26,20 +26,21 @@
         || ! empty(data_get(portal_layout_settings('header'), 'announcement.text'));
 @endphp
 
-@if ($hasTopBarContent)
-    <div class="max-lg:hidden">
-        <x-portal::layouts.header.desktop.top />
-    </div>
-@endif
+<header class="portal-header sticky top-0 z-50 bg-[var(--bg-surface)] backdrop-blur-md border-b border-[var(--border-subtle)] shadow-xs transition-all duration-300">
+    <!-- Top Utility Bar (Desktop - Stacking z-30 so dropdowns float over bottom navigation) -->
+    @if ($hasTopBarContent)
+        <div class="hidden md:block relative z-30">
+            <x-portal::layouts.header.desktop.top />
+        </div>
+    @endif
 
-<header class="shadow-gray sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-[var(--border-subtle)] shadow-xs max-lg:shadow-none transition-all duration-300">
-    <!-- Desktop Header -->
-    <div class="max-lg:hidden">
+    <!-- Main Navigation Bar (Desktop - Stacking z-20) -->
+    <div class="hidden md:block relative z-20">
         <x-portal::layouts.header.desktop.bottom />
     </div>
 
-    <!-- Mobile Header -->
-    <div class="lg:hidden">
+    <!-- Mobile Header (Mobile Screens) -->
+    <div class="md:hidden relative z-20">
         <x-portal::layouts.header.mobile />
     </div>
 </header>
@@ -53,7 +54,7 @@
     >
         <button
             type="button"
-            class="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)]/80 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--brand-primary)]/40 hover:bg-[var(--bg-surface-elevated)] transition-all focus:outline-none shadow-2xs"
+            class="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--brand-primary)]/40 hover:bg-[var(--bg-surface-elevated)] transition-all focus:outline-none shadow-2xs"
             :title="isDarkMode ? '@lang('portal::app.home.theme.light-mode')' : '@lang('portal::app.home.theme.dark-mode')'"
             @click="toggle"
             aria-label="Toggle theme"
