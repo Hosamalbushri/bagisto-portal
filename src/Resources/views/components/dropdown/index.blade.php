@@ -51,7 +51,7 @@
                 leave-to-class="scale-95 transform opacity-0"
             >
                 <div
-                    class="absolute z-[100] w-max rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl max-md:rounded-lg"
+                    class="absolute z-50 w-max rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-[var(--shadow-card)] max-md:rounded-lg"
                     :style="positionStyles"
                     v-show="isActive"
                 >
