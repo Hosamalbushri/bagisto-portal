@@ -8,7 +8,7 @@ return [
         'key' => 'portal',
         'name' => 'portal::app.admin.acl.portal',
         'route' => 'admin.portal.pages.index',
-        'sort' => 3,
+        'sort' => 6,
     ],
 
     /**
