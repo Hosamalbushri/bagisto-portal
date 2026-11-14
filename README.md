@@ -134,28 +134,51 @@ Include the standard dark mode toggle matching Bagisto Admin:
 </v-dark>
 ```
 
+### Artisan Commands
+
+The package provides automated scaffolding commands following Bagisto generator standards:
+
+```bash
+# 1. Complete installation and initial seeding
+php artisan portal:install
+
+# 2. Scaffold a custom Section Type class and Blade view
+php artisan portal:make-section HeroScaffold
+
+# 3. Scaffold an In-App Theme (resources/themes/{name})
+php artisan portal:make-theme medical --title="Medical Portal"
+
+# 4. Scaffold a Standalone Theme Package (packages/{Vendor}/{Theme})
+php artisan portal:make-theme Acme/MedicalTheme --package
+```
+
 ### Creating Custom Section Types
 
-Extend the `AbstractSection` class and register it via `SectionTypeRegistry`:
+Extend `SectionType` and register your section type:
 
 ```php
-use Platform\Portal\Sections\AbstractSection;
+use Platform\Portal\Sections\SectionType;
 
-class HeroSection extends AbstractSection
+class HeroScaffoldSection extends SectionType
 {
-    public function getKey(): string
+    protected string $code = 'hero_scaffold';
+    protected ?string $title = 'Hero Scaffold';
+    protected ?string $view = 'portal::sections.hero-scaffold';
+
+    public function getFields(): array
     {
-        return 'hero_slider';
+        return [
+            ['name' => 'title', 'type' => 'text', 'label' => 'Main Title'],
+            ['name' => 'subtitle', 'type' => 'textarea', 'label' => 'Subtitle'],
+        ];
     }
 
-    public function getName(): string
+    public function getDefaultOptions(): array
     {
-        return 'Hero Slider';
-    }
-
-    public function render(array $data, array $config = []): string
-    {
-        return view('portal::sections.hero', compact('data', 'config'))->render();
+        return [
+            'title' => 'Welcome to our platform',
+            'subtitle' => 'Modern, extensible website engine',
+        ];
     }
 }
 ```
