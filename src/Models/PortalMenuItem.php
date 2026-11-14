@@ -139,18 +139,46 @@ class PortalMenuItem extends TranslatableModel implements PortalMenuItemContract
     }
 
     /**
-     * Check if this menu item represents the current page.
+     * Check if this menu item represents the current page or contains an active descendant.
      */
-    public function isActive(): bool
+    public function isActive(bool $checkChildren = true): bool
     {
         $url = $this->getUrl();
 
-        if ($url === '#' || empty($url)) {
-            return false;
+        if ($url !== '#' && ! empty($url)) {
+            $itemClean = rtrim($url, '/');
+            $currentClean = rtrim(url()->current(), '/');
+
+            if ($itemClean === $currentClean || request()->fullUrlIs($url) || request()->fullUrlIs($itemClean)) {
+                return true;
+            }
+
+            $itemPath = trim(parse_url($url, PHP_URL_PATH) ?? '', '/');
+            $currentPath = trim(request()->path(), '/');
+
+            $isHome = ($itemPath === '' || $itemPath === 'home');
+            $currentIsHome = ($currentPath === '' || $currentPath === 'home');
+
+            if ($isHome && $currentIsHome) {
+                return true;
+            }
+
+            if ($itemPath !== '' && $itemPath === $currentPath) {
+                return true;
+            }
         }
 
-        $current = url()->current();
+        if ($checkChildren) {
+            $children = $this->relationLoaded('children') ? $this->children : $this->children()->get();
+            if ($children && $children->isNotEmpty()) {
+                foreach ($children as $child) {
+                    if ($child->isActive(true)) {
+                        return true;
+                    }
+                }
+            }
+        }
 
-        return $current === $url || request()->fullUrlIs($url);
+        return false;
     }
 }

@@ -54,27 +54,28 @@
                 id="header_main"
                 location="header"
                 class="flex items-center gap-1 xl:gap-2"
-                item-class="px-3 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                active-class="!text-[var(--brand-primary)] font-bold bg-zinc-100 dark:bg-zinc-800"
             >
                 <nav class="flex items-center gap-1 xl:gap-2" aria-label="Main Navigation">
                     <a
                         href="{{ portal_home_url() }}"
-                        class="px-3.5 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors {{ request()->routeIs('portal.home') ? '!text-[var(--brand-primary)] font-bold bg-zinc-100 dark:bg-zinc-800' : '' }}"
+                        class="relative inline-flex items-center px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 select-none {{ (request()->routeIs('portal.home') || request()->is('/')) ? '!text-[var(--brand-primary)] font-bold bg-[var(--brand-primary-light,#eef2ff)] dark:bg-[var(--brand-primary)]/15 shadow-xs border border-[var(--brand-primary)]/20' : 'text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80' }}"
                     >
-                        @lang('portal::app.home.nav.home')
+                        <span>@lang('portal::app.home.nav.home')</span>
+                        @if (request()->routeIs('portal.home') || request()->is('/'))
+                            <span class="absolute -bottom-1.5 inset-x-3 h-[2.5px] rounded-full bg-[var(--brand-primary)] shadow-[0_1px_6px_var(--brand-primary)]"></span>
+                        @endif
                     </a>
                     <a
                         href="{{ portal_home_url() }}#services"
-                        class="px-3.5 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                        class="inline-flex items-center px-3.5 py-2 rounded-xl text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80 transition-all duration-200 select-none"
                     >
-                        @lang('portal::app.home.nav.services')
+                        <span>@lang('portal::app.home.nav.services')</span>
                     </a>
                     <a
                         href="{{ portal_home_url() }}#contact"
-                        class="px-3.5 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                        class="inline-flex items-center px-3.5 py-2 rounded-xl text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80 transition-all duration-200 select-none"
                     >
-                        @lang('portal::app.home.nav.contact-us')
+                        <span>@lang('portal::app.home.nav.contact-us')</span>
                     </a>
                 </nav>
             </x-portal::menu-slot>
