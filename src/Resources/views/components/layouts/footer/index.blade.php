@@ -184,7 +184,7 @@
     <div class="border-t border-[var(--border-subtle)] py-6 bg-[var(--bg-surface-elevated)]/40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
             <div class="flex items-center gap-3">
-                <p>{!! $formattedCopyright !!}</p>
+                <x-portal::layouts.footer.copyright />
             </div>
 
             <x-portal::menu-slot
