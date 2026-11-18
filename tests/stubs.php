@@ -516,6 +516,26 @@ namespace Webkul\CMS\Repositories {
             {
                 return null;
             }
+
+            public function whereHas($relation, $callback = null)
+            {
+                return $this;
+            }
+
+            public function whereTranslation($key, $value)
+            {
+                return $this;
+            }
+
+            public function first()
+            {
+                return null;
+            }
+
+            public function get()
+            {
+                return collect();
+            }
         }
     }
 }
@@ -525,6 +545,11 @@ namespace Webkul\Theme\Repositories {
         class SectionRepository
         {
             public function findAllOfType($type, $channelId = null, $theme = null)
+            {
+                return collect();
+            }
+
+            public function getRenderable($channelId = null, $theme = null)
             {
                 return collect();
             }

@@ -36,6 +36,27 @@ return [
     ],
 
     /*
+     * Portal Routing Configuration.
+     *
+     * mode: 'root' (default) serves portal storefront directly at root URL (/).
+     *       'prefix' serves portal storefront under a URL prefix (e.g. /portal).
+     * prefix: URL segment when mode is set to 'prefix'.
+     */
+    'routing' => [
+        'mode' => env('PORTAL_ROUTING_MODE', 'root'),
+        'prefix' => env('PORTAL_ROUTING_PREFIX', 'portal'),
+    ],
+
+    /*
+     * Portal Response Cache Configuration.
+     *
+     * response_ttl: Time-to-live in seconds for cached storefront HTTP responses.
+     */
+    'cache' => [
+        'response_ttl' => (int) env('PORTAL_CACHE_TTL', 300),
+    ],
+
+    /*
      * Dynamic Menu Slots Configuration.
      *
      * Define custom menu locations without modifying core package layout files.

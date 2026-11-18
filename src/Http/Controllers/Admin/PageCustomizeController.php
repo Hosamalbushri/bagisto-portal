@@ -8,10 +8,14 @@ use Illuminate\View\View;
 use Platform\Portal\Http\Controllers\Controller;
 use Platform\Portal\Repositories\PortalPageRepository;
 use Platform\Portal\Repositories\PortalPageSectionRepository;
+use Platform\Portal\Rules\ValidJsonArrayRule;
 use Platform\Portal\Sections\SectionTypeRegistry;
 
 class PageCustomizeController extends Controller
 {
+    public const MAX_IMAGE_UPLOAD_KB = 10 * 1024; // 10MB
+    public const MAX_MEDIA_UPLOAD_KB = 50 * 1024; // 50MB
+
     /**
      * Create a new controller instance.
      */
@@ -205,25 +209,7 @@ class PageCustomizeController extends Controller
         $this->validate(request(), [
             'tokens' => [
                 'present',
-                function ($attribute, $value, $fail) {
-                    if (is_array($value)) {
-                        return;
-                    }
-
-                    if (is_string($value)) {
-                        $decoded = json_decode($value, true);
-                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                            return;
-                        }
-                    }
-
-                    $msg = trans('validation.json', ['attribute' => $attribute]);
-                    if ($msg === 'validation.json') {
-                        $msg = "The {$attribute} field must be a valid JSON object or array.";
-                    }
-
-                    $fail($msg);
-                },
+                new ValidJsonArrayRule,
             ],
         ]);
 
@@ -326,7 +312,7 @@ class PageCustomizeController extends Controller
         $uploadedFile = request()->file('file');
         $extension = strtolower($uploadedFile?->getClientOriginalExtension() ?? '');
         $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'bmp']);
-        $maxKilobytes = $isImage ? 10240 : 51200; // 10MB for images, 50MB for video/audio
+        $maxKilobytes = $isImage ? self::MAX_IMAGE_UPLOAD_KB : self::MAX_MEDIA_UPLOAD_KB;
 
         $this->validate(request(), [
             'file' => ['required', 'file', 'mimes:bmp,jpeg,jpg,png,webp,mp4,webm,ogg', "max:$maxKilobytes"],

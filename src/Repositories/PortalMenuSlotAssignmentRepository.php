@@ -66,7 +66,7 @@ class PortalMenuSlotAssignmentRepository extends Repository
         $version = Cache::get(PortalMenuRepository::CACHE_VERSION_KEY, 1);
         $cacheKey = "portal_slot_v{$version}_{$slotId}_{$channelId}_{$themeCode}_".($localeCode ?? 'none');
 
-        return Cache::remember($cacheKey, 86400, function () use ($slotId, $channelId, $themeCode, $localeCode) {
+        return Cache::remember($cacheKey, now()->addDay(), function () use ($slotId, $channelId, $themeCode, $localeCode) {
             if ($localeCode) {
                 $assignment = $this->findOneWhere([
                     'slot_id' => $slotId,

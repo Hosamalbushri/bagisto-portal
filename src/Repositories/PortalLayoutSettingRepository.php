@@ -38,8 +38,8 @@ class PortalLayoutSettingRepository extends Repository
 
             $candidate = bin2hex(random_bytes(16));
 
-            // Explicit positive TTL (31536000s / 1 year) triggers native store->add(); atomicity depends on driver (atomic in Redis/Database, driver-dependent in File/Array)
-            Cache::add($key, $candidate, 31536000);
+            // Explicit positive TTL (1 year) triggers native store->add(); atomicity depends on driver (atomic in Redis/Database, driver-dependent in File/Array)
+            Cache::add($key, $candidate, now()->addYear());
 
             $confirmed = Cache::get($key);
 

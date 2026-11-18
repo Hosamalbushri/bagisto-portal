@@ -105,8 +105,10 @@ class ThemeController extends Controller
         $homePage = $this->portalPageRepository->findHomePage($targetChannel->id);
 
         if (! $homePage) {
-            $currentLocale = core()->getCurrentLocale();
-            $locale = $currentLocale?->code ?? app()->getLocale() ?? 'ar';
+            $locale = $targetChannel?->default_locale?->code
+                ?? core()->getCurrentLocale()?->code
+                ?? app()->getLocale()
+                ?? config('app.locale', 'en');
             $defaultTitle = trans('portal::app.themes.default_home_title', [], $locale);
 
             $homePage = $this->portalPageRepository->create([

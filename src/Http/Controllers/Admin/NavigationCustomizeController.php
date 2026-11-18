@@ -10,7 +10,7 @@ use Platform\Portal\Repositories\PortalLayoutSettingRepository;
 use Platform\Portal\Repositories\PortalMenuRepository;
 use Platform\Portal\Repositories\PortalMenuSlotAssignmentRepository;
 use Platform\Portal\Services\MenuSlotScanner;
-use Webkul\Admin\Http\Controllers\Controller;
+use Platform\Portal\Http\Controllers\Controller;
 
 class NavigationCustomizeController extends Controller
 {

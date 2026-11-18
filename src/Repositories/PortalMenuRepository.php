@@ -34,7 +34,7 @@ class PortalMenuRepository extends Repository
 
             Cache::increment(self::CACHE_VERSION_KEY);
         } catch (\Throwable) {
-            Cache::put(self::CACHE_VERSION_KEY, time(), 86400 * 30);
+            Cache::put(self::CACHE_VERSION_KEY, time(), now()->addDays(30));
         }
 
         Event::dispatch('portal.menu.updated');
@@ -96,7 +96,7 @@ class PortalMenuRepository extends Repository
         $version = Cache::get(self::CACHE_VERSION_KEY, 1);
         $cacheKey = "portal_menu_tree_v{$version}_{$slug}_{$channelKey}_{$locale}";
 
-        return Cache::remember($cacheKey, 86400, function () use ($slug, $channelId, $locale) {
+        return Cache::remember($cacheKey, now()->addDay(), function () use ($slug, $channelId, $locale) {
             $menu = $this->model
                 ->where('slug', $slug)
                 ->forChannel($channelId)

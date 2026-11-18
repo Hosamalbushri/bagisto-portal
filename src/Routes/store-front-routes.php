@@ -22,6 +22,11 @@ Route::get('pages/{slug}', [PageController::class, 'view'])
 Route::get('pages/{slug}/preview', [PageController::class, 'preview'])
     ->name('portal.page.preview');
 
+/**
+ * Backward compatibility alias for single page view.
+ *
+ * @deprecated Use 'portal.page.show' (pages/{slug}) instead. Will be removed in next major release.
+ */
 Route::get('page/{slug}', [PageController::class, 'view'])
     ->name('portal.page.legacy')
     ->middleware('cache.response');

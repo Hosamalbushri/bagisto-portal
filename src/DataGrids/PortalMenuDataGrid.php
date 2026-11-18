@@ -23,6 +23,7 @@ class PortalMenuDataGrid extends DataGrid
     public function prepareQueryBuilder()
     {
         $currentLocale = core()->getRequestedLocaleCode();
+        $allChannelsLabel = addslashes(trans('portal::app.admin.menus.all-channels'));
 
         $queryBuilder = DB::table('portal_menus')
             ->select(
@@ -31,7 +32,7 @@ class PortalMenuDataGrid extends DataGrid
                 'portal_menus.slug',
                 'portal_menus.status',
                 'portal_menus.created_at',
-                DB::raw('COALESCE(channel_translations.name, channels.code, "All Channels") as channel_name'),
+                DB::raw("COALESCE(channel_translations.name, channels.code, '{$allChannelsLabel}') as channel_name"),
                 DB::raw('(SELECT COUNT(*) FROM portal_menu_items WHERE portal_menu_items.portal_menu_id = portal_menus.id) as items_count')
             )
             ->leftJoin('channels', 'portal_menus.channel_id', '=', 'channels.id')

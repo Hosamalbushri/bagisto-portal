@@ -4,6 +4,7 @@ namespace Platform\Portal\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Platform\Portal\Contracts\PortalPageSection as PortalPageSectionContract;
+use Platform\Portal\Models\Traits\HasTokensAttribute;
 use Platform\Portal\Sections\SectionType;
 use Platform\Portal\Sections\SectionTypeRegistry;
 use Platform\Portal\Services\Tokens\TokenSanitizer;
@@ -11,6 +12,7 @@ use Webkul\Core\Eloquent\TranslatableModel;
 
 class PortalPageSection extends TranslatableModel implements PortalPageSectionContract
 {
+    use HasTokensAttribute;
     /**
      * Table associated with the model.
      *
@@ -87,28 +89,7 @@ class PortalPageSection extends TranslatableModel implements PortalPageSectionCo
      */
     public function setTokensAttribute($value): void
     {
-        if (is_null($value)) {
-            $this->attributes['tokens'] = null;
-
-            return;
-        }
-
-        if (is_string($value)) {
-            $decoded = json_decode($value, true);
-            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
-                return;
-            }
-            $value = $decoded;
-        }
-
-        if (is_array($value)) {
-            $sanitizer = function_exists('app') && app()->bound(TokenSanitizer::class)
-                ? app(TokenSanitizer::class)
-                : null;
-
-            $normalized = $sanitizer ? $sanitizer->normalizeTokens($value) : $value;
-            $this->attributes['tokens'] = json_encode($normalized);
-        }
+        $this->mutateTokenAttribute('tokens', $value, emptyAsNull: false);
     }
 
     /**
@@ -116,28 +97,7 @@ class PortalPageSection extends TranslatableModel implements PortalPageSectionCo
      */
     public function setDraftTokensAttribute($value): void
     {
-        if (is_null($value)) {
-            $this->attributes['draft_tokens'] = null;
-
-            return;
-        }
-
-        if (is_string($value)) {
-            $decoded = json_decode($value, true);
-            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
-                return;
-            }
-            $value = $decoded;
-        }
-
-        if (is_array($value)) {
-            $sanitizer = function_exists('app') && app()->bound(TokenSanitizer::class)
-                ? app(TokenSanitizer::class)
-                : null;
-
-            $normalized = $sanitizer ? $sanitizer->normalizeTokens($value) : $value;
-            $this->attributes['draft_tokens'] = json_encode($normalized);
-        }
+        $this->mutateTokenAttribute('draft_tokens', $value, emptyAsNull: false);
     }
 
     /**

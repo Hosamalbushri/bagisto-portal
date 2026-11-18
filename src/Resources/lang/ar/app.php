@@ -1065,4 +1065,7 @@ return [
         'menu_services' => 'خدماتنا',
         'menu_contact' => 'اتصل بنا',
     ],
+    'validation' => [
+        'json-array' => 'حقل :attribute يجب أن يكون كائن أو مصفوفة JSON صالحة.',
+    ],
 ];

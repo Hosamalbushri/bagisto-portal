@@ -85,7 +85,7 @@ class MenuSlotScanner
             }
         }
 
-        Cache::put($cacheKey, $slots, 86400);
+        Cache::put($cacheKey, $slots, now()->addDay());
 
         return $slots;
     }

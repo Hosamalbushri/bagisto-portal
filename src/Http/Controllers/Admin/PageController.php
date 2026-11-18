@@ -8,6 +8,7 @@ use Illuminate\View\View;
 use Platform\Portal\DataGrids\PortalPageDataGrid;
 use Platform\Portal\Http\Controllers\Controller;
 use Platform\Portal\Repositories\PortalPageRepository;
+use Platform\Portal\Rules\ValidJsonArrayRule;
 use Platform\Portal\Services\Tokens\TokenSanitizer;
 use Webkul\Core\Repositories\ChannelRepository;
 
@@ -54,119 +55,13 @@ class PageController extends Controller
     {
         abort_unless(bouncer()->hasPermission('portal.pages.create') || bouncer()->hasPermission('pages.create'), 403);
 
+        $this->validate(request(), $this->getPageValidationRules());
+
         $locale = request('locale', core()->getRequestedLocaleCode());
+        ['data' => $data, 'error' => $errorResponse] = $this->preparePagePayload($locale);
 
-        $tokenRule = function ($attribute, $value, $fail) {
-            if (is_array($value)) {
-                return;
-            }
-
-            if (is_string($value)) {
-                $decoded = json_decode($value, true);
-                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                    return;
-                }
-            }
-
-            $msg = trans('validation.json', ['attribute' => $attribute]);
-            if ($msg === 'validation.json') {
-                $msg = "The {$attribute} field must be a valid JSON object or array.";
-            }
-
-            $fail($msg);
-        };
-
-        $rules = [
-            'slug' => [
-                'required',
-                'alpha_dash',
-                function ($attribute, $value, $fail) {
-                    if (strtolower($value) === 'home') {
-                        $fail(trans('portal::app.admin.pages.url-key-home-reserved'));
-                    }
-                },
-            ],
-            'channel_id' => ['required', 'exists:channels,id'],
-        ];
-
-        if (request()->has('tokens')) {
-            $rules['tokens'] = [$tokenRule];
-        }
-
-        $this->validate(request(), $rules);
-
-        $status = request()->has('status') ? (request()->boolean('status') ? 1 : 0) : 0;
-        $isHomePage = request()->boolean('is_home_page') ? 1 : 0;
-
-        if ($isHomePage && ! $status) {
-            $errorMsg = trans('portal::app.admin.pages.home-page-must-be-active');
-
-            if (request()->ajax() || request()->wantsJson()) {
-                return new JsonResponse([
-                    'message' => $errorMsg,
-                    'errors' => ['status' => [$errorMsg]],
-                ], 422);
-            }
-
-            session()->flash('error', $errorMsg);
-
-            return redirect()->back()->withInput();
-        }
-
-        // Extract translatable attributes (supports both array per locale and flat inputs)
-        $localeData = request($locale, []);
-        $title = $localeData['title'] ?? request('title');
-        $metaTitle = $localeData['meta_title'] ?? request('meta_title');
-        $metaDescription = $localeData['meta_description'] ?? request('meta_description');
-        $metaKeywords = $localeData['meta_keywords'] ?? request('meta_keywords');
-
-        if (empty($title)) {
-            $titleMsg = trans('validation.required', ['attribute' => trans('portal::app.admin.pages.create.page-title')]);
-
-            if (request()->ajax() || request()->wantsJson()) {
-                return new JsonResponse([
-                    'message' => $titleMsg,
-                    'errors' => [
-                        $locale.'.title' => [$titleMsg],
-                        'title' => [$titleMsg],
-                    ],
-                ], 422);
-            }
-
-            return redirect()->back()->withErrors(['title' => $titleMsg])->withInput();
-        }
-
-        $data = [
-            'slug' => request('slug'),
-            'channel_id' => (int) request('channel_id'),
-            'status' => $status,
-            'is_home_page' => ($isHomePage && $status) ? 1 : 0,
-            $locale => [
-                'title' => $title,
-                'meta_title' => $metaTitle,
-                'meta_description' => $metaDescription,
-                'meta_keywords' => $metaKeywords,
-            ],
-        ];
-
-        // Capture any other locales present in request
-        foreach (core()->getAllLocales() as $loc) {
-            if ($loc->code !== $locale && request()->has($loc->code)) {
-                $otherData = request($loc->code);
-                if (! empty($otherData['title'])) {
-                    $data[$loc->code] = $otherData;
-                }
-            }
-        }
-
-        if (request()->has('tokens')) {
-            $rawTokens = request('tokens');
-            if (is_string($rawTokens)) {
-                $rawTokens = json_decode($rawTokens, true);
-            }
-
-            $normalized = app(TokenSanitizer::class)->normalizeTokens($rawTokens);
-            $data['tokens'] = empty($normalized) ? null : $normalized;
+        if ($errorResponse) {
+            return $errorResponse;
         }
 
         $page = $this->portalPageRepository->create($data);
@@ -206,28 +101,37 @@ class PageController extends Controller
     {
         abort_unless(bouncer()->hasPermission('portal.pages.edit') || bouncer()->hasPermission('pages.edit'), 403);
 
+        $this->validate(request(), $this->getPageValidationRules());
+
         $locale = request('locale', core()->getRequestedLocaleCode());
+        ['data' => $data, 'error' => $errorResponse] = $this->preparePagePayload($locale);
 
-        $tokenRule = function ($attribute, $value, $fail) {
-            if (is_array($value)) {
-                return;
-            }
+        if ($errorResponse) {
+            return $errorResponse;
+        }
 
-            if (is_string($value)) {
-                $decoded = json_decode($value, true);
-                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                    return;
-                }
-            }
+        $page = $this->portalPageRepository->update($data, $id);
 
-            $msg = trans('validation.json', ['attribute' => $attribute]);
-            if ($msg === 'validation.json') {
-                $msg = "The {$attribute} field must be a valid JSON object or array.";
-            }
+        $successMsg = trans('portal::app.admin.pages.update-success');
 
-            $fail($msg);
-        };
+        if (request()->ajax() || request()->wantsJson()) {
+            return new JsonResponse([
+                'data' => $page,
+                'message' => $successMsg,
+                'redirect_url' => route('admin.portal.pages.index'),
+            ]);
+        }
 
+        session()->flash('success', $successMsg);
+
+        return redirect()->route('admin.portal.pages.index');
+    }
+
+    /**
+     * Get the common validation rules for page creation and update.
+     */
+    protected function getPageValidationRules(): array
+    {
         $rules = [
             'slug' => [
                 'required',
@@ -242,27 +146,33 @@ class PageController extends Controller
         ];
 
         if (request()->has('tokens')) {
-            $rules['tokens'] = [$tokenRule];
+            $rules['tokens'] = [new ValidJsonArrayRule];
         }
 
-        $this->validate(request(), $rules);
+        return $rules;
+    }
 
+    /**
+     * Validate and build the page data payload from the request.
+     *
+     * @return array{data: array, error: JsonResponse|RedirectResponse|null}
+     */
+    protected function preparePagePayload(string $locale): array
+    {
         $status = request()->has('status') ? (request()->boolean('status') ? 1 : 0) : 0;
         $isHomePage = request()->boolean('is_home_page') ? 1 : 0;
 
         if ($isHomePage && ! $status) {
             $errorMsg = trans('portal::app.admin.pages.home-page-must-be-active');
 
-            if (request()->ajax() || request()->wantsJson()) {
-                return new JsonResponse([
+            $errorResponse = (request()->ajax() || request()->wantsJson())
+                ? new JsonResponse([
                     'message' => $errorMsg,
                     'errors' => ['status' => [$errorMsg]],
-                ], 422);
-            }
+                ], 422)
+                : redirect()->back()->withInput()->with('error', $errorMsg);
 
-            session()->flash('error', $errorMsg);
-
-            return redirect()->back()->withInput();
+            return ['data' => [], 'error' => $errorResponse];
         }
 
         $localeData = request($locale, []);
@@ -274,17 +184,17 @@ class PageController extends Controller
         if (empty($title)) {
             $titleMsg = trans('validation.required', ['attribute' => trans('portal::app.admin.pages.create.page-title')]);
 
-            if (request()->ajax() || request()->wantsJson()) {
-                return new JsonResponse([
+            $errorResponse = (request()->ajax() || request()->wantsJson())
+                ? new JsonResponse([
                     'message' => $titleMsg,
                     'errors' => [
                         $locale.'.title' => [$titleMsg],
                         'title' => [$titleMsg],
                     ],
-                ], 422);
-            }
+                ], 422)
+                : redirect()->back()->withErrors(['title' => $titleMsg])->withInput();
 
-            return redirect()->back()->withErrors(['title' => $titleMsg])->withInput();
+            return ['data' => [], 'error' => $errorResponse];
         }
 
         $data = [
@@ -319,21 +229,7 @@ class PageController extends Controller
             $data['tokens'] = empty($normalized) ? null : $normalized;
         }
 
-        $page = $this->portalPageRepository->update($data, $id);
-
-        $successMsg = trans('portal::app.admin.pages.update-success');
-
-        if (request()->ajax() || request()->wantsJson()) {
-            return new JsonResponse([
-                'data' => $page,
-                'message' => $successMsg,
-                'redirect_url' => route('admin.portal.pages.index'),
-            ]);
-        }
-
-        session()->flash('success', $successMsg);
-
-        return redirect()->route('admin.portal.pages.index');
+        return ['data' => $data, 'error' => null];
     }
 
     /**

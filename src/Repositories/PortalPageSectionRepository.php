@@ -135,17 +135,19 @@ class PortalPageSectionRepository extends Repository
      */
     public function saveOrderDraft(array $sectionIds): void
     {
-        foreach (array_values($sectionIds) as $position => $id) {
-            $section = $this->find($id);
+        DB::transaction(function () use ($sectionIds) {
+            foreach (array_values($sectionIds) as $position => $id) {
+                $section = $this->find($id);
 
-            if (! $section) {
-                continue;
+                if (! $section) {
+                    continue;
+                }
+
+                $order = $position + 1;
+                $section->draft_sort_order = $order === (int) $section->sort_order ? null : $order;
+                $section->save();
             }
-
-            $order = $position + 1;
-            $section->draft_sort_order = $order === (int) $section->sort_order ? null : $order;
-            $section->save();
-        }
+        });
     }
 
     /**
