@@ -97,14 +97,6 @@ class HomeController extends Controller
     }
 
     /**
-     * Display the contact us page.
-     */
-    public function contactUs(): View
-    {
-        return view('portal::home.contact-us');
-    }
-
-    /**
      * Send the contact us mail.
      */
     public function sendContactUsMail(ContactRequest $contactRequest): RedirectResponse

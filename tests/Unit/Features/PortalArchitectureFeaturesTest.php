@@ -26,15 +26,17 @@ class PortalArchitectureFeaturesTest extends TestCase
     }
 
     /**
-     * Test contact us view includes anti-spam honeypot input.
+     * Test contact section includes anti-spam honeypot input.
      */
-    public function test_contact_us_view_includes_honeypot_field(): void
+    public function test_contact_section_includes_honeypot_field(): void
     {
-        $response = $this->get(route('portal.contact_us'));
+        view()->share('errors', new \Illuminate\Support\ViewErrorBag);
 
-        $response->assertStatus(200);
-        $response->assertSee('name="website"', false);
-        $response->assertSee('tabindex="-1"', false);
+        $html = Blade::render('<x-portal::sections.contact-section />');
+
+        $this->assertNotEmpty($html);
+        $this->assertStringContainsString('name="website"', $html);
+        $this->assertStringContainsString('tabindex="-1"', $html);
     }
 
     /**

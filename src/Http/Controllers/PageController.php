@@ -22,8 +22,28 @@ class PageController extends Controller
     /**
      * View a dynamic modular page or fallback to standard CMS page.
      */
-    public function view(string $slug): View
+    public function view(?string $slug = null): View
     {
+        if (empty($slug)) {
+            $path = trim(request()->getPathInfo(), '/');
+            $prefix = config('portal.routing.mode') === 'prefix' ? config('portal.routing.prefix', 'portal') : '';
+
+            if ($prefix && (str_starts_with($path, $prefix.'/') || $path === $prefix)) {
+                $path = substr($path, strlen($prefix));
+                $path = trim($path, '/');
+            }
+
+            if (str_starts_with($path, 'pages/')) {
+                $path = substr($path, 6);
+            } elseif (str_starts_with($path, 'page/')) {
+                $path = substr($path, 5);
+            }
+
+            $slug = urldecode($path);
+        }
+
+        abort_if(empty($slug), 404);
+
         $channel = core()->getCurrentChannel();
 
         $portalPage = $this->portalPageRepository->findBySlug($slug, $channel->id);

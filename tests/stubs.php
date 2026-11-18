@@ -111,6 +111,22 @@ namespace Webkul\Core {
                 return collect([$this->getCurrentChannel()]);
             }
 
+            public function getSenderEmailDetails()
+            {
+                return [
+                    'name' => 'Support',
+                    'email' => 'support@example.com',
+                ];
+            }
+
+            public function getAdminEmailDetails()
+            {
+                return [
+                    'name' => 'Admin',
+                    'email' => 'admin@example.com',
+                ];
+            }
+
             public function getCurrentLocale()
             {
                 return (object) ['code' => 'en', 'direction' => 'ltr'];

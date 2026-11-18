@@ -56,6 +56,11 @@
             <!-- Right Form using standard Bagisto Form Components -->
             <div>
                 <x-portal::form :action="portal_route('portal.contact_us.send_mail')">
+                    <!-- Honeypot anti-spam protection -->
+                    <div class="hidden" aria-hidden="true" style="display:none !important;">
+                        <input type="text" name="website" tabindex="-1" autocomplete="off" />
+                    </div>
+
                     <!-- Name -->
                     <x-portal::form.control-group>
                         <x-portal::form.control-group.label class="required">

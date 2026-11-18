@@ -21,12 +21,32 @@ class ContactUs extends Mailable implements ShouldQueue
      */
     public function build(): self
     {
-        return $this->from(
-            core()->getSenderEmailDetails()['email'],
-            core()->getSenderEmailDetails()['name']
-        )
-            ->to(core()->getAdminEmailDetails()['email'], core()->getAdminEmailDetails()['name'])
-            ->replyTo($this->data['email'], $this->data['name'])
+        $senderEmail = config('mail.from.address', 'admin@example.com');
+        $senderName = config('mail.from.name', config('app.name', 'Admin'));
+        $adminEmail = $senderEmail;
+        $adminName = $senderName;
+
+        if (function_exists('core')) {
+            try {
+                if (method_exists(core(), 'getSenderEmailDetails')) {
+                    $sender = core()->getSenderEmailDetails();
+                    $senderEmail = $sender['email'] ?? $senderEmail;
+                    $senderName = $sender['name'] ?? $senderName;
+                }
+
+                if (method_exists(core(), 'getAdminEmailDetails')) {
+                    $admin = core()->getAdminEmailDetails();
+                    $adminEmail = $admin['email'] ?? $adminEmail;
+                    $adminName = $admin['name'] ?? $adminName;
+                }
+            } catch (\Throwable) {
+                // Graceful fallback to default mail settings
+            }
+        }
+
+        return $this->from($senderEmail, $senderName)
+            ->to($adminEmail, $adminName)
+            ->replyTo($this->data['email'], $this->data['name'] ?? 'Visitor')
             ->subject(trans('portal::app.mail.contact-us.subject'))
             ->view('portal::emails.contact-us');
     }

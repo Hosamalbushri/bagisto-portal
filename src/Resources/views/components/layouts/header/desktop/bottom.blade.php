@@ -66,20 +66,6 @@
                 'is_active' => request()->routeIs('portal.home') || request()->is('/'),
                 'children' => [],
             ],
-            [
-                'id' => 'services',
-                'name' => trans('portal::app.home.nav.services'),
-                'url' => portal_home_url() . '#services',
-                'is_active' => false,
-                'children' => [],
-            ],
-            [
-                'id' => 'contact',
-                'name' => trans('portal::app.home.nav.contact-us'),
-                'url' => Route::has('portal.contact_us') ? route('portal.contact_us') : portal_home_url() . '#contact-us',
-                'is_active' => request()->routeIs('portal.contact_us'),
-                'children' => [],
-            ],
         ];
     }
 @endphp

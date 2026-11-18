@@ -47,12 +47,8 @@ Route::get('appearance-preview', [HomeController::class, 'preview'])
     ->name('portal.appearance.preview');
 
 /**
- * Contact Us.
+ * Contact mail submission (used by dynamic contact sections/forms).
  */
-Route::get('contact-us', [HomeController::class, 'contactUs'])
-    ->name('portal.contact_us')
-    ->middleware('cache.response');
-
 Route::post('contact-us/send-mail', [HomeController::class, 'sendContactUsMail'])
     ->name('portal.contact_us.send_mail')
     ->middleware('throttle:5,1');
@@ -118,3 +114,11 @@ Route::get('register', [RegisterController::class, 'showRegistrationForm'])
 Route::post('register', [RegisterController::class, 'register'])
     ->name('portal.auth.register.store')
     ->middleware('throttle:5,1');
+
+/**
+ * Universal fallback dynamic router for all custom page slugs (e.g. /about, /features, /contact-us, /faq).
+ * Must be registered at the very end of storefront routes so explicit routes match first.
+ */
+Route::fallback([PageController::class, 'view'])
+    ->name('portal.page.fallback')
+    ->middleware('cache.response');
