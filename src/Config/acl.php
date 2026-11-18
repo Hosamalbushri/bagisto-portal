@@ -2,7 +2,7 @@
 
 return [
     /**
-     * Root: Storefront Portal.
+     * Root: Digital Experience Portal.
      */
     [
         'key' => 'portal',

@@ -47,31 +47,37 @@
 
         <!-- Bento Box Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Bento Tile 1: Full-Stack Runtime Platforms (Wide 2-col span on LG) -->
+            <!-- Bento Tile 1: Strategic Planning & Execution (Wide 2-col span on LG) -->
             <x-portal::card :interactive="true" :spotlight="true" class="lg:col-span-2 flex flex-col justify-between group !p-6 sm:!p-8">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-mono font-bold tracking-wider text-[var(--brand-primary)]">
-                            // CONTRACT_INTERFACE.TS
-                        </span>
-                        <x-portal::badge variant="muted">
-                            {{ $card1Tag }}
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[var(--brand-primary)]"></span>
+                            <span class="text-xs font-mono font-bold tracking-wider text-[var(--brand-primary)] uppercase">
+                                {{ $card1Tag }}
+                            </span>
+                        </div>
+                        <x-portal::badge variant="primary">
+                            @lang('portal::app.sections.bento_grid.card_1_badge')
                         </x-portal::badge>
                     </div>
 
-                    <!-- Architectural TypeScript Contract Specimen -->
-                    <div class="p-3.5 mb-6 rounded-xl bg-[var(--code-bg)] text-[var(--code-text)] font-mono text-xs border border-[var(--border-subtle)] overflow-x-auto shadow-inner">
-                        <div class="flex items-center gap-2 mb-2 pb-2 border-b border-white/10 text-[10px] text-slate-400">
-                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
-                            <span class="ms-1 font-sans">core/distributed/stream_engine.ts</span>
+                    <!-- Milestone Tracking Preview Specimen -->
+                    <div class="p-4 mb-6 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-2.5">
+                        <div class="flex items-center justify-between text-xs pb-2 border-b border-[var(--border-subtle)]">
+                            <span class="font-medium text-[var(--text-primary)]">@lang('portal::app.sections.bento_grid.card_1_specimen_title')</span>
+                            <span class="text-[10px] font-mono text-[var(--brand-primary)] font-semibold">100% READY</span>
                         </div>
-                        <div class="text-slate-400">// Compile-time validated runtime RPC contract</div>
-                        <div class="mt-1"><span class="text-sky-400 font-semibold">export interface</span> <span class="text-amber-300">DistributedRuntime</span>&lt;<span class="text-emerald-400">TPayload</span>&gt; {</div>
-                        <div class="ps-4 text-slate-300"><span class="text-slate-400">readonly</span> <span class="text-blue-300">clusterEpoch</span>: <span class="text-emerald-400">number</span>;</div>
-                        <div class="ps-4 text-slate-300"><span class="text-blue-300">dispatch</span>(message: <span class="text-emerald-400">TPayload</span>): <span class="text-purple-300">Promise</span>&lt;<span class="text-amber-300">SLAState</span>&gt;;</div>
-                        <div>}</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[var(--text-secondary)]">
+                            <div class="flex items-center gap-2 p-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                                <span>@lang('portal::app.sections.bento_grid.card_1_item_1')</span>
+                            </div>
+                            <div class="flex items-center gap-2 p-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                                <span>@lang('portal::app.sections.bento_grid.card_1_item_2')</span>
+                            </div>
+                        </div>
                     </div>
 
                     <h3 class="text-xl sm:text-2xl font-bold font-cairo text-[var(--text-primary)] mb-3 group-hover:text-[var(--brand-primary)] transition-colors duration-200">
@@ -83,42 +89,36 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-[var(--border-subtle)]">
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">Vue 3</span>
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">TypeScript</span>
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">Node.js</span>
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">PostgreSQL</span>
+                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-medium">@lang('portal::app.sections.bento_grid.tag_reliable')</span>
+                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-medium">@lang('portal::app.sections.bento_grid.tag_scalable')</span>
+                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-medium">@lang('portal::app.sections.bento_grid.tag_secure')</span>
                 </div>
             </x-portal::card>
 
-            <!-- Bento Tile 2: Cloud Infrastructure & SRE -->
+            <!-- Bento Tile 2: Operational Agility & Performance -->
             <x-portal::card :interactive="true" :spotlight="true" class="flex flex-col justify-between group !p-6 sm:!p-8">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-mono font-bold tracking-wider text-sky-500">
-                            // TOPOLOGY_FLOW
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                            <span class="text-xs font-mono font-bold tracking-wider text-sky-500 uppercase">
+                                {{ $card2Tag }}
+                            </span>
+                        </div>
                         <x-portal::badge variant="muted">
-                            {{ $card2Tag }}
+                            @lang('portal::app.sections.bento_grid.card_2_badge')
                         </x-portal::badge>
                     </div>
 
-                    <!-- Architectural Container Pipeline Schematic -->
-                    <div class="p-3.5 mb-6 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] font-mono text-[11px] space-y-2">
-                        <div class="flex items-center justify-between text-slate-400 text-[10px]">
-                            <span>STAGE</span>
-                            <span>METRIC</span>
+                    <!-- Operational Performance Schematic -->
+                    <div class="p-3.5 mb-6 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-xs space-y-2">
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+                            <span class="text-[var(--text-primary)] font-medium">@lang('portal::app.sections.bento_grid.card_2_stage_1')</span>
+                            <span class="text-emerald-500 font-bold font-mono text-[11px]">PASS</span>
                         </div>
-                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-                            <span class="text-[var(--text-primary)] font-semibold">1. OCI Immutable Build</span>
-                            <span class="text-emerald-500 font-bold">PASS</span>
-                        </div>
-                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-                            <span class="text-[var(--text-primary)] font-semibold">2. Gateway Mesh TLS</span>
-                            <span class="text-[var(--brand-primary)] font-bold">&lt;2ms</span>
-                        </div>
-                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-                            <span class="text-[var(--text-primary)] font-semibold">3. Multi-Region Replica</span>
-                            <span class="text-[var(--brand-accent)] font-semibold">TOPOLOGY SPEC</span>
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+                            <span class="text-[var(--text-primary)] font-medium">@lang('portal::app.sections.bento_grid.card_2_stage_2')</span>
+                            <span class="text-[var(--brand-primary)] font-bold font-mono text-[11px]">&lt;2ms</span>
                         </div>
                     </div>
 
@@ -131,35 +131,37 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-[var(--border-subtle)]">
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">Docker</span>
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">AWS</span>
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">Kubernetes</span>
+                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-medium">@lang('portal::app.sections.bento_grid.tag_automation')</span>
+                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-medium">@lang('portal::app.sections.bento_grid.tag_performance')</span>
                 </div>
             </x-portal::card>
 
-            <!-- Bento Tile 3: Vector Retrieval & Data Pipelines -->
+            <!-- Bento Tile 3: Actionable Insights & Data Intelligence -->
             <x-portal::card :interactive="true" :spotlight="true" class="flex flex-col justify-between group !p-6 sm:!p-8">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-mono font-bold tracking-wider text-[var(--brand-accent)]">
-                            // VECTOR_INDEX
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[var(--brand-accent)]"></span>
+                            <span class="text-xs font-mono font-bold tracking-wider text-[var(--brand-accent)] uppercase">
+                                {{ $card3Tag }}
+                            </span>
+                        </div>
                         <x-portal::badge variant="accent">
-                            {{ $card3Tag }}
+                            @lang('portal::app.sections.bento_grid.card_3_badge')
                         </x-portal::badge>
                     </div>
 
-                    <!-- Architectural Data Flow Diagram -->
-                    <div class="p-3.5 mb-6 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] font-mono text-[11px] space-y-1.5">
-                        <div class="text-[10px] text-slate-400 mb-1">// Vector Retrieval Pipeline</div>
-                        <div class="flex items-center gap-2">
-                            <span class="px-1.5 py-0.5 rounded bg-[var(--brand-accent-light)] text-[var(--brand-accent)] font-bold text-[10px]">INGEST</span>
-                            <span class="text-[var(--text-secondary)] text-[10px]">Raw Chunk Stream</span>
+                    <!-- Growth & Intelligence Progress Visual -->
+                    <div class="p-3.5 mb-6 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-2">
+                        <div class="flex items-center justify-between text-xs text-[var(--text-secondary)]">
+                            <span class="font-medium text-[var(--text-primary)]">@lang('portal::app.sections.bento_grid.card_3_metric_label')</span>
+                            <span class="text-[var(--brand-accent)] font-bold font-mono">+45%</span>
                         </div>
-                        <div class="text-center text-slate-400 text-[10px]">↓ HNSW Index (Cosine)</div>
-                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-                            <span class="text-[var(--text-primary)] text-[10px]">Synthetic Benchmark P99</span>
-                            <span class="text-[var(--brand-accent)] font-bold">11.8ms</span>
+                        <div class="w-full bg-[var(--bg-surface)] rounded-full h-2 overflow-hidden border border-[var(--border-subtle)]">
+                            <div class="bg-[var(--brand-accent)] h-full rounded-full" style="width: 85%"></div>
+                        </div>
+                        <div class="text-[11px] text-[var(--text-muted)] text-center pt-1">
+                            @lang('portal::app.sections.bento_grid.card_3_subtext')
                         </div>
                     </div>
 
@@ -172,42 +174,44 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-[var(--border-subtle)]">
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">PyTorch</span>
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">HNSW</span>
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">Vector DB</span>
+                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-medium">@lang('portal::app.sections.bento_grid.tag_analytics')</span>
+                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-medium">@lang('portal::app.sections.bento_grid.tag_accuracy')</span>
                 </div>
             </x-portal::card>
 
-            <!-- Bento Tile 4: Bilingual Engineering Design Systems (Wide 2-col span on LG) -->
+            <!-- Bento Tile 4: Inclusive Experience & Design Harmony (Wide 2-col span on LG) -->
             <x-portal::card :interactive="true" :spotlight="true" class="lg:col-span-2 flex flex-col justify-between group !p-6 sm:!p-8">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-mono font-bold tracking-wider text-purple-500">
-                            // TYPOGRAPHY_CONTRAST_SPEC
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                            <span class="text-xs font-mono font-bold tracking-wider text-purple-500 uppercase">
+                                {{ $card4Tag }}
+                            </span>
+                        </div>
                         <x-portal::badge variant="muted">
-                            {{ $card4Tag }}
+                            AAA CONTRAST
                         </x-portal::badge>
                     </div>
 
-                    <!-- Architectural Typography & Bi-Directional Specimen -->
+                    <!-- Bilingual Typography & Accessibility Harmony -->
                     <div class="p-3.5 mb-6 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="p-3 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
                             <div class="flex items-center justify-between mb-1.5">
                                 <span class="text-[10px] font-mono text-slate-400">LATIN // INTER</span>
-                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">AAA CONTRAST</span>
+                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">WCAG AAA</span>
                             </div>
                             <div class="text-base font-bold text-[var(--text-primary)]">@lang('portal::app.sections.bento_grid.typography_latin_sample')</div>
-                            <div class="text-xs text-[var(--text-secondary)] font-mono">tracking-tight • 600 weight</div>
+                            <div class="text-xs text-[var(--text-secondary)] font-mono">tracking-tight • fluid scaling</div>
                         </div>
 
                         <div class="p-3 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
                             <div class="flex items-center justify-between mb-1.5">
                                 <span class="text-[10px] font-mono text-slate-400">ARABIC // CAIRO</span>
-                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">AAA CONTRAST</span>
+                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">WCAG AAA</span>
                             </div>
                             <div class="text-base font-bold font-cairo text-[var(--text-primary)]">@lang('portal::app.sections.bento_grid.typography_arabic_sample')</div>
-                            <div class="text-xs text-[var(--text-secondary)] font-mono">normal tracking • 1.35 leading</div>
+                            <div class="text-xs text-[var(--text-secondary)] font-mono">تناغم بصري أصيل • قراءة مريحة</div>
                         </div>
                     </div>
 
@@ -220,13 +224,12 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-[var(--border-subtle)]">
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">WCAG 2.2 AAA</span>
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">RTL Symmetry</span>
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">WebGPU</span>
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-mono">Design Tokens</span>
+                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-medium">@lang('portal::app.sections.bento_grid.tag_responsive')</span>
+                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-medium">@lang('portal::app.sections.bento_grid.tag_accessible')</span>
+                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-medium">@lang('portal::app.sections.bento_grid.tag_bilingual')</span>
+                    <span class="text-xs px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] font-medium">@lang('portal::app.sections.bento_grid.tag_fast')</span>
                 </div>
             </x-portal::card>
         </div>
     </div>
 </section>
-

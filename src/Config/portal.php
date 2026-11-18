@@ -48,12 +48,16 @@ return [
     ],
 
     /*
-     * Portal Response Cache Configuration.
+     * Portal Response and API Cache Configuration.
      *
+     * enabled: Whether caching is active.
      * response_ttl: Time-to-live in seconds for cached storefront HTTP responses.
+     * api_ttl: Time-to-live in seconds for internal and headless REST API responses.
      */
     'cache' => [
+        'enabled' => env('PORTAL_CACHE_ENABLED', true),
         'response_ttl' => (int) env('PORTAL_CACHE_TTL', 300),
+        'api_ttl' => (int) env('PORTAL_API_CACHE_TTL', 3600),
     ],
 
     /*

@@ -1,4 +1,4 @@
-<v-flash-group ref='flashes'></v-flash-group>
+<v-flash-group ref="flashes"></v-flash-group>
 
 @pushOnce('scripts')
     @php
@@ -8,14 +8,10 @@
             if (session()->has($type)) {
                 $flashes[] = [
                     'type' => $type,
-                    'message' => session($type)
+                    'message' => session($type),
                 ];
             }
         }
-
-        $willResponseBeCached = class_exists(\Webkul\FPC\FullPageCache::class)
-            ? \Webkul\FPC\FullPageCache::willCache()
-            : false;
     @endphp
 
     <script
@@ -23,87 +19,82 @@
         id="v-flash-group-template"
     >
         <transition-group
-            tag='div'
+            tag="div"
             name="flash-group"
-            enter-from-class="ltr:translate-x-full rtl:-translate-x-full"
-            enter-active-class="transform transition duration-200 ease-in-out"
-            enter-to-class="ltr:translate-x-0 rtl:-translate-x-0"
-            leave-from-class="ltr:translate-x-0 rtl:-translate-x-0"
-            leave-active-class="transform transition duration-200 ease-in-out"
-            leave-to-class="ltr:translate-x-full rtl:-translate-x-full"
-            class='fixed top-5 z-[1001] grid justify-items-end gap-2.5 max-sm:hidden ltr:right-5 rtl:left-5'
+            enter-from-class="ltr:translate-x-full rtl:-translate-x-full opacity-0"
+            enter-active-class="transform transition duration-300 ease-out"
+            enter-to-class="ltr:translate-x-0 rtl:-translate-x-0 opacity-100"
+            leave-from-class="ltr:translate-x-0 rtl:-translate-x-0 opacity-100"
+            leave-active-class="transform transition duration-200 ease-in"
+            leave-to-class="ltr:translate-x-full rtl:-translate-x-full opacity-0"
+            class="fixed top-5 z-[9999] grid justify-items-end gap-3 max-sm:hidden ltr:right-5 rtl:left-5"
         >
             <x-portal::flash-group.item />
         </transition-group>
 
         <transition-group
-            tag='div'
+            tag="div"
             name="flash-group"
-            enter-from-class="ltr:translate-y-full rtl:-translate-y-full"
-            enter-active-class="transform transition duration-200 ease-in-out"
-            enter-to-class="ltr:translate-y-0 rtl:-translate-y-0"
-            leave-from-class="ltr:translate-y-0 rtl:-translate-y-0"
-            leave-active-class="transform transition duration-200 ease-in-out"
-            leave-to-class="ltr:translate-y-full rtl:-translate-y-full"
-            class='fixed bottom-10 left-1/2 z-[1001] grid -translate-x-1/2 -translate-y-1/2 transform justify-items-center gap-2.5 sm:hidden'
+            enter-from-class="translate-y-full opacity-0"
+            enter-active-class="transform transition duration-300 ease-out"
+            enter-to-class="translate-y-0 opacity-100"
+            leave-from-class="translate-y-0 opacity-100"
+            leave-active-class="transform transition duration-200 ease-in"
+            leave-to-class="translate-y-full opacity-0"
+            class="fixed bottom-6 left-1/2 z-[9999] grid -translate-x-1/2 transform justify-items-center gap-3 sm:hidden"
         >
             <x-portal::flash-group.item />
         </transition-group>
     </script>
 
     <script type="module">
-        app.component('v-flash-group', {
-            template: '#v-flash-group-template',
+        if (typeof app !== 'undefined' && app.component) {
+            app.component('v-flash-group', {
+                template: '#v-flash-group-template',
 
-            data() {
-                return {
-                    uid: 0,
+                data() {
+                    return {
+                        uid: 0,
+                        flashes: [],
+                    };
+                },
 
-                    flashes: []
-                }
-            },
+                created() {
+                    this.loadInitialFlashes();
+                    this.registerGlobalEvents();
+                },
 
-            created() {
-                this.loadInitialFlashes();
+                methods: {
+                    loadInitialFlashes() {
+                        const initialFlashes = @json($flashes);
 
-                this.registerGlobalEvents();
-            },
+                        if (Array.isArray(initialFlashes)) {
+                            initialFlashes.forEach(flash => {
+                                flash.uid = this.uid++;
+                                this.flashes.push(flash);
+                            });
+                        }
+                    },
 
-            methods: {
-                loadInitialFlashes() {
-                    @if ($willResponseBeCached)
-                        let flashes = '<bagisto-response-cache-session-flashes>';
-                    @else
-                        let flashes = @json($flashes);
-                    @endif
-
-                    if (typeof(flashes) === 'string') {
-                        return;
-                    }
-                    
-                    flashes.forEach(flash => {
+                    add(flash) {
                         flash.uid = this.uid++;
-
                         this.flashes.push(flash);
-                    });
-                },
+                    },
 
-                add(flash) {
-                    flash.uid = this.uid++;
+                    remove(flash) {
+                        const index = this.flashes.indexOf(flash);
+                        if (index > -1) {
+                            this.flashes.splice(index, 1);
+                        }
+                    },
 
-                    this.flashes.push(flash);
-                },
-
-                remove(flash) {
-                    let index = this.flashes.indexOf(flash);
-
-                    this.flashes.splice(index, 1);
-                },
-
-                registerGlobalEvents() {
-                    this.$emitter.on('add-flash', this.add);
-                },
-            }
-        });
+                    registerGlobalEvents() {
+                        if (this.$emitter) {
+                            this.$emitter.on('add-flash', this.add);
+                        }
+                    },
+                }
+            });
+        }
     </script>
 @endpushOnce

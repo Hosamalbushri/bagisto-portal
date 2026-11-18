@@ -2,7 +2,7 @@
 
 namespace Platform\Portal\Providers;
 
-use Konekt\Concord\BaseModuleServiceProvider;
+use Webkul\Core\Providers\CoreModuleServiceProvider;
 use Platform\Portal\Models\PortalLayoutSetting;
 use Platform\Portal\Models\PortalMenu;
 use Platform\Portal\Models\PortalMenuItem;
@@ -13,7 +13,7 @@ use Platform\Portal\Models\PortalPageSection;
 use Platform\Portal\Models\PortalPageSectionTranslation;
 use Platform\Portal\Models\PortalPageTranslation;
 
-class ModuleServiceProvider extends BaseModuleServiceProvider
+class ModuleServiceProvider extends CoreModuleServiceProvider
 {
     /**
      * Models.

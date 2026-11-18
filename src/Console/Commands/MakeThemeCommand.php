@@ -53,7 +53,7 @@ class MakeThemeCommand extends Command
         $themeTitle = $this->option('title') ?: Str::headline($themeCode).' Portal';
         $parent = $this->option('parent') ?: 'portal';
         $author = $this->option('author') ?: 'Custom Developer';
-        $description = $this->option('description') ?: "{$themeTitle} for storefront and portal pages.";
+        $description = $this->option('description') ?: "{$themeTitle} for web experience and portal pages.";
         $force = (bool) $this->option('force');
 
         $themeBaseDir = resource_path("themes/{$themeCode}");

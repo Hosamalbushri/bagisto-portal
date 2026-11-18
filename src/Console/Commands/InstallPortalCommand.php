@@ -86,7 +86,7 @@ class InstallPortalCommand extends Command
         // Step 3: Seed Sample Out-of-the-Box Content
         if (! $skipSeed) {
             $this->newLine();
-            $this->info('🌱 3/5 Seeding sample storefront homepage and navigation menus...');
+            $this->info('🌱 3/5 Seeding sample homepage and navigation menus...');
             $this->seedSampleData();
         } else {
             $this->newLine();
@@ -104,7 +104,7 @@ class InstallPortalCommand extends Command
         $this->line('<fg=green;options=bold>🎉 Portal Engine successfully installed and ready for production!</>');
         $this->newLine();
         $this->comment('Quick links:');
-        $this->line('   🌐 Storefront:          <info>'.url('/').'</info>');
+        $this->line('   🌐 Public Site:          <info>'.url('/').'</info>');
         $this->line('   🎨 Theme Gallery:        <info>'.url('/admin/appearance/themes').'</info>');
         $this->line('   📑 Pages Management:     <info>'.url('/admin/portal/pages').'</info>');
         $this->line('   🗂️  Menu Navigation:     <info>'.url('/admin/portal/menus').'</info>');

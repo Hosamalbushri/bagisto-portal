@@ -13,7 +13,8 @@ Designed as a high-performance, modular replacement or alternative to `Webkul/Sh
 
 ## 🌟 Key Highlights
 
-- **Domain-Agnostic Storefront**: Pure presentation engine without hard dependencies on products, shopping carts, or checkouts.
+- **Universal Domain-Agnostic Web Platform**: Pure presentation and digital experience engine without hard dependencies on products, shopping carts, or checkouts. Can be used to build corporate, SaaS, portfolio, educational, medical, booking, or any custom web portal.
+- **Optional E-Commerce Integration**: Decoupled shop bridge (`PORTAL_SHOP_ENABLED=true`) that effortlessly links Bagisto's catalog, cart, and checkout when an online store is desired, without polluting non-store applications.
 - **Dynamic Menu Slot Engine**: Declare `<x-portal::menu-slot id="..." />` anywhere in any Blade view. The AST/regex static scanner automatically detects them and exposes them to the Admin Navigation Customizer.
 - **Hierarchical Menu Builder**: Create multi-level, nested menus with custom URLs, target types, icons, and localized labels.
 - **Admin Appearance & Section Customizer**: Manage sections dynamically (Hero Banners, Feature Grids, Content Blocks, Testimonials, Footer Columns) with order, activation status, and translations.
@@ -40,7 +41,7 @@ flowchart TD
         Repos["Repository Layer<br/>(Slots, Menus, Pages)"]
     end
 
-    subgraph Storefront["Storefront Presentation"]
+    subgraph Frontend["Frontend Presentation Engine"]
         Layout["Portal Layout<br/>x-portal::layouts"]
         SlotResolver["Slot Resolver<br/>x-portal::menu-slot"]
         ThemeEngine["Theme & Dark Engine<br/>v-dark"]
@@ -51,12 +52,12 @@ flowchart TD
     MenuUI --> Repos
     PageUI --> Registry
 
-    Storefront --> ThemeEngine
-    Storefront --> SlotResolver
+    Frontend --> ThemeEngine
+    Frontend --> SlotResolver
     SlotResolver --> Repos
 ```
 
-For in-depth architectural details, design rules, and AI development instructions, see [GUIDELINES.md](GUIDELINES.md).
+For complete developer documentation and deep architectural reference, see **[DOCUMENTATION.md](DOCUMENTATION.md)**. For design rules and AI development guidelines, see [GUIDELINES.md](GUIDELINES.md). For extensibility and CLI scaffolding, see [EXTENDING.md](EXTENDING.md).
 
 ---
 

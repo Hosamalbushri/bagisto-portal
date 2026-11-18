@@ -595,3 +595,9 @@ namespace Webkul\DataGrid {
         }
     }
 }
+
+namespace Webkul\Core\Providers {
+    if (! class_exists(CoreModuleServiceProvider::class)) {
+        abstract class CoreModuleServiceProvider extends \Konekt\Concord\BaseModuleServiceProvider {}
+    }
+}

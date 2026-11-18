@@ -2,7 +2,7 @@
 
 return [
     /**
-     * Root Level Item: Storefront Portal.
+     * Root Level Item: Digital Experience Portal.
      */
     [
         'key' => 'portal',

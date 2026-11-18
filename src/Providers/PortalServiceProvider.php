@@ -40,6 +40,10 @@ class PortalServiceProvider extends ServiceProvider
 
         $this->app->alias(SectionTypeRegistry::class, 'portal.section');
 
+        $this->app->singleton(\Platform\Portal\Helpers\PortalCache::class, function () {
+            return new \Platform\Portal\Helpers\PortalCache;
+        });
+
         $this->mergeConfigFrom(
             dirname(__DIR__).'/Config/bagisto-vite.php',
             'bagisto-vite.viters'
@@ -73,9 +77,32 @@ class PortalServiceProvider extends ServiceProvider
             });
         }
 
+        $this->registerConfig();
+    }
+
+    /**
+     * Register package configurations conforming to Bagisto core standards.
+     */
+    protected function registerConfig(): void
+    {
         $this->mergeConfigFrom(
             dirname(__DIR__).'/Config/portal.php',
             'portal'
+        );
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__).'/Config/menu.php',
+            'menu.admin'
+        );
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__).'/Config/acl.php',
+            'acl'
+        );
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__).'/Config/system.php',
+            'core'
         );
     }
 
@@ -99,6 +126,8 @@ class PortalServiceProvider extends ServiceProvider
 
         $this->app->booted(function () {
             Route::middleware(['web'])->group(__DIR__.'/../Routes/web.php');
+            Route::middleware(['web', 'portal', \Webkul\Core\Http\Middleware\PreventRequestsDuringMaintenance::class])
+                ->group(__DIR__.'/../Routes/api.php');
 
             // Seamlessly resolve missing core Bagisto named routes (e.g. admin header's "visit-shop" link)
             if ($this->app->bound('url')) {
@@ -141,7 +170,7 @@ class PortalServiceProvider extends ServiceProvider
             event('portal.theme.activated', [$channelId, $themeCode]);
         });
 
-        // Event-driven full page cache (FPC) invalidation
+        // Event-driven cache invalidation (FPC + PortalCache)
         Event::listen([
             'portal.page.created',
             'portal.page.updated',
@@ -151,6 +180,14 @@ class PortalServiceProvider extends ServiceProvider
             'portal.menu.updated',
             'portal.tokens.updated',
         ], function () {
+            try {
+                if (app()->bound(\Platform\Portal\Helpers\PortalCache::class)) {
+                    app(\Platform\Portal\Helpers\PortalCache::class)->flush();
+                }
+            } catch (\Throwable) {
+                // Graceful fallback
+            }
+
             if (class_exists(ResponseCache::class) && app()->bound(ResponseCache::class)) {
                 try {
                     app(ResponseCache::class)->clear();
@@ -159,18 +196,6 @@ class PortalServiceProvider extends ServiceProvider
                 }
             }
         });
-
-        $portalMenu = require dirname(__DIR__).'/Config/menu.php';
-        $currentMenu = config('menu.admin', []);
-        config(['menu.admin' => collect($currentMenu)->concat($portalMenu)->unique('key')->values()->toArray()]);
-
-        $portalAcl = require dirname(__DIR__).'/Config/acl.php';
-        $currentAcl = config('acl', []);
-        config(['acl' => collect($currentAcl)->concat($portalAcl)->unique('key')->values()->toArray()]);
-
-        $portalSystem = require dirname(__DIR__).'/Config/system.php';
-        $currentCore = config('core', []);
-        config(['core' => collect($currentCore)->concat($portalSystem)->unique('key')->values()->toArray()]);
 
         if ($this->app->runningInConsole()) {
             $this->commands([

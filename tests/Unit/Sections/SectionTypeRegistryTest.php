@@ -73,4 +73,23 @@ class SectionTypeRegistryTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         PortalSection::register(\stdClass::class);
     }
+
+    /**
+     * Verify that shop sections are decoupled and only registered on demand.
+     */
+    public function test_shop_sections_are_decoupled_by_default(): void
+    {
+        $registry = new SectionTypeRegistry;
+
+        // In pure portal mode without shop enabled, product and category carousels must not exist
+        if (! portal_shop_enabled()) {
+            $this->assertFalse($registry->has('product_carousel'));
+            $this->assertFalse($registry->has('category_carousel'));
+        }
+
+        // When explicitly registering shop sections (e.g. ecommerce enabled)
+        $registry->registerShopSections();
+        $this->assertTrue($registry->has('product_carousel'));
+        $this->assertTrue($registry->has('category_carousel'));
+    }
 }

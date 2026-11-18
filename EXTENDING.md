@@ -70,7 +70,7 @@ Whenever a theme overrides `assets/css/app.css`, Portal automatically injects th
 
 ```css
 :root {
-    --brand-primary: #10b981;       /* Changes your store's primary color to Emerald Green */
+    --brand-primary: #10b981;       /* Changes your site primary color to Emerald Green */
     --brand-primary-hover: #059669;
     --brand-accent: #f59e0b;        /* Amber accent */
     --bg-app: #f8fafc;
@@ -128,7 +128,7 @@ Register new slots in `config/portal.php`:
 ],
 ```
 
-Store administrators can immediately assign any menu to this slot via **Portal > Navigation > Menu Slots**.
+Administrators can immediately assign any menu to this slot via **Portal > Navigation > Menu Slots**.
 
 ---
 
@@ -148,7 +148,7 @@ External packages can hook into lifecycle events using Laravel's standard `Event
 | `portal.theme.activating`| `[int $channelId, string $themeCode]` | Fired before a theme is switched on a channel. |
 | `portal.theme.activated` | `[int $channelId, string $themeCode]` | Fired after a theme is successfully activated. |
 | `portal.section.registered` | `[SectionType $section]` | Fired when a custom section type is registered. |
-| `portal.section.rendering` | `[PortalPageSection $sec, array &$data]` | Fired before a section is rendered on storefront. |
+| `portal.section.rendering` | `[PortalPageSection $sec, array &$data]` | Fired before a section is rendered on the public frontend. |
 
 ---
 
@@ -178,3 +178,26 @@ $this->app->concord->registerModel(
     \App\Models\CustomPortalPage::class
 );
 ```
+
+---
+
+## 7. Decoupled Architecture & Optional E-Commerce Bridge
+
+Bagisto Platform Portal is designed from the ground up as a **universal web platform engine**. It has zero hard dependencies on products, carts, pricing, or checkouts, allowing developers to create any type of site (Corporate, SaaS, Educational, Portfolio, Medical, Booking, etc.).
+
+### 7.1 Operating in Pure Portal Mode (Default)
+When used out-of-the-box (`PORTAL_SHOP_ENABLED=false`):
+- All built-in visual customizer sections are purely universal (Hero Scaffold, Bento Grid, Features, Accordion, Testimonials, Rich HTML, Contact).
+- Navigation and headers render cleanly without e-commerce artifacts (no shopping cart icon, no product badge).
+- The visual builder is free from product or category carousel options.
+
+### 7.2 Activating E-Commerce Mode
+When you want to attach Bagisto's full catalog, customer accounts, and shopping cart:
+1. In your `.env`:
+```env
+PORTAL_SHOP_ENABLED=true
+```
+2. The package automatically activates:
+   - **Catalog Sections**: `product_carousel` and `category_carousel` become available in the Page Customizer.
+   - **Header Bridge**: Mini-cart dropdown and customer order management links appear seamlessly.
+   - **Route Coexistence**: Coexists cleanly with Bagisto catalog and checkout routes.
