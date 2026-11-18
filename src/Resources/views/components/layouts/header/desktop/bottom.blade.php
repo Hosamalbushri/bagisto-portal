@@ -25,13 +25,6 @@
         ? route('shop.customers.account.orders.index')
         : (Route::has('customer.account.orders.index') ? route('customer.account.orders.index') : null);
 
-    $logoutRoute = ($isShopMode && Route::has('shop.customer.session.destroy'))
-        ? route('shop.customer.session.destroy')
-        : (Route::has('portal.auth.logout') ? route('portal.auth.logout') : null);
-
-    $showCompare = $isShopMode && (bool) core()->getConfigData('catalog.products.settings.compare_option');
-    $showMiniCart = $isShopMode && (bool) core()->getConfigData('sales.checkout.shopping_cart.cart_page');
-
     $hasCustomerGuard = array_key_exists('customer', config('auth.guards', []));
     $isCustomerAuth = $hasCustomerGuard && auth()->guard('customer')->check();
     $portalGuard = \Platform\Portal\Helpers\PortalAuth::guard();
@@ -91,36 +84,24 @@
     }
 @endphp
 
-<div class="max-w-[var(--container-max-width,1280px)] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16 gap-6">
-        {{-- Right Side (Start in RTL): Brand Logo & Multi-Level Navigation --}}
+        {{-- Right Side: Brand Logo & Multi-Level Vue Navigation --}}
         <div class="flex items-center gap-8">
             {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.logo.before') !!}
 
             <a
                 href="{{ portal_home_url() }}"
-                aria-label="{{ $channelName }}"
-                class="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)] rounded-lg py-1 shrink-0"
+                aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.bagisto')"
+                class="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 rounded-lg py-1"
             >
-                @if ($logo = $channel->logo_url)
-                    <img
-                        src="{{ $logo }}"
-                        alt="{{ $channelName }}"
-                        class="h-7 w-auto max-h-[32px]"
-                    >
-                @else
-                    <div class="w-8 h-8 rounded-lg bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-center p-1 shadow-2xs">
-                        <svg viewBox="0 0 64 64" fill="none" class="w-full h-full" aria-hidden="true">
-                            <path d="M18 44V20H32C36.4183 20 40 23.5817 40 28C40 32.4183 36.4183 36 32 36H24" stroke="#1c66f6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M30 36L44 44" stroke="#fe8312" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
-                            <circle cx="44" cy="24" r="4.5" fill="#fe8312" />
-                        </svg>
-                    </div>
-
-                    <span class="text-base font-black tracking-tight text-[var(--text-primary)] font-cairo">
-                        {{ $channelName }}
-                    </span>
-                @endif
+                <img
+                    src="{{ core()->getCurrentChannel()->logo_url ?? (function_exists('bagisto_asset') ? bagisto_asset('images/logo.svg') : (function_exists('portal_asset') ? portal_asset('images/logo.svg') : '')) }}"
+                    width="131"
+                    height="29"
+                    alt="{{ config('app.name') }}"
+                    class="h-7 w-auto"
+                >
             </a>
 
             {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.logo.after') !!}
@@ -134,148 +115,85 @@
             <v-desktop-category :initial-categories='@json($navigationItems)'>
                 {{-- Shimmer Skeleton before Vue Mounts --}}
                 <div class="flex items-center gap-5">
-                    <span class="w-16 h-5 rounded bg-[var(--bg-surface-muted)] animate-pulse"></span>
-                    <span class="w-20 h-5 rounded bg-[var(--bg-surface-muted)] animate-pulse"></span>
-                    <span class="w-16 h-5 rounded bg-[var(--bg-surface-muted)] animate-pulse"></span>
-                    <span class="w-14 h-5 rounded bg-[var(--bg-surface-muted)] animate-pulse"></span>
+                    <span class="w-16 h-5 rounded bg-[var(--bg-surface-muted,theme(colors.slate.100))] dark:bg-[var(--bg-surface-muted,theme(colors.slate.800))] animate-pulse"></span>
+                    <span class="w-20 h-5 rounded bg-[var(--bg-surface-muted,theme(colors.slate.100))] dark:bg-[var(--bg-surface-muted,theme(colors.slate.800))] animate-pulse"></span>
+                    <span class="w-16 h-5 rounded bg-[var(--bg-surface-muted,theme(colors.slate.100))] dark:bg-[var(--bg-surface-muted,theme(colors.slate.800))] animate-pulse"></span>
+                    <span class="w-14 h-5 rounded bg-[var(--bg-surface-muted,theme(colors.slate.100))] dark:bg-[var(--bg-surface-muted,theme(colors.slate.800))] animate-pulse"></span>
                 </div>
             </v-desktop-category>
 
             {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.category.after') !!}
         </div>
 
-        {{-- Left Side: Search, Theme Toggle, Customer Dropdown & Actions --}}
+        {{-- Left Side: Search, Locale/Customer Dropdowns & Actions --}}
         <div class="flex items-center gap-2">
             {{-- Search Trigger --}}
-            @if ($searchRoute)
-                <form action="{{ $searchRoute }}" method="GET" class="flex items-center" role="search">
-                    <div class="relative">
-                        <input
-                            type="text"
-                            name="query"
-                            value="{{ request('query') }}"
-                            placeholder="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
-                            class="w-44 xl:w-56 ps-9 pe-3 py-1.5 rounded-lg text-[13px] bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)] transition-colors"
-                        >
-                        <span class="icon-search text-base text-[var(--text-muted)] absolute top-2 start-3 pointer-events-none"></span>
-                    </div>
-                </form>
-            @endif
-
-            {{-- Dark Mode Switcher --}}
-            <v-dark></v-dark>
-
-            {{-- Compare (Shop Mode Only) --}}
-            @if ($showCompare && Route::has('shop.compare.index'))
-                <a
-                    href="{{ route('shop.compare.index') }}"
-                    class="w-9 h-9 inline-flex items-center justify-center rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] transition-colors"
-                    aria-label="Compare"
-                >
-                    <span class="icon-compare text-lg"></span>
-                </a>
-            @endif
-
-            {{-- Mini Cart (Shop Mode Only) --}}
-            @if ($showMiniCart)
-                @if (view()->exists('shop::checkout.cart.mini-cart'))
-                    <div class="flex items-center justify-center">
-                        @include('shop::checkout.cart.mini-cart')
-                    </div>
-                @elseif (Route::has('shop.checkout.cart.index'))
-                    <a
-                        href="{{ route('shop.checkout.cart.index') }}"
-                        class="w-9 h-9 inline-flex items-center justify-center rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] transition-colors"
-                        aria-label="Cart"
+            <form action="{{ $searchRoute ?? portal_home_url() }}" class="flex items-center">
+                <div class="relative">
+                    <input
+                        type="text"
+                        name="query"
+                        value="{{ request('query') }}"
+                        placeholder="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
+                        class="w-48 xl:w-64 ps-9 pe-3 py-1.5 rounded-lg text-[13px] bg-[var(--bg-surface-elevated,theme(colors.slate.100))] dark:bg-[var(--bg-surface-elevated,theme(colors.slate.800))] border border-[var(--border-subtle,theme(colors.slate.200))] dark:border-[var(--border-subtle,theme(colors.slate.700))] text-[var(--text-primary,theme(colors.slate.800))] dark:text-[var(--text-primary,theme(colors.slate.200))] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,theme(colors.slate.900))]"
                     >
-                        <span class="icon-cart text-lg"></span>
-                    </a>
-                @endif
-            @endif
+                    <span class="icon-search text-base text-[var(--text-muted,theme(colors.slate.400))] absolute top-2 start-3 pointer-events-none"></span>
+                </div>
+            </form>
 
-            {{-- Customer / Account Dropdown --}}
+            {{-- Bagisto Customer Dropdown (<x-portal::dropdown>) --}}
             <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'rtl' ? 'left' : 'right' }}">
                 <x-slot:toggle>
                     <button
                         type="button"
-                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] transition-colors focus:outline-none cursor-pointer"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--text-secondary,theme(colors.slate.700))] dark:text-[var(--text-secondary,theme(colors.slate.200))] hover:bg-[var(--bg-surface-elevated,theme(colors.slate.100))] dark:hover:bg-[var(--bg-surface-elevated,theme(colors.slate.800))] transition-colors"
                         aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.profile')"
                     >
                         <span class="icon-users text-lg"></span>
-                        <span class="max-sm:hidden">@lang('portal::app.components.layouts.header.desktop.bottom.profile')</span>
+                        <span>@lang('portal::app.components.layouts.header.desktop.bottom.profile')</span>
                     </button>
                 </x-slot:toggle>
 
                 @if (! $currentUser)
                     <x-slot:content>
-                        <div class="p-4 w-64 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-lg">
-                            <p class="text-sm font-semibold text-[var(--text-primary)]">
+                        <div class="p-4 w-64 bg-[var(--bg-surface,#ffffff)] dark:bg-[var(--bg-surface,#111624)] rounded-xl border border-[var(--border-subtle,theme(colors.slate.200))] dark:border-[var(--border-subtle,theme(colors.slate.800))]">
+                            <p class="text-sm font-semibold text-[var(--text-primary,theme(colors.slate.900))] dark:text-white">
                                 @lang('portal::app.components.layouts.header.desktop.bottom.welcome-guest')
                             </p>
-                            <p class="text-xs text-[var(--text-muted)] mt-1">
+                            <p class="text-xs text-[var(--text-muted,theme(colors.slate.500))] mt-1">
                                 @lang('portal::app.components.layouts.header.desktop.bottom.dropdown-text')
                             </p>
                             <div class="mt-4 grid grid-cols-2 gap-2">
-                                @if ($loginRoute)
-                                    <a
-                                        href="{{ $loginRoute }}"
-                                        class="py-2 px-3 rounded-lg text-xs font-semibold bg-[var(--brand-primary)] text-white text-center hover:bg-[var(--brand-primary-hover)] transition-colors"
-                                    >
-                                        @lang('portal::app.components.layouts.header.desktop.bottom.sign-in')
-                                    </a>
-                                @endif
-                                @if ($registerRoute)
-                                    <a
-                                        href="{{ $registerRoute }}"
-                                        class="py-2 px-3 rounded-lg text-xs font-semibold border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)] text-center hover:bg-[var(--bg-surface-elevated)] transition-colors"
-                                    >
-                                        @lang('portal::app.components.layouts.header.desktop.bottom.sign-up')
-                                    </a>
-                                @endif
+                                <a
+                                    href="{{ $loginRoute ?? '#' }}"
+                                    class="py-2 px-3 rounded-lg text-xs font-medium bg-[var(--brand-primary,theme(colors.slate.900))] text-white text-center hover:opacity-90 transition-opacity"
+                                >
+                                    @lang('portal::app.components.layouts.header.desktop.bottom.sign-in')
+                                </a>
+                                <a
+                                    href="{{ $registerRoute ?? '#' }}"
+                                    class="py-2 px-3 rounded-lg text-xs font-medium border border-[var(--border-subtle,theme(colors.slate.200))] text-[var(--text-secondary,theme(colors.slate.700))] text-center hover:bg-[var(--bg-surface-elevated,theme(colors.slate.50))] transition-colors"
+                                >
+                                    @lang('portal::app.components.layouts.header.desktop.bottom.sign-up')
+                                </a>
                             </div>
                         </div>
                     </x-slot:content>
                 @else
                     <x-slot:content class="!p-1.5">
-                        <div class="w-52 space-y-0.5 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-lg p-2">
-                            <div class="px-3 py-2 border-b border-[var(--border-subtle)] mb-1">
-                                <p class="text-xs font-bold text-[var(--text-primary)] truncate">
-                                    {{ $currentUser->name ?? $currentUser->first_name ?? trans('portal::app.components.layouts.header.desktop.bottom.default-user') }}
-                                </p>
-                                <p class="text-[11px] text-[var(--text-muted)] truncate">
-                                    {{ $currentUser->email }}
-                                </p>
-                            </div>
-
-                            @if ($profileRoute)
-                                <a
-                                    href="{{ $profileRoute }}"
-                                    class="block px-3 py-2 rounded-lg text-[13px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] transition-colors"
-                                >
-                                    @lang('portal::app.components.layouts.header.desktop.bottom.profile')
-                                </a>
-                            @endif
-
-                            @if ($ordersRoute)
-                                <a
-                                    href="{{ $ordersRoute }}"
-                                    class="block px-3 py-2 rounded-lg text-[13px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] transition-colors"
-                                >
-                                    @lang('portal::app.components.layouts.header.desktop.bottom.orders', [], false) ?: 'Orders'
-                                </a>
-                            @endif
-
-                            @if ($logoutRoute)
-                                <form action="{{ $logoutRoute }}" method="POST" class="pt-1 border-t border-[var(--border-subtle)]">
-                                    @csrf
-                                    <button
-                                        type="submit"
-                                        class="w-full text-start px-3 py-2 rounded-lg text-[13px] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
-                                    >
-                                        @lang('portal::app.components.layouts.header.desktop.bottom.logout')
-                                    </button>
-                                </form>
-                            @endif
+                        <div class="w-52 space-y-0.5 bg-[var(--bg-surface,#ffffff)] dark:bg-[var(--bg-surface,#111624)] rounded-xl border border-[var(--border-subtle,theme(colors.slate.200))] dark:border-[var(--border-subtle,theme(colors.slate.800))] p-1">
+                            <a
+                                href="{{ $profileRoute ?? '#' }}"
+                                class="block px-3 py-2 rounded-lg text-[13px] text-[var(--text-secondary,theme(colors.slate.700))] hover:bg-[var(--bg-surface-elevated,theme(colors.slate.100))] transition-colors"
+                            >
+                                @lang('portal::app.components.layouts.header.desktop.bottom.profile')
+                            </a>
+                            <a
+                                href="{{ $ordersRoute ?? '#' }}"
+                                class="block px-3 py-2 rounded-lg text-[13px] text-[var(--text-secondary,theme(colors.slate.700))] hover:bg-[var(--bg-surface-elevated,theme(colors.slate.100))] transition-colors"
+                            >
+                                @lang('portal::app.components.layouts.header.desktop.bottom.orders')
+                            </a>
                         </div>
                     </x-slot:content>
                 @endif
@@ -295,10 +213,9 @@
             class="flex items-center gap-5"
             v-if="isLoading"
         >
-            <span class="w-16 h-5 rounded bg-[var(--bg-surface-muted)] animate-pulse"></span>
-            <span class="w-20 h-5 rounded bg-[var(--bg-surface-muted)] animate-pulse"></span>
-            <span class="w-16 h-5 rounded bg-[var(--bg-surface-muted)] animate-pulse"></span>
-            <span class="w-14 h-5 rounded bg-[var(--bg-surface-muted)] animate-pulse"></span>
+            <span class="w-16 h-5 rounded bg-slate-100 dark:bg-slate-800 animate-pulse"></span>
+            <span class="w-20 h-5 rounded bg-slate-100 dark:bg-slate-800 animate-pulse"></span>
+            <span class="w-16 h-5 rounded bg-slate-100 dark:bg-slate-800 animate-pulse"></span>
         </div>
 
         <nav
@@ -319,10 +236,8 @@
                     <div class="flex items-center">
                         <a
                             :href="sanitizeUrl(category.url)"
-                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[14px] font-medium transition-colors select-none"
-                            :class="(category.is_active || isActiveUrl(category.url))
-                                ? '!text-[var(--brand-primary)] font-bold bg-[var(--brand-primary-light,#eef2ff)] shadow-2xs'
-                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)]'"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[14px] font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/60 transition-colors"
+                            :class="{ '!text-[var(--brand-primary)] font-bold': category.is_active || isActiveUrl(category.url) }"
                             :aria-expanded="category.children && category.children.length ? (openCategoryId === category.id ? 'true' : 'false') : undefined"
                             @click="category.children && category.children.length ? toggleCategory($event, category.id) : null"
                         >
@@ -330,7 +245,7 @@
 
                             <svg
                                 v-if="category.children && category.children.length"
-                                class="w-3.5 h-3.5 text-[var(--text-muted)] transition-transform duration-150"
+                                class="w-3.5 h-3.5 text-slate-400 transition-transform duration-150"
                                 :class="{ 'rotate-180': openCategoryId === category.id }"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -346,11 +261,11 @@
                     <div
                         v-if="category.children && category.children.length"
                         v-show="openCategoryId === category.id"
-                        class="absolute top-full mt-2 start-0 w-[720px] max-w-[92vw] bg-[var(--bg-surface)] rounded-xl shadow-xl border border-[var(--border-subtle)] overflow-hidden z-50 transition-all duration-150 backdrop-blur-md"
+                        class="absolute top-full mt-2 start-0 w-[720px] max-w-[92vw] bg-[var(--bg-surface,#ffffff)] dark:bg-[var(--bg-surface,#111624)] rounded-xl shadow-[0_16px_40px_-12px_rgba(15,23,42,0.12)] border border-[var(--border-subtle,theme(colors.slate.200))]/90 dark:border-[var(--border-subtle,theme(colors.slate.800))] overflow-hidden z-50 transition-all duration-150"
                     >
                         <div class="grid grid-cols-12">
                             {{-- Level 2: Category Switcher Rail --}}
-                            <div class="col-span-4 bg-[var(--bg-surface-elevated)] border-e border-[var(--border-subtle)] p-2.5">
+                            <div class="col-span-4 bg-[var(--bg-surface-elevated,theme(colors.slate.50))]/80 dark:bg-[var(--bg-surface-elevated,theme(colors.slate.900))]/50 border-e border-[var(--border-subtle,theme(colors.slate.200))]/70 dark:border-[var(--border-subtle,theme(colors.slate.800))] p-2.5">
                                 <ul role="list" class="space-y-0.5">
                                     <li
                                         v-for="secondLevel in category.children"
@@ -362,14 +277,14 @@
                                             @focus="activeSecondLevelId = secondLevel.id"
                                             class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors"
                                             :class="getActiveSecondLevel(category).id === secondLevel.id
-                                                ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] font-bold shadow-2xs border border-[var(--border-subtle)]'
-                                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]/60 border border-transparent'"
+                                                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-2xs border border-slate-200/60 dark:border-slate-700/60'
+                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-100/80 border border-transparent'"
                                         >
                                             <span v-text="secondLevel.name"></span>
 
                                             <span
                                                 v-if="secondLevel.children && secondLevel.children.length"
-                                                class="icon-arrow-left rtl:icon-arrow-left ltr:icon-arrow-right text-xs text-[var(--text-muted)]"
+                                                class="icon-arrow-left rtl:icon-arrow-left ltr:icon-arrow-right text-xs text-slate-400"
                                             ></span>
                                         </a>
                                     </li>
@@ -381,37 +296,34 @@
                                 class="col-span-8 p-5"
                                 v-if="getActiveSecondLevel(category)"
                             >
-                                <div class="pb-2 mb-3 border-b border-[var(--border-subtle)] flex items-center justify-between">
+                                <div class="pb-2 mb-3 border-b border-[var(--border-subtle,theme(colors.slate.100))] dark:border-[var(--border-subtle,theme(colors.slate.800))] flex items-center justify-between">
                                     <span
-                                        class="text-[11px] font-semibold tracking-wider text-[var(--text-muted)] uppercase"
+                                        class="text-[11px] font-semibold tracking-wider text-[var(--text-muted,theme(colors.slate.400))] uppercase"
                                         v-text="getActiveSecondLevel(category).name"
                                     ></span>
                                     <a
                                         :href="sanitizeUrl(getActiveSecondLevel(category).url)"
-                                        class="text-[12px] font-medium text-[var(--brand-primary)] hover:text-[var(--brand-primary-hover)] transition-colors"
+                                        class="text-[12px] font-medium text-[var(--text-secondary,theme(colors.slate.600))] hover:text-[var(--text-primary,theme(colors.slate.900))] dark:text-slate-400 dark:hover:text-white"
                                     >
-                                        @lang('portal::app.components.layouts.header.mobile.view-all', ['title' => '']) &larr;
+                                        عرض الكل &larr;
                                     </a>
                                 </div>
 
-                                <div
-                                    class="grid grid-cols-2 gap-3"
-                                    v-if="getActiveSecondLevel(category).children && getActiveSecondLevel(category).children.length"
-                                >
+                                <div class="grid grid-cols-2 gap-3" v-if="getActiveSecondLevel(category).children && getActiveSecondLevel(category).children.length">
                                     <div
                                         v-for="thirdLevel in getActiveSecondLevel(category).children"
                                         :key="thirdLevel.id"
-                                        class="p-2.5 rounded-xl hover:bg-[var(--bg-surface-elevated)] transition-colors"
+                                        class="p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                                     >
                                         <a
                                             :href="sanitizeUrl(thirdLevel.url)"
-                                            class="text-[13px] font-semibold text-[var(--text-primary)] hover:text-[var(--brand-primary)] transition-colors block"
+                                            class="text-[13px] font-semibold text-slate-900 dark:text-white hover:text-[var(--brand-primary,theme(colors.blue.600))] transition-colors block"
                                             v-text="thirdLevel.name"
                                         ></a>
 
                                         <p
                                             v-if="thirdLevel.description"
-                                            class="text-[12px] text-[var(--text-secondary)] mt-0.5 leading-snug"
+                                            class="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug"
                                             v-text="thirdLevel.description"
                                         ></p>
 
@@ -427,7 +339,7 @@
                                             >
                                                 <a
                                                     :href="sanitizeUrl(fourthLevel.url)"
-                                                    class="text-[11px] font-medium text-[var(--text-secondary)] hover:text-[var(--brand-primary)] bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] px-2 py-0.5 rounded transition-colors"
+                                                    class="text-[11px] font-medium text-slate-500 hover:text-[var(--brand-primary,theme(colors.blue.600))] bg-slate-100/80 dark:bg-slate-800 px-2 py-0.5 rounded transition-colors"
                                                     v-text="fourthLevel.name"
                                                 ></a>
                                             </li>
@@ -436,10 +348,10 @@
                                 </div>
 
                                 {{-- If level 2 has no subchildren, show direct link --}}
-                                <div v-else class="py-6 text-center text-xs text-[var(--text-muted)]">
+                                <div v-else class="py-6 text-center text-xs text-[var(--text-muted,theme(colors.slate.400))]">
                                     <a
                                         :href="sanitizeUrl(getActiveSecondLevel(category).url)"
-                                        class="inline-flex items-center gap-1 text-[13px] font-medium text-[var(--brand-primary)] hover:underline"
+                                        class="inline-flex items-center gap-1 text-[13px] font-medium text-[var(--brand-primary,theme(colors.blue.600))] hover:underline"
                                     >
                                         <span v-text="getActiveSecondLevel(category).name"></span> &rarr;
                                     </a>
