@@ -383,6 +383,27 @@
                                 />
                             </div>
 
+                            <!-- Search Field -->
+                            <div class="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700">
+                                <div class="pe-4">
+                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
+                                        @lang('portal::app.admin.navigation.header-controls.show-search')
+                                    </p>
+                                    <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+                                        @lang('portal::app.admin.navigation.header-controls.show-search-desc')
+                                    </p>
+                                </div>
+
+                                <input type="hidden" name="header_settings[controls][show_search]" value="0" />
+                                <x-admin::form.control-group.control
+                                    type="switch"
+                                    id="header_control_search"
+                                    name="header_settings[controls][show_search]"
+                                    value="1"
+                                    :checked="(bool) data_get($headerSettings, 'controls.show_search', true)"
+                                />
+                            </div>
+
                             <!-- Auth Links -->
                             <div class="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700">
                                 <div class="pe-4">
@@ -403,6 +424,89 @@
                                     :checked="(bool) data_get($headerSettings, 'controls.show_auth', true)"
                                 />
                             </div>
+                        </div>
+                    </x-slot>
+                </x-admin::accordion>
+
+                <!-- 4. Action Button (CTA) Accordion -->
+                <x-admin::accordion :is-active="false">
+                    <x-slot:header class="p-4">
+                        <p class="text-base font-semibold text-gray-800 dark:text-white">
+                            @lang('portal::app.admin.navigation.cta.title')
+                        </p>
+                    </x-slot>
+
+                    <x-slot:content class="p-5 pt-0">
+                        <div class="space-y-4">
+                            <!-- CTA Status Switch -->
+                            <div class="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700">
+                                <div class="pe-4">
+                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
+                                        @lang('portal::app.admin.navigation.cta.status')
+                                    </p>
+                                    <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+                                        @lang('portal::app.admin.navigation.cta.status-desc')
+                                    </p>
+                                </div>
+
+                                <input type="hidden" name="header_settings[cta][enabled]" value="0" />
+                                <x-admin::form.control-group.control
+                                    type="switch"
+                                    id="header_cta_enabled"
+                                    name="header_settings[cta][enabled]"
+                                    value="1"
+                                    :checked="(bool) data_get($headerSettings, 'cta.enabled', false)"
+                                />
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Button Text -->
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.cta.text')
+                                    </x-admin::form.control-group.label>
+
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="header_settings[cta][text]"
+                                        :value="data_get($headerSettings, 'cta.text')"
+                                        :placeholder="trans('portal::app.admin.navigation.cta.text-placeholder')"
+                                    />
+                                </x-admin::form.control-group>
+
+                                <!-- Button URL -->
+                                <x-admin::form.control-group class="!mb-0">
+                                    <x-admin::form.control-group.label>
+                                        @lang('portal::app.admin.navigation.cta.url')
+                                    </x-admin::form.control-group.label>
+
+                                    <x-admin::form.control-group.control
+                                        type="text"
+                                        name="header_settings[cta][url]"
+                                        :value="data_get($headerSettings, 'cta.url')"
+                                        :placeholder="trans('portal::app.admin.navigation.cta.url-placeholder')"
+                                    />
+                                </x-admin::form.control-group>
+                            </div>
+
+                            <!-- Target Window -->
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    @lang('portal::app.admin.navigation.cta.target')
+                                </x-admin::form.control-group.label>
+
+                                <select
+                                    name="header_settings[cta][target]"
+                                    class="custom-select w-full rounded border border-gray-200 px-3 py-2 text-sm text-gray-800 transition-colors focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                                >
+                                    <option value="_self" @selected(data_get($headerSettings, 'cta.target', '_self') === '_self')>
+                                        @lang('portal::app.admin.navigation.cta.target-self')
+                                    </option>
+                                    <option value="_blank" @selected(data_get($headerSettings, 'cta.target') === '_blank')>
+                                        @lang('portal::app.admin.navigation.cta.target-blank')
+                                    </option>
+                                </select>
+                            </x-admin::form.control-group>
                         </div>
                     </x-slot>
                 </x-admin::accordion>

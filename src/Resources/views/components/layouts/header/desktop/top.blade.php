@@ -1,99 +1,165 @@
-{!! view_render_event('bagisto.portal.layout.header.desktop.top.before') !!}
+@php
+    $headerSettings = portal_layout_settings('header');
+    $isShopMode = function_exists('portal_shop_enabled') && portal_shop_enabled();
 
-<div class="relative z-[60] flex w-full items-center justify-between border-b border-[var(--border-subtle)] px-4 sm:px-8 lg:px-[60px] text-xs bg-zinc-50/70 dark:bg-zinc-900/90 text-[var(--text-secondary)]">
-    {!! view_render_event('bagisto.portal.layout.header.desktop.top.currency_switcher.before') !!}
+    $announcementEnabled = (bool) data_get($headerSettings, 'announcement.status', true);
+    $announcementText = $announcementEnabled ? data_get($headerSettings, 'announcement.text') : null;
+    $announcementLink = data_get($headerSettings, 'announcement.link');
 
-    <!-- Left: Currency Switcher -->
-    @if (core()->getCurrentChannel()->currencies->count() > 1)
-        <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'left' : 'right' }}">
-            <x-slot:toggle>
-                <div class="flex cursor-pointer items-center gap-2 py-2 hover:text-[var(--text-primary)] transition-colors" role="button" tabindex="0">
-                    <span>
-                        {{ core()->getCurrentCurrency()->symbol . ' ' . core()->getCurrentCurrencyCode() }}
-                    </span>
-                    <span class="icon-arrow-down text-base opacity-70"></span>
-                </div>
-            </x-slot>
+    if (! $announcementText && $isShopMode && $announcementEnabled) {
+        $announcementText = core()->getConfigData('general.content.header_offer.title');
+        $announcementLink = core()->getConfigData('general.content.header_offer.redirection_link');
+    }
 
-            <x-slot:content class="journal-scroll max-h-[500px] !p-1 min-w-[120px] rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-xl z-[70]">
-                @foreach (core()->getCurrentChannel()->currencies as $currency)
-                    <a
-                        href="{{ route('portal.currency.switch', $currency->code) }}"
-                        class="flex items-center px-3 py-1.5 text-xs rounded-md transition-colors {{ core()->getCurrentCurrencyCode() == $currency->code ? 'font-bold text-[var(--brand-primary)] bg-[var(--brand-primary-light)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface-elevated)]' }}"
+    $showLocales = (bool) data_get($headerSettings, 'controls.show_locales', true);
+    $channel = core()->getCurrentChannel();
+
+    $rawCurrencies = $channel->currencies ?? collect();
+    $currencies = is_iterable($rawCurrencies) ? collect($rawCurrencies) : collect();
+    $hasCurrencies = $currencies->count() > 1;
+
+    $rawLocales = $channel->locales ?? collect();
+    $locales = (is_iterable($rawLocales) ? collect($rawLocales) : collect())->sortBy('name');
+    $hasLocales = $showLocales && $locales->count() > 1;
+    $hasContent = $announcementText || $hasCurrencies || $hasLocales;
+
+    $currentLocaleName = $locales->firstWhere('code', app()->getLocale())?->name ?? core()->getCurrentLocale()->name;
+@endphp
+
+@if ($hasContent)
+    {!! view_render_event('bagisto.portal.layout.header.desktop.top.before') !!}
+
+    <div class="flex w-full items-center justify-between border border-b border-l-0 border-r-0 border-t-0 border-[var(--border-subtle,#e5e7eb)] dark:border-slate-800 px-16 max-1180:px-8 text-sm text-[var(--text-secondary,#475569)] dark:text-slate-400 bg-white dark:bg-[#0b0f19]">
+        {!! view_render_event('bagisto.portal.layout.header.desktop.top.currency_switcher.before') !!}
+
+        <!-- Currency Switcher -->
+        @if ($hasCurrencies)
+            <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'left' : 'right' }}">
+                <!-- Dropdown Toggler -->
+                <x-slot:toggle>
+                    <div
+                        class="flex cursor-pointer items-center gap-2.5 py-3 hover:text-black dark:hover:text-white transition-colors"
+                        role="button"
+                        tabindex="0"
                     >
-                        {{ $currency->code }} ({{ $currency->symbol }})
-                    </a>
-                @endforeach
-            </x-slot>
-        </x-portal::dropdown>
-    @else
-        <div class="text-[11px] font-medium text-[var(--text-muted)] py-2">
-            {{ core()->getCurrentChannel()->name }}
-        </div>
-    @endif
+                        <span>
+                            {{ core()->getCurrentCurrency()->symbol . ' ' . core()->getCurrentCurrencyCode() }}
+                        </span>
 
-    {!! view_render_event('bagisto.portal.layout.header.desktop.top.currency_switcher.after') !!}
+                        <span
+                            class="icon-arrow-down text-2xl"
+                            role="presentation"
+                        ></span>
+                    </div>
+                </x-slot>
 
-    <!-- Center: Announcement / Brand Motto -->
-    @php
-        $headerSettings = portal_layout_settings('header');
-        $isShopMode = function_exists('portal_shop_enabled') && portal_shop_enabled();
+                <!-- Dropdown Content -->
+                <x-slot:content class="journal-scroll max-h-[500px] !p-0">
+                    <div class="my-2.5 grid gap-1 overflow-auto max-md:my-0 sm:max-h-[500px]">
+                        @foreach ($currencies as $currency)
+                            <a
+                                href="{{ route('portal.currency.switch', $currency->code) }}"
+                                class="cursor-pointer px-5 py-2 text-base hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors {{ core()->getCurrentCurrencyCode() == $currency->code ? 'bg-gray-100 dark:bg-slate-800 font-semibold text-black dark:text-white' : 'text-gray-700 dark:text-slate-300' }}"
+                            >
+                                {{ $currency->symbol . ' ' . $currency->code }}
+                            </a>
+                        @endforeach
+                    </div>
+                </x-slot>
+            </x-portal::dropdown>
+        @else
+            <div class="w-20"></div>
+        @endif
 
-        $announcementText = data_get($headerSettings, 'announcement.text');
-        $announcementLink = data_get($headerSettings, 'announcement.link');
+        {!! view_render_event('bagisto.portal.layout.header.desktop.top.currency_switcher.after') !!}
 
-        if (! $announcementText && $isShopMode) {
-            $announcementText = core()->getConfigData('general.content.header_offer.title');
-            $announcementLink = core()->getConfigData('general.content.header_offer.redirection_link');
-        }
-    @endphp
+        <!-- Center: Offers / Announcement -->
+        @if ($announcementText)
+            <p class="py-3 text-xs font-medium text-center text-gray-700 dark:text-slate-300">
+                {{ $announcementText }}
 
-    @if ($announcementText)
-        <p class="py-2 text-xs font-medium text-[var(--text-primary)]">
-            {{ $announcementText }}
-
-            @if ($announcementLink)
-                <a href="{{ $announcementLink }}" class="underline ltr:ml-1 rtl:mr-1 hover:text-[var(--brand-primary)] transition-colors">
-                    {{ data_get($headerSettings, 'announcement.link_text') ?: $announcementText }}
-                </a>
-            @endif
-        </p>
-    @else
-        <div></div>
-    @endif
-
-    {!! view_render_event('bagisto.portal.layout.header.desktop.top.locale_switcher.before') !!}
-
-    <!-- Right: Locale Switcher -->
-    @if (core()->getCurrentChannel()->locales->count() > 1)
-        <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
-            <x-slot:toggle>
-                <div class="flex cursor-pointer items-center gap-2 py-2 hover:text-[var(--text-primary)] transition-colors" role="button" tabindex="0">
-                    @if (! empty(core()->getCurrentLocale()->logo_url))
-                        <img src="{{ core()->getCurrentLocale()->logo_url }}" class="h-4 w-4 rounded-full" alt="{{ core()->getCurrentLocale()->name }}">
-                    @endif
-                    <span>{{ core()->getCurrentLocale()->name }}</span>
-                    <span class="icon-arrow-down text-base opacity-70"></span>
-                </div>
-            </x-slot>
-
-            <x-slot:content class="journal-scroll max-h-[500px] !p-1 min-w-[130px] rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-xl z-[70]">
-                @foreach (core()->getCurrentChannel()->locales as $locale)
+                @if ($announcementLink)
                     <a
-                        href="{{ route('portal.locale.switch', $locale->code) }}"
-                        class="flex items-center gap-2 px-3 py-1.5 text-xs rounded-md transition-colors {{ app()->getLocale() == $locale->code ? 'font-bold text-[var(--brand-primary)] bg-[var(--brand-primary-light)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface-elevated)]' }}"
+                        href="{{ $announcementLink }}"
+                        class="underline ltr:ml-1 rtl:mr-1 hover:text-black dark:hover:text-white transition-colors"
+                        role="button"
                     >
-                        @if (! empty($locale->logo_url))
-                            <img src="{{ $locale->logo_url }}" class="h-3.5 w-3.5 rounded-full" alt="{{ $locale->name }}">
-                        @endif
-                        {{ $locale->name }}
+                        {{ data_get($headerSettings, 'announcement.link_text') ?: (core()->getConfigData('general.content.header_offer.redirection_title') ?: $announcementText) }}
                     </a>
-                @endforeach
-            </x-slot>
-        </x-portal::dropdown>
-    @else
-        <div></div>
-    @endif
+                @endif
+            </p>
+        @else
+            <div></div>
+        @endif
+
+        {!! view_render_event('bagisto.portal.layout.header.desktop.top.locale_switcher.before') !!}
+
+        <!-- Locales Switcher -->
+        @if ($hasLocales)
+            <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
+                <x-slot:toggle>
+                    <!-- Dropdown Toggler -->
+                    <div
+                        class="flex cursor-pointer items-center gap-2.5 py-3 hover:text-black dark:hover:text-white transition-colors"
+                        role="button"
+                        tabindex="0"
+                    >
+                        @php
+                            $isDefaultLogo = empty(core()->getCurrentLocale()->logo_url);
+                        @endphp
+                        <img
+                            src="{{ ! empty(core()->getCurrentLocale()->logo_url)
+                                    ? core()->getCurrentLocale()->logo_url
+                                    : portal_asset('images/default-language.svg', bagisto_asset('images/default-language.svg'))
+                                }}"
+                            class="h-[16px] w-[24px] object-cover rounded-sm shadow-sm transition-all {{ $isDefaultLogo ? 'portal-default-lang-icon dark:invert' : '' }}"
+                            alt="@lang('portal::app.components.layouts.header.desktop.top.default-locale')"
+                            width="24"
+                            height="16"
+                        />
+
+                        <span>
+                            {{ $currentLocaleName }}
+                        </span>
+
+                        <span
+                            class="icon-arrow-down text-2xl"
+                            role="presentation"
+                        ></span>
+                    </div>
+                </x-slot>
+
+                <!-- Dropdown Content -->
+                <x-slot:content class="journal-scroll max-h-[500px] !p-0">
+                    <div class="my-2.5 grid gap-1 overflow-auto max-md:my-0 sm:max-h-[500px]">
+                        @foreach ($locales as $locale)
+                            @php
+                                $isLocaleDefaultLogo = empty($locale->logo_url);
+                            @endphp
+                            <a
+                                href="{{ route('portal.locale.switch', $locale->code) }}"
+                                class="flex cursor-pointer items-center gap-2.5 px-5 py-2 text-base hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors {{ app()->getLocale() == $locale->code ? 'bg-gray-100 dark:bg-slate-800 font-semibold text-black dark:text-white' : 'text-gray-700 dark:text-slate-300' }}"
+                            >
+                                <img
+                                    src="{{ ! empty($locale->logo_url) ? $locale->logo_url : portal_asset('images/default-language.svg', bagisto_asset('images/default-language.svg')) }}"
+                                    width="24"
+                                    height="16"
+                                    class="h-[16px] w-[24px] object-cover rounded-sm shadow-sm transition-all {{ $isLocaleDefaultLogo ? 'portal-default-lang-icon dark:invert' : '' }}"
+                                    alt="{{ $locale->name }}"
+                                />
+
+                                <span>{{ $locale->name }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+                </x-slot>
+            </x-portal::dropdown>
+        @else
+            <div class="w-32"></div>
+        @endif
+
+        {!! view_render_event('bagisto.portal.layout.header.desktop.top.locale_switcher.after') !!}
+    </div>
 
     {!! view_render_event('bagisto.portal.layout.header.desktop.top.after') !!}
-</div>
+@endif

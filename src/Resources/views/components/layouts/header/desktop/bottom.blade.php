@@ -3,6 +3,16 @@
 @php
     $channel = core()->getCurrentChannel();
     $channelName = $channel->name ?? config('app.name');
+    $headerSettings = portal_layout_settings('header');
+
+    $showSearch = (bool) data_get($headerSettings, 'controls.show_search', true);
+    $showAuth = (bool) data_get($headerSettings, 'controls.show_auth', true);
+    $showDarkMode = (bool) data_get($headerSettings, 'controls.show_dark_mode', true);
+
+    $ctaEnabled = (bool) data_get($headerSettings, 'cta.enabled', false);
+    $ctaText = data_get($headerSettings, 'cta.text');
+    $ctaUrl = data_get($headerSettings, 'cta.url');
+    $ctaTarget = data_get($headerSettings, 'cta.target', '_self');
 
     $isShopMode = function_exists('portal_shop_enabled') && portal_shop_enabled();
     $searchRoute = ($isShopMode && Route::has('shop.search.index'))
@@ -113,77 +123,101 @@
 
         {{-- Left Side: Search, Locale/Customer Dropdowns & Actions --}}
         <div class="flex items-center gap-2">
-            {{-- Search Trigger --}}
-            <form action="{{ $searchRoute ?? portal_home_url() }}" class="flex items-center">
-                <div class="relative">
-                    <input
-                        type="text"
-                        name="query"
-                        value="{{ request('query') }}"
-                        placeholder="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
-                        class="w-48 xl:w-64 ps-9 pe-3 py-1.5 rounded-lg text-[13px] bg-[var(--bg-surface-elevated,theme(colors.slate.100))] dark:bg-[var(--bg-surface-elevated,theme(colors.slate.800))] border border-[var(--border-subtle,theme(colors.slate.200))] dark:border-[var(--border-subtle,theme(colors.slate.700))] text-[var(--text-primary,theme(colors.slate.800))] dark:text-[var(--text-primary,theme(colors.slate.200))] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,theme(colors.slate.900))]"
-                    >
-                    <span class="icon-search text-base text-[var(--text-muted,theme(colors.slate.400))] absolute top-2 start-3 pointer-events-none"></span>
-                </div>
-            </form>
+            {{-- Search Icon Button --}}
+            @if ($showSearch)
+                <a
+                    href="{{ $searchRoute ?? (Route::has('portal.search.index') ? route('portal.search.index') : portal_home_url()) }}"
+                    class="inline-flex items-center justify-center w-9 h-9 rounded-lg text-[var(--text-secondary,theme(colors.slate.600))] dark:text-[var(--text-secondary,theme(colors.slate.300))] hover:bg-[var(--bg-surface-elevated,theme(colors.slate.100))] dark:hover:bg-[var(--bg-surface-elevated,theme(colors.slate.800))] hover:text-[var(--text-primary)] transition-colors focus:outline-none"
+                    aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
+                    title="@lang('portal::app.components.layouts.header.desktop.bottom.search-text')"
+                >
+                    <span class="icon-search text-lg"></span>
+                </a>
+            @endif
+
+            {{-- Dark Mode Switcher --}}
+            @if ($showDarkMode)
+                <button
+                    type="button"
+                    onclick="togglePortalDarkMode()"
+                    class="inline-flex items-center justify-center w-9 h-9 rounded-lg text-[var(--text-secondary,theme(colors.slate.600))] dark:text-[var(--text-secondary,theme(colors.slate.300))] hover:bg-[var(--bg-surface-elevated,theme(colors.slate.100))] dark:hover:bg-[var(--bg-surface-elevated,theme(colors.slate.800))] hover:text-[var(--text-primary)] transition-colors focus:outline-none"
+                    aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.theme-toggle')"
+                    title="@lang('portal::app.components.layouts.header.desktop.bottom.theme-toggle')"
+                >
+                    <span class="portal-theme-icon {{ in_array(request()->cookie('portal_dark_mode'), ['1', 'dark']) ? 'icon-light' : 'icon-dark' }} text-xl"></span>
+                </button>
+            @endif
 
             {{-- Bagisto Customer Dropdown (<x-portal::dropdown>) --}}
-            <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'rtl' ? 'left' : 'right' }}">
-                <x-slot:toggle>
-                    <button
-                        type="button"
-                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--text-secondary,theme(colors.slate.700))] dark:text-[var(--text-secondary,theme(colors.slate.200))] hover:bg-[var(--bg-surface-elevated,theme(colors.slate.100))] dark:hover:bg-[var(--bg-surface-elevated,theme(colors.slate.800))] transition-colors"
-                        aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.profile')"
-                    >
-                        <span class="icon-users text-lg"></span>
-                        <span>@lang('portal::app.components.layouts.header.desktop.bottom.profile')</span>
-                    </button>
-                </x-slot:toggle>
+            @if ($showAuth)
+                <x-portal::dropdown position="bottom-{{ core()->getCurrentLocale()->direction === 'rtl' ? 'left' : 'right' }}">
+                    <x-slot:toggle>
+                        <button
+                            type="button"
+                            class="inline-flex items-center justify-center w-9 h-9 rounded-lg text-[var(--text-secondary,theme(colors.slate.600))] dark:text-[var(--text-secondary,theme(colors.slate.300))] hover:bg-[var(--bg-surface-elevated,theme(colors.slate.100))] dark:hover:bg-[var(--bg-surface-elevated,theme(colors.slate.800))] hover:text-[var(--text-primary)] transition-colors focus:outline-none"
+                            aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.profile')"
+                            title="@lang('portal::app.components.layouts.header.desktop.bottom.profile')"
+                        >
+                            <span class="icon-users text-lg"></span>
+                        </button>
+                    </x-slot:toggle>
 
-                @if (! $currentUser)
-                    <x-slot:content>
-                        <div class="p-4 w-64 bg-[var(--bg-surface,#ffffff)] dark:bg-[var(--bg-surface,#111624)] rounded-xl border border-[var(--border-subtle,theme(colors.slate.200))] dark:border-[var(--border-subtle,theme(colors.slate.800))]">
-                            <p class="text-sm font-semibold text-[var(--text-primary,theme(colors.slate.900))] dark:text-white">
-                                @lang('portal::app.components.layouts.header.desktop.bottom.welcome-guest')
-                            </p>
-                            <p class="text-xs text-[var(--text-muted,theme(colors.slate.500))] mt-1">
-                                @lang('portal::app.components.layouts.header.desktop.bottom.dropdown-text')
-                            </p>
-                            <div class="mt-4 grid grid-cols-2 gap-2">
+                    @if (! $currentUser)
+                        <x-slot:content>
+                            <div class="p-4 w-64 bg-[var(--bg-surface,#ffffff)] dark:bg-[var(--bg-surface,#111624)] rounded-xl border border-[var(--border-subtle,theme(colors.slate.200))] dark:border-[var(--border-subtle,theme(colors.slate.800))]">
+                                <p class="text-sm font-semibold text-[var(--text-primary,theme(colors.slate.900))] dark:text-white">
+                                    @lang('portal::app.components.layouts.header.desktop.bottom.welcome-guest')
+                                </p>
+                                <p class="text-xs text-[var(--text-muted,theme(colors.slate.500))] mt-1">
+                                    @lang('portal::app.components.layouts.header.desktop.bottom.dropdown-text')
+                                </p>
+                                <div class="mt-4 grid grid-cols-2 gap-2">
+                                    <a
+                                        href="{{ $loginRoute ?? '#' }}"
+                                        class="py-2 px-3 rounded-lg text-xs font-medium bg-[var(--brand-primary,theme(colors.slate.900))] text-white text-center hover:opacity-90 transition-opacity"
+                                    >
+                                        @lang('portal::app.components.layouts.header.desktop.bottom.sign-in')
+                                    </a>
+                                    <a
+                                        href="{{ $registerRoute ?? '#' }}"
+                                        class="py-2 px-3 rounded-lg text-xs font-medium border border-[var(--border-subtle,theme(colors.slate.200))] text-[var(--text-secondary,theme(colors.slate.700))] text-center hover:bg-[var(--bg-surface-elevated,theme(colors.slate.50))] transition-colors"
+                                    >
+                                        @lang('portal::app.components.layouts.header.desktop.bottom.sign-up')
+                                    </a>
+                                </div>
+                            </div>
+                        </x-slot:content>
+                    @else
+                        <x-slot:content class="!p-1.5">
+                            <div class="w-52 space-y-0.5 bg-[var(--bg-surface,#ffffff)] dark:bg-[var(--bg-surface,#111624)] rounded-xl border border-[var(--border-subtle,theme(colors.slate.200))] dark:border-[var(--border-subtle,theme(colors.slate.800))] p-1">
                                 <a
-                                    href="{{ $loginRoute ?? '#' }}"
-                                    class="py-2 px-3 rounded-lg text-xs font-medium bg-[var(--brand-primary,theme(colors.slate.900))] text-white text-center hover:opacity-90 transition-opacity"
+                                    href="{{ $profileRoute ?? '#' }}"
+                                    class="block px-3 py-2 rounded-lg text-[13px] text-[var(--text-secondary,theme(colors.slate.700))] hover:bg-[var(--bg-surface-elevated,theme(colors.slate.100))] transition-colors"
                                 >
-                                    @lang('portal::app.components.layouts.header.desktop.bottom.sign-in')
+                                    @lang('portal::app.components.layouts.header.desktop.bottom.profile')
                                 </a>
                                 <a
-                                    href="{{ $registerRoute ?? '#' }}"
-                                    class="py-2 px-3 rounded-lg text-xs font-medium border border-[var(--border-subtle,theme(colors.slate.200))] text-[var(--text-secondary,theme(colors.slate.700))] text-center hover:bg-[var(--bg-surface-elevated,theme(colors.slate.50))] transition-colors"
+                                    href="{{ $ordersRoute ?? '#' }}"
+                                    class="block px-3 py-2 rounded-lg text-[13px] text-[var(--text-secondary,theme(colors.slate.700))] hover:bg-[var(--bg-surface-elevated,theme(colors.slate.100))] transition-colors"
                                 >
-                                    @lang('portal::app.components.layouts.header.desktop.bottom.sign-up')
+                                    @lang('portal::app.components.layouts.header.desktop.bottom.orders')
                                 </a>
                             </div>
-                        </div>
-                    </x-slot:content>
-                @else
-                    <x-slot:content class="!p-1.5">
-                        <div class="w-52 space-y-0.5 bg-[var(--bg-surface,#ffffff)] dark:bg-[var(--bg-surface,#111624)] rounded-xl border border-[var(--border-subtle,theme(colors.slate.200))] dark:border-[var(--border-subtle,theme(colors.slate.800))] p-1">
-                            <a
-                                href="{{ $profileRoute ?? '#' }}"
-                                class="block px-3 py-2 rounded-lg text-[13px] text-[var(--text-secondary,theme(colors.slate.700))] hover:bg-[var(--bg-surface-elevated,theme(colors.slate.100))] transition-colors"
-                            >
-                                @lang('portal::app.components.layouts.header.desktop.bottom.profile')
-                            </a>
-                            <a
-                                href="{{ $ordersRoute ?? '#' }}"
-                                class="block px-3 py-2 rounded-lg text-[13px] text-[var(--text-secondary,theme(colors.slate.700))] hover:bg-[var(--bg-surface-elevated,theme(colors.slate.100))] transition-colors"
-                            >
-                                @lang('portal::app.components.layouts.header.desktop.bottom.orders')
-                            </a>
-                        </div>
-                    </x-slot:content>
-                @endif
-            </x-portal::dropdown>
+                        </x-slot:content>
+                    @endif
+                </x-portal::dropdown>
+            @endif
+
+            {{-- Action Button (CTA) --}}
+            @if ($ctaEnabled && $ctaText && $ctaUrl)
+                <a
+                    href="{{ portal_sanitize_url($ctaUrl) }}"
+                    target="{{ $ctaTarget }}"
+                    class="btn-primary inline-flex items-center justify-center !px-4 !py-2 !text-xs !font-semibold rounded-xl shadow-sm hover:opacity-95 transition-all"
+                >
+                    {{ $ctaText }}
+                </a>
+            @endif
         </div>
     </div>
 </div>

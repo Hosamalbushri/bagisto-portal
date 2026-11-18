@@ -8,7 +8,7 @@
 <html
     lang="{{ app()->getLocale() }}"
     dir="{{ core()->getCurrentLocale()->direction }}"
-    class="{{ request()->cookie('portal_dark_mode') ? 'dark' : '' }}"
+    class="{{ in_array(request()->cookie('portal_dark_mode'), ['1', 'dark']) ? 'dark' : '' }}"
 >
 <head>
     {!! view_render_event('bagisto.portal.layout.head.before') !!}
@@ -17,9 +17,9 @@
         (function() {
             var cookie = document.cookie.match(/(?:^|; )portal_dark_mode=([^;]*)/);
             var manualPreference = cookie ? cookie[1] : localStorage.getItem('portal_dark_mode');
-            if (manualPreference === '1') {
+            if (manualPreference === '1' || manualPreference === 'dark') {
                 document.documentElement.classList.add('dark');
-            } else if (manualPreference === '0') {
+            } else if (manualPreference === '0' || manualPreference === 'light') {
                 document.documentElement.classList.remove('dark');
             } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.classList.add('dark');

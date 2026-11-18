@@ -47,4 +47,41 @@ class PortalComponentsTest extends TestCase
         $this->assertNotEmpty($rendered);
         $this->assertStringContainsString('v-flash-group', $rendered);
     }
+
+    public function test_header_renders_successfully(): void
+    {
+        $rendered = Blade::render('<x-portal::layouts.header />');
+
+        $this->assertNotEmpty($rendered);
+        $this->assertStringContainsString('<header', $rendered);
+        $this->assertStringContainsString('portal-theme-icon', $rendered);
+        $this->assertStringContainsString('icon-search', $rendered);
+    }
+
+    public function test_header_renders_cta_button_when_configured(): void
+    {
+        $channel = core()->getCurrentChannel();
+        $theme = portal_active_theme($channel->id);
+        $locale = app()->getLocale();
+
+        app(\Platform\Portal\Repositories\PortalLayoutSettingRepository::class)->saveSettings(
+            'header',
+            [
+                'cta' => [
+                    'enabled' => 1,
+                    'text' => 'Get Started Now',
+                    'url' => '/start',
+                    'target' => '_blank',
+                ],
+            ],
+            $channel->id,
+            $theme,
+            $locale
+        );
+
+        $rendered = Blade::render('<x-portal::layouts.header />');
+
+        $this->assertStringContainsString('Get Started Now', $rendered);
+        $this->assertStringContainsString('/start', $rendered);
+    }
 }
