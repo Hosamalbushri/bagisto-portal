@@ -91,13 +91,7 @@
                 aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.bagisto')"
                 class="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 rounded-lg py-1"
             >
-                <img
-                    src="{{ core()->getCurrentChannel()->logo_url ?? (function_exists('bagisto_asset') ? bagisto_asset('images/logo.svg') : (function_exists('portal_asset') ? portal_asset('images/logo.svg') : '')) }}"
-                    width="131"
-                    height="29"
-                    alt="{{ config('app.name') }}"
-                    class="h-7 w-auto"
-                >
+                <x-portal::logo width="131" height="29" class="h-7 w-auto" />
             </a>
 
             {!! view_render_event('bagisto.portal.layout.header.desktop.bottom.logo.after') !!}

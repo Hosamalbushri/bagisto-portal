@@ -16,7 +16,7 @@ class ManifestController extends Controller
         $name = $channel?->name ?? config('app.name', 'Bagisto Portal');
         $desc = $channel?->description ?? config('app.description', 'Modern portal and content engine.');
         $favicon = $channel?->favicon_url ?? portal_asset('images/favicon.ico', asset('favicon.ico'));
-        $logo = $channel?->logo_url ?? portal_asset('images/logo.svg', asset('images/logo.svg'));
+        $logo = portal_logo('light') ?? portal_asset('images/logo.svg', asset('images/logo.svg'));
 
         $manifest = [
             'name' => $name,

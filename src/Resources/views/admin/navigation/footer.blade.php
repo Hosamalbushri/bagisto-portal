@@ -114,10 +114,10 @@
 
         <!-- Main Body Grid -->
         <div class="mt-4 flex gap-4 max-xl:flex-wrap">
-            <!-- Left Container: Accordion Sections (Closed by default) -->
+            <!-- Left Container: Accordion Sections -->
             <div class="flex flex-1 flex-col gap-4 max-xl:flex-auto">
-                <!-- 1. Footer Navigation Slots Accordion (Placed First) -->
-                <x-admin::accordion :is-active="false">
+                <!-- 1. Footer Navigation Slots Accordion -->
+                <x-admin::accordion :is-active="true">
                     <x-slot:header class="p-4">
                         <div class="flex items-center gap-2">
                             <p class="text-base font-semibold text-gray-800 dark:text-white">
@@ -237,228 +237,6 @@
                         @endforelse
                     </x-slot:content>
                 </x-admin::accordion>
-
-                <!-- 2. Social Media Links Accordion -->
-                <x-admin::accordion :is-active="false">
-                    <x-slot:header class="p-4">
-                        <p class="text-base font-semibold text-gray-800 dark:text-white">
-                            @lang('portal::app.admin.navigation.social-links.title')
-                        </p>
-                    </x-slot>
-
-                    <x-slot:content class="p-5 pt-0 space-y-4">
-                        <div class="flex items-center justify-between border-b pb-3 dark:border-gray-800">
-                            <span class="text-xs font-medium text-gray-700 dark:text-gray-300">
-                                @lang('portal::app.admin.navigation.social-links.status')
-                            </span>
-
-                            <input type="hidden" name="footer_settings[social][status]" value="0" />
-                            <x-admin::form.control-group.control
-                                type="switch"
-                                id="footer_social_status"
-                                name="footer_settings[social][status]"
-                                value="1"
-                                :checked="(bool) data_get($footerSettings, 'social.status', true)"
-                            />
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.social-links.twitter')
-                                </x-admin::form.control-group.label>
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    name="footer_settings[social][platforms][twitter]"
-                                    :value="data_get($footerSettings, 'social.platforms.twitter', '')"
-                                    placeholder="https://x.com/username"
-                                />
-                            </x-admin::form.control-group>
-
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.social-links.instagram')
-                                </x-admin::form.control-group.label>
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    name="footer_settings[social][platforms][instagram]"
-                                    :value="data_get($footerSettings, 'social.platforms.instagram', '')"
-                                    placeholder="https://instagram.com/username"
-                                />
-                            </x-admin::form.control-group>
-
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.social-links.facebook')
-                                </x-admin::form.control-group.label>
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    name="footer_settings[social][platforms][facebook]"
-                                    :value="data_get($footerSettings, 'social.platforms.facebook', '')"
-                                    placeholder="https://facebook.com/username"
-                                />
-                            </x-admin::form.control-group>
-
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.social-links.youtube')
-                                </x-admin::form.control-group.label>
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    name="footer_settings[social][platforms][youtube]"
-                                    :value="data_get($footerSettings, 'social.platforms.youtube', '')"
-                                    placeholder="https://youtube.com/@channel"
-                                />
-                            </x-admin::form.control-group>
-
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.social-links.linkedin')
-                                </x-admin::form.control-group.label>
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    name="footer_settings[social][platforms][linkedin]"
-                                    :value="data_get($footerSettings, 'social.platforms.linkedin', '')"
-                                    placeholder="https://linkedin.com/company/name"
-                                />
-                            </x-admin::form.control-group>
-
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.social-links.whatsapp')
-                                </x-admin::form.control-group.label>
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    name="footer_settings[social][platforms][whatsapp]"
-                                    :value="data_get($footerSettings, 'social.platforms.whatsapp', '')"
-                                    placeholder="+966500000000"
-                                />
-                            </x-admin::form.control-group>
-
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.social-links.telegram')
-                                </x-admin::form.control-group.label>
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    name="footer_settings[social][platforms][telegram]"
-                                    :value="data_get($footerSettings, 'social.platforms.telegram', '')"
-                                    placeholder="https://t.me/channel"
-                                />
-                            </x-admin::form.control-group>
-
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.social-links.tiktok')
-                                </x-admin::form.control-group.label>
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    name="footer_settings[social][platforms][tiktok]"
-                                    :value="data_get($footerSettings, 'social.platforms.tiktok', '')"
-                                    placeholder="https://tiktok.com/@username"
-                                />
-                            </x-admin::form.control-group>
-                        </div>
-                    </x-slot>
-                </x-admin::accordion>
-
-                <!-- 3. Brand & Contact Information Accordion -->
-                <x-admin::accordion :is-active="false">
-                    <x-slot:header class="p-4">
-                        <p class="text-base font-semibold text-gray-800 dark:text-white">
-                            @lang('portal::app.admin.navigation.contact-info.title')
-                        </p>
-                    </x-slot>
-
-                    <x-slot:content class="p-5 pt-0 space-y-4">
-                        <x-admin::form.control-group class="!mb-0">
-                            <x-admin::form.control-group.label>
-                                @lang('portal::app.admin.navigation.contact-info.bio')
-                                <span class="rounded border border-gray-200 bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300" v-pre>
-                                    {{ $currentLocale->name }}
-                                </span>
-                            </x-admin::form.control-group.label>
-
-                            <x-admin::form.control-group.control
-                                type="textarea"
-                                id="footer_contact_bio"
-                                name="footer_settings[contact][bio]"
-                                :value="data_get($footerSettings, 'contact.bio', '')"
-                                :placeholder="trans('portal::app.admin.navigation.contact-info.bio-placeholder')"
-                                rows="3"
-                            />
-                        </x-admin::form.control-group>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.contact-info.phone')
-                                </x-admin::form.control-group.label>
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    name="footer_settings[contact][phone]"
-                                    :value="data_get($footerSettings, 'contact.phone', '')"
-                                    :placeholder="trans('portal::app.admin.navigation.contact-info.phone-placeholder')"
-                                />
-                            </x-admin::form.control-group>
-
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.contact-info.email')
-                                </x-admin::form.control-group.label>
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    name="footer_settings[contact][email]"
-                                    :value="data_get($footerSettings, 'contact.email', '')"
-                                    :placeholder="trans('portal::app.admin.navigation.contact-info.email-placeholder')"
-                                />
-                            </x-admin::form.control-group>
-
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.contact-info.address')
-                                </x-admin::form.control-group.label>
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    name="footer_settings[contact][address]"
-                                    :value="data_get($footerSettings, 'contact.address', '')"
-                                    :placeholder="trans('portal::app.admin.navigation.contact-info.address-placeholder')"
-                                />
-                            </x-admin::form.control-group>
-                        </div>
-                    </x-slot>
-                </x-admin::accordion>
-
-                <!-- 4. Copyright Notice Accordion -->
-                <x-admin::accordion :is-active="false">
-                    <x-slot:header class="p-4">
-                        <p class="text-base font-semibold text-gray-800 dark:text-white">
-                            @lang('portal::app.admin.navigation.copyright.title')
-                        </p>
-                    </x-slot>
-
-                    <x-slot:content class="p-5 pt-0 space-y-4">
-                        <x-admin::form.control-group class="!mb-0">
-                            <x-admin::form.control-group.label>
-                                @lang('portal::app.admin.navigation.copyright.text')
-                                <span class="rounded border border-gray-200 bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300" v-pre>
-                                    {{ $currentLocale->name }}
-                                </span>
-                            </x-admin::form.control-group.label>
-
-                            <x-admin::form.control-group.control
-                                type="text"
-                                id="footer_copyright_text"
-                                name="footer_settings[copyright][text]"
-                                :value="data_get($footerSettings, 'copyright.text', '')"
-                                :placeholder="trans('portal::app.admin.navigation.copyright.text-placeholder')"
-                            />
-                            <p class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">
-                                @lang('portal::app.admin.navigation.copyright.hint')
-                            </p>
-                        </x-admin::form.control-group>
-                    </x-slot>
-                </x-admin::accordion>
             </div>
 
             <!-- Right Container: Scope Info Card (Standard Card, NOT Accordion) -->
@@ -507,6 +285,16 @@
                     </div>
 
                     <div class="mt-5 space-y-2.5">
+                        @if (Route::has('admin.configuration.index'))
+                            <a
+                                href="{{ route('admin.configuration.index', ['portal', 'footer']) }}"
+                                class="primary-button flex w-full items-center justify-center gap-1.5 py-2.5 text-xs font-semibold"
+                            >
+                                <span class="icon-settings text-base"></span>
+                                <span>@lang('portal::app.admin.navigation.open-settings-btn')</span>
+                            </a>
+                        @endif
+
                         <a
                             href="{{ route('admin.portal.navigation.header', ['channel' => $currentChannel->code, 'locale' => $currentLocale->code]) }}"
                             class="secondary-button flex w-full items-center justify-center gap-1.5 py-2.5 text-xs font-semibold"

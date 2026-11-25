@@ -82,11 +82,7 @@
             <x-slot:header>
                 <div class="flex items-center justify-between py-2">
                     <a href="{{ portal_home_url() }}">
-                        <img
-                            src="{{ core()->getCurrentChannel()->logo_url ?? (function_exists('bagisto_asset') ? bagisto_asset('images/logo.svg') : (function_exists('portal_asset') ? portal_asset('images/logo.svg') : '')) }}"
-                            alt="{{ config('app.name') }}"
-                            class="h-6 w-auto"
-                        >
+                        <x-portal::logo class="h-6 w-auto" />
                     </a>
                 </div>
             </x-slot:header>
@@ -115,8 +111,8 @@
 
         {!! view_render_event('bagisto.portal.layout.header.mobile.drawer.after') !!}
 
-        <a href="{{ portal_home_url() }}" class="font-semibold text-[15px] text-slate-900 dark:text-white">
-            {{ config('app.name') }}
+        <a href="{{ portal_home_url() }}" class="flex items-center font-semibold text-[15px] text-slate-900 dark:text-white">
+            <x-portal::logo class="h-6 w-auto" />
         </a>
     </div>
 

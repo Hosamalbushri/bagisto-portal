@@ -150,6 +150,9 @@ if (! function_exists('portal_layout_setting')) {
 if (! function_exists('portal_layout_settings')) {
     /**
      * Retrieve all portal layout settings for a group.
+     *
+     * For 'header' and 'footer', merges Bagisto System Configuration (`portal.header.*`
+     * / `portal.footer.*`) with any legacy `portal_layout_settings` overrides.
      */
     function portal_layout_settings(
         string $group,
@@ -161,12 +164,95 @@ if (! function_exists('portal_layout_settings')) {
         $themeCode = $themeCode ?? portal_active_theme($channelId);
         $localeCode = $localeCode ?? app()->getLocale();
 
-        return app(PortalLayoutSettingRepository::class)->getSettings(
+        $settings = app(PortalLayoutSettingRepository::class)->getSettings(
             $group,
             $channelId,
             $themeCode,
             $localeCode
         );
+
+        if (in_array($group, ['header', 'footer'], true)) {
+            $settings = portal_merge_system_settings($group, $settings, $channelId, $localeCode);
+        }
+
+        return $settings;
+    }
+}
+
+if (! function_exists('portal_merge_system_settings')) {
+    /**
+     * Populate header/footer layout settings from Bagisto System Configuration (`system.php`).
+     */
+    function portal_merge_system_settings(
+        string $group,
+        array $settings,
+        ?int $channelId = null,
+        ?string $localeCode = null
+    ): array {
+        $channel = ($channelId && method_exists(core(), 'getAllChannels'))
+            ? core()->getAllChannels()->firstWhere('id', $channelId)
+            : core()->getCurrentChannel();
+
+        $channelCode = $channel?->code ?? null;
+        $defaultLocaleCode = $channel?->default_locale?->code ?? null;
+
+        $readConfig = static function (string $key, bool $localeBased) use ($channelCode, $localeCode, $defaultLocaleCode): mixed {
+            $value = $localeBased
+                ? core()->getConfigData($key, $channelCode, $localeCode)
+                : core()->getConfigData($key, $channelCode);
+
+            if ($localeBased && ($value === null || $value === '') && $defaultLocaleCode && $defaultLocaleCode !== $localeCode) {
+                $value = core()->getConfigData($key, $channelCode, $defaultLocaleCode);
+            }
+
+            return $value;
+        };
+
+        $map = $group === 'header'
+            ? [
+                'controls.sticky'          => ['portal.header.controls.sticky', false],
+                'controls.show_dark_mode'  => ['portal.header.controls.show_dark_mode', false],
+                'controls.show_locales'    => ['portal.header.controls.show_locales', false],
+                'controls.show_search'     => ['portal.header.controls.show_search', false],
+                'controls.show_auth'       => ['portal.header.controls.show_auth', false],
+                'announcement.status'      => ['portal.header.announcement.status', false],
+                'announcement.text'        => ['portal.header.announcement.text', true],
+                'announcement.link'        => ['portal.header.announcement.link', false],
+                'announcement.bg_color'    => ['portal.header.announcement.bg_color', false],
+                'announcement.text_color'  => ['portal.header.announcement.text_color', false],
+                'cta.enabled'              => ['portal.header.cta.enabled', false],
+                'cta.text'                 => ['portal.header.cta.text', true],
+                'cta.url'                  => ['portal.header.cta.url', false],
+                'cta.target'               => ['portal.header.cta.target', false],
+            ]
+            : [
+                'contact.bio'                => ['portal.footer.contact.bio', true],
+                'contact.phone'              => ['portal.footer.contact.phone', false],
+                'contact.email'              => ['portal.footer.contact.email', false],
+                'contact.address'            => ['portal.footer.contact.address', true],
+                'social.status'              => ['portal.footer.social.status', false],
+                'social.platforms.twitter'   => ['portal.footer.social.twitter', false],
+                'social.platforms.instagram' => ['portal.footer.social.instagram', false],
+                'social.platforms.facebook'  => ['portal.footer.social.facebook', false],
+                'social.platforms.youtube'   => ['portal.footer.social.youtube', false],
+                'social.platforms.linkedin'  => ['portal.footer.social.linkedin', false],
+                'social.platforms.whatsapp'  => ['portal.footer.social.whatsapp', false],
+                'social.platforms.telegram'  => ['portal.footer.social.telegram', false],
+                'social.platforms.tiktok'    => ['portal.footer.social.tiktok', false],
+                'copyright.text'             => ['portal.footer.copyright.text', true],
+            ];
+
+        foreach ($map as $dotPath => [$configKey, $localeBased]) {
+            if (data_get($settings, $dotPath) === null) {
+                $configValue = $readConfig($configKey, $localeBased);
+
+                if ($configValue !== null) {
+                    data_set($settings, $dotPath, $configValue);
+                }
+            }
+        }
+
+        return $settings;
     }
 }
 
@@ -219,6 +305,65 @@ if (! function_exists('portal_asset')) {
         } catch (Throwable) {
             return $fallback;
         }
+    }
+}
+
+if (! function_exists('portal_logo')) {
+    /**
+     * Resolve the portal site logo URL for the given theme mode ('light' or 'dark') and locale.
+     *
+     * Falls back cleanly from locale/channel-scoped configuration (`portal.general.design.logo_light`
+     * / `logo_dark`) to the channel default locale's configuration, then to the channel logo
+     * (`core()->getCurrentChannel()->logo_url`), and finally to the package SVG defaults.
+     */
+    function portal_logo(string $mode = 'light', ?string $locale = null): ?string
+    {
+        $resolveUrl = static function (mixed $value): ?string {
+            if (! is_string($value) || trim($value) === '') {
+                return null;
+            }
+
+            if (preg_match('/^(https?:\/\/|\/)/i', $value)) {
+                return $value;
+            }
+
+            return \Illuminate\Support\Facades\Storage::url($value);
+        };
+
+        $channel = core()->getCurrentChannel();
+        $defaultLocaleCode = $channel?->default_locale?->code ?? null;
+
+        $resolveLocaleConfig = static function (string $key) use ($locale, $defaultLocaleCode): mixed {
+            $value = $locale !== null
+                ? core()->getConfigData($key, null, $locale)
+                : core()->getConfigData($key);
+
+            if ((! is_string($value) || trim($value) === '') && $defaultLocaleCode) {
+                $activeLocale = $locale ?? (app()->getLocale() ?: null);
+
+                if ($activeLocale !== $defaultLocaleCode) {
+                    $value = core()->getConfigData($key, null, $defaultLocaleCode);
+                }
+            }
+
+            return $value;
+        };
+
+        $lightConfig = $resolveLocaleConfig('portal.general.design.logo_light');
+        $darkConfig = $resolveLocaleConfig('portal.general.design.logo_dark');
+        $channelLogo = $channel?->logo_url;
+
+        $lightUrl = $resolveUrl($lightConfig) ?: ($channelLogo ?: null);
+        $darkUrl = $resolveUrl($darkConfig);
+
+        $defaultLight = portal_asset('images/logo.svg');
+        $defaultDark = portal_asset('images/dark-logo.svg') ?: $defaultLight;
+
+        if ($mode === 'dark') {
+            return $darkUrl ?: ($lightUrl ?: $defaultDark);
+        }
+
+        return $lightUrl ?: $defaultLight;
     }
 }
 

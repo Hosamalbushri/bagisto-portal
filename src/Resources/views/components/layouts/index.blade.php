@@ -63,6 +63,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
 
+    <style id="portal-theme-logo-rules">
+        html.dark .portal-logo-light { display: none !important; }
+        html:not(.dark) .portal-logo-dark { display: none !important; }
+    </style>
+
     @stack('styles')
 
     @if ($customCss = core()->getConfigData('general.content.custom_scripts.custom_css'))

@@ -17,7 +17,7 @@
     $resolvedTitle = trim(($title ? $title . ' | ' : '') . ($channel?->name ?? config('app.name', 'Bagisto Portal')));
     $resolvedDesc = $description ?: ($channel?->description ?? config('app.description', 'Modern portal and content engine.'));
     $resolvedUrl = $url ?: url()->current();
-    $resolvedImage = $image ?: ($channel?->logo_url ?? portal_asset('images/hero-image.webp', asset('images/logo.svg')));
+    $resolvedImage = $image ?: (portal_logo('light') ?? portal_asset('images/hero-image.webp', asset('images/logo.svg')));
     $siteName = $channel?->name ?? config('app.name', 'Bagisto');
 
     $schemaData = array_filter([

@@ -306,6 +306,14 @@ img.lazy {
         filter: invert(1) brightness(1.2);
     }
 
+    html.dark .portal-logo-light {
+        display: none !important;
+    }
+
+    html:not(.dark) .portal-logo-dark {
+        display: none !important;
+    }
+
     .icon-checkout-address:before {
         content: "\e944";
     }

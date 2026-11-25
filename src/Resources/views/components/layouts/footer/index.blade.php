@@ -41,20 +41,7 @@
             <!-- Brand & Contact Column -->
             <div class="space-y-4">
                 <a href="{{ portal_home_url() }}" class="flex items-center gap-2.5">
-                    @if ($logo = core()->getCurrentChannel()->logo_url)
-                        <img src="{{ $logo }}" class="h-8 w-auto" alt="{{ config('app.name') }}" />
-                    @else
-                        <span class="flex items-center gap-2">
-                            <svg class="h-7 w-7 rounded-lg shrink-0 shadow-sm" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="32" height="32" rx="8" fill="#1c66f6"/>
-                                <path d="M10 8H20C21.6569 8 23 9.34315 23 11C23 12.6569 21.6569 14 20 14H10V8Z" fill="#fe8312"/>
-                                <path d="M10 14H19L23 24H18L15 16.5H10V24H7V8H10V14Z" fill="white"/>
-                            </svg>
-                            <span class="text-xl font-bold text-[var(--text-primary)] font-cairo">
-                                {{ $channelName }}
-                            </span>
-                        </span>
-                    @endif
+                    <x-portal::logo class="h-8 w-auto" :alt="$channelName" :fallback-text="true" />
                 </a>
 
                 @if ($customBio)

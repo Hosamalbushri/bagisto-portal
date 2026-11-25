@@ -114,10 +114,10 @@
 
         <!-- Main Body Grid -->
         <div class="mt-4 flex gap-4 max-xl:flex-wrap">
-            <!-- Left Container: Accordion Sections (Closed by default) -->
+            <!-- Left Container: Accordion Sections -->
             <div class="flex flex-1 flex-col gap-4 max-xl:flex-auto">
-                <!-- 1. Header Navigation Slots Accordion (Placed First) -->
-                <x-admin::accordion :is-active="false">
+                <!-- 1. Header Navigation Slots Accordion -->
+                <x-admin::accordion :is-active="true">
                     <x-slot:header class="p-4">
                         <div class="flex items-center gap-2">
                             <p class="text-base font-semibold text-gray-800 dark:text-white">
@@ -216,300 +216,6 @@
                         @endforelse
                     </x-slot:content>
                 </x-admin::accordion>
-
-                <!-- 2. Announcement Bar Accordion -->
-                <x-admin::accordion :is-active="false">
-                    <x-slot:header class="p-4">
-                        <p class="text-base font-semibold text-gray-800 dark:text-white">
-                            @lang('portal::app.admin.navigation.announcement.title')
-                        </p>
-                    </x-slot>
-
-                    <x-slot:content class="p-5 pt-0 space-y-4">
-                        <div class="flex items-center justify-between border-b pb-3 dark:border-gray-800">
-                            <span class="text-xs font-medium text-gray-700 dark:text-gray-300">
-                                @lang('portal::app.admin.navigation.announcement.status')
-                            </span>
-
-                            <input type="hidden" name="header_settings[announcement][status]" value="0" />
-                            <x-admin::form.control-group.control
-                                type="switch"
-                                id="header_announcement_status"
-                                name="header_settings[announcement][status]"
-                                value="1"
-                                :checked="(bool) data_get($headerSettings, 'announcement.status', false)"
-                            />
-                        </div>
-
-                        <x-admin::form.control-group class="!mb-0">
-                            <x-admin::form.control-group.label>
-                                @lang('portal::app.admin.navigation.announcement.text')
-                                <span class="rounded border border-gray-200 bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300" v-pre>
-                                    {{ $currentLocale->name }}
-                                </span>
-                            </x-admin::form.control-group.label>
-
-                            <x-admin::form.control-group.control
-                                type="text"
-                                id="header_announcement_text"
-                                name="header_settings[announcement][text]"
-                                :value="data_get($headerSettings, 'announcement.text', '')"
-                                :placeholder="trans('portal::app.admin.navigation.announcement.text-placeholder')"
-                            />
-                        </x-admin::form.control-group>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                            <x-admin::form.control-group class="md:col-span-2 !mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.announcement.link')
-                                </x-admin::form.control-group.label>
-
-                                <x-admin::form.control-group.control
-                                    type="text"
-                                    id="header_announcement_link"
-                                    name="header_settings[announcement][link]"
-                                    :value="data_get($headerSettings, 'announcement.link', '')"
-                                    :placeholder="trans('portal::app.admin.navigation.announcement.link-placeholder')"
-                                />
-                            </x-admin::form.control-group>
-
-                            <div class="grid grid-cols-2 gap-3">
-                                <x-admin::form.control-group class="!mb-0">
-                                    <x-admin::form.control-group.label class="text-xs">
-                                        @lang('portal::app.admin.navigation.announcement.bg-color')
-                                    </x-admin::form.control-group.label>
-
-                                    <div class="flex items-center gap-2">
-                                        <input
-                                            type="color"
-                                            name="header_settings[announcement][bg_color]"
-                                            id="header_announcement_bg_color"
-                                            value="{{ data_get($headerSettings, 'announcement.bg_color', '#1e293b') }}"
-                                            class="h-9 w-full cursor-pointer rounded border border-gray-200 bg-white p-1 dark:border-gray-700 dark:bg-gray-800"
-                                        />
-                                    </div>
-                                </x-admin::form.control-group>
-
-                                <x-admin::form.control-group class="!mb-0">
-                                    <x-admin::form.control-group.label class="text-xs">
-                                        @lang('portal::app.admin.navigation.announcement.text-color')
-                                    </x-admin::form.control-group.label>
-
-                                    <div class="flex items-center gap-2">
-                                        <input
-                                            type="color"
-                                            name="header_settings[announcement][text_color]"
-                                            id="header_announcement_text_color"
-                                            value="{{ data_get($headerSettings, 'announcement.text_color', '#ffffff') }}"
-                                            class="h-9 w-full cursor-pointer rounded border border-gray-200 bg-white p-1 dark:border-gray-700 dark:bg-gray-800"
-                                        />
-                                    </div>
-                                </x-admin::form.control-group>
-                            </div>
-                        </div>
-                    </x-slot>
-                </x-admin::accordion>
-
-                <!-- 3. Header Controls Accordion -->
-                <x-admin::accordion :is-active="false">
-                    <x-slot:header class="p-4">
-                        <p class="text-base font-semibold text-gray-800 dark:text-white">
-                            @lang('portal::app.admin.navigation.header-controls.title')
-                        </p>
-                    </x-slot>
-
-                    <x-slot:content class="p-5 pt-0">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Sticky Header -->
-                            <div class="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700">
-                                <div class="pe-4">
-                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
-                                        @lang('portal::app.admin.navigation.header-controls.sticky')
-                                    </p>
-                                    <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-                                        @lang('portal::app.admin.navigation.header-controls.sticky-desc')
-                                    </p>
-                                </div>
-
-                                <input type="hidden" name="header_settings[controls][sticky]" value="0" />
-                                <x-admin::form.control-group.control
-                                    type="switch"
-                                    id="header_control_sticky"
-                                    name="header_settings[controls][sticky]"
-                                    value="1"
-                                    :checked="(bool) data_get($headerSettings, 'controls.sticky', true)"
-                                />
-                            </div>
-
-                            <!-- Dark Mode Switcher -->
-                            <div class="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700">
-                                <div class="pe-4">
-                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
-                                        @lang('portal::app.admin.navigation.header-controls.show-dark-mode')
-                                    </p>
-                                    <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-                                        @lang('portal::app.admin.navigation.header-controls.show-dark-mode-desc')
-                                    </p>
-                                </div>
-
-                                <input type="hidden" name="header_settings[controls][show_dark_mode]" value="0" />
-                                <x-admin::form.control-group.control
-                                    type="switch"
-                                    id="header_control_dark_mode"
-                                    name="header_settings[controls][show_dark_mode]"
-                                    value="1"
-                                    :checked="(bool) data_get($headerSettings, 'controls.show_dark_mode', true)"
-                                />
-                            </div>
-
-                            <!-- Locales Switcher -->
-                            <div class="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700">
-                                <div class="pe-4">
-                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
-                                        @lang('portal::app.admin.navigation.header-controls.show-locales')
-                                    </p>
-                                    <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-                                        @lang('portal::app.admin.navigation.header-controls.show-locales-desc')
-                                    </p>
-                                </div>
-
-                                <input type="hidden" name="header_settings[controls][show_locales]" value="0" />
-                                <x-admin::form.control-group.control
-                                    type="switch"
-                                    id="header_control_locales"
-                                    name="header_settings[controls][show_locales]"
-                                    value="1"
-                                    :checked="(bool) data_get($headerSettings, 'controls.show_locales', true)"
-                                />
-                            </div>
-
-                            <!-- Search Field -->
-                            <div class="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700">
-                                <div class="pe-4">
-                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
-                                        @lang('portal::app.admin.navigation.header-controls.show-search')
-                                    </p>
-                                    <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-                                        @lang('portal::app.admin.navigation.header-controls.show-search-desc')
-                                    </p>
-                                </div>
-
-                                <input type="hidden" name="header_settings[controls][show_search]" value="0" />
-                                <x-admin::form.control-group.control
-                                    type="switch"
-                                    id="header_control_search"
-                                    name="header_settings[controls][show_search]"
-                                    value="1"
-                                    :checked="(bool) data_get($headerSettings, 'controls.show_search', true)"
-                                />
-                            </div>
-
-                            <!-- Auth Links -->
-                            <div class="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700">
-                                <div class="pe-4">
-                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
-                                        @lang('portal::app.admin.navigation.header-controls.show-auth')
-                                    </p>
-                                    <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-                                        @lang('portal::app.admin.navigation.header-controls.show-auth-desc')
-                                    </p>
-                                </div>
-
-                                <input type="hidden" name="header_settings[controls][show_auth]" value="0" />
-                                <x-admin::form.control-group.control
-                                    type="switch"
-                                    id="header_control_auth"
-                                    name="header_settings[controls][show_auth]"
-                                    value="1"
-                                    :checked="(bool) data_get($headerSettings, 'controls.show_auth', true)"
-                                />
-                            </div>
-                        </div>
-                    </x-slot>
-                </x-admin::accordion>
-
-                <!-- 4. Action Button (CTA) Accordion -->
-                <x-admin::accordion :is-active="false">
-                    <x-slot:header class="p-4">
-                        <p class="text-base font-semibold text-gray-800 dark:text-white">
-                            @lang('portal::app.admin.navigation.cta.title')
-                        </p>
-                    </x-slot>
-
-                    <x-slot:content class="p-5 pt-0">
-                        <div class="space-y-4">
-                            <!-- CTA Status Switch -->
-                            <div class="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700">
-                                <div class="pe-4">
-                                    <p class="text-sm font-medium text-gray-800 dark:text-white">
-                                        @lang('portal::app.admin.navigation.cta.status')
-                                    </p>
-                                    <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-                                        @lang('portal::app.admin.navigation.cta.status-desc')
-                                    </p>
-                                </div>
-
-                                <input type="hidden" name="header_settings[cta][enabled]" value="0" />
-                                <x-admin::form.control-group.control
-                                    type="switch"
-                                    id="header_cta_enabled"
-                                    name="header_settings[cta][enabled]"
-                                    value="1"
-                                    :checked="(bool) data_get($headerSettings, 'cta.enabled', false)"
-                                />
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Button Text -->
-                                <x-admin::form.control-group class="!mb-0">
-                                    <x-admin::form.control-group.label>
-                                        @lang('portal::app.admin.navigation.cta.text')
-                                    </x-admin::form.control-group.label>
-
-                                    <x-admin::form.control-group.control
-                                        type="text"
-                                        name="header_settings[cta][text]"
-                                        :value="data_get($headerSettings, 'cta.text')"
-                                        :placeholder="trans('portal::app.admin.navigation.cta.text-placeholder')"
-                                    />
-                                </x-admin::form.control-group>
-
-                                <!-- Button URL -->
-                                <x-admin::form.control-group class="!mb-0">
-                                    <x-admin::form.control-group.label>
-                                        @lang('portal::app.admin.navigation.cta.url')
-                                    </x-admin::form.control-group.label>
-
-                                    <x-admin::form.control-group.control
-                                        type="text"
-                                        name="header_settings[cta][url]"
-                                        :value="data_get($headerSettings, 'cta.url')"
-                                        :placeholder="trans('portal::app.admin.navigation.cta.url-placeholder')"
-                                    />
-                                </x-admin::form.control-group>
-                            </div>
-
-                            <!-- Target Window -->
-                            <x-admin::form.control-group class="!mb-0">
-                                <x-admin::form.control-group.label>
-                                    @lang('portal::app.admin.navigation.cta.target')
-                                </x-admin::form.control-group.label>
-
-                                <select
-                                    name="header_settings[cta][target]"
-                                    class="custom-select w-full rounded border border-gray-200 px-3 py-2 text-sm text-gray-800 transition-colors focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                                >
-                                    <option value="_self" @selected(data_get($headerSettings, 'cta.target', '_self') === '_self')>
-                                        @lang('portal::app.admin.navigation.cta.target-self')
-                                    </option>
-                                    <option value="_blank" @selected(data_get($headerSettings, 'cta.target') === '_blank')>
-                                        @lang('portal::app.admin.navigation.cta.target-blank')
-                                    </option>
-                                </select>
-                            </x-admin::form.control-group>
-                        </div>
-                    </x-slot>
-                </x-admin::accordion>
             </div>
 
             <!-- Right Container: Scope Info Card (Standard Card, NOT Accordion) -->
@@ -558,6 +264,16 @@
                     </div>
 
                     <div class="mt-5 space-y-2.5">
+                        @if (Route::has('admin.configuration.index'))
+                            <a
+                                href="{{ route('admin.configuration.index', ['portal', 'header']) }}"
+                                class="primary-button flex w-full items-center justify-center gap-1.5 py-2.5 text-xs font-semibold"
+                            >
+                                <span class="icon-settings text-base"></span>
+                                <span>@lang('portal::app.admin.navigation.open-settings-btn')</span>
+                            </a>
+                        @endif
+
                         <a
                             href="{{ route('admin.portal.navigation.footer', ['channel' => $currentChannel->code, 'locale' => $currentLocale->code]) }}"
                             class="secondary-button flex w-full items-center justify-center gap-1.5 py-2.5 text-xs font-semibold"
