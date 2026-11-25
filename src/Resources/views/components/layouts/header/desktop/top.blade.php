@@ -112,7 +112,7 @@
                                     ? core()->getCurrentLocale()->logo_url
                                     : portal_asset('images/default-language.svg', bagisto_asset('images/default-language.svg'))
                                 }}"
-                            class="h-[16px] w-[24px] object-cover rounded-sm shadow-sm transition-all {{ $isDefaultLogo ? 'portal-default-lang-icon dark:invert' : '' }}"
+                            class="h-[16px] w-[24px] object-cover rounded-sm shadow-sm transition-all {{ $isDefaultLogo ? 'dark:invert' : '' }}"
                             alt="@lang('portal::app.components.layouts.header.desktop.top.default-locale')"
                             width="24"
                             height="16"
@@ -144,7 +144,7 @@
                                     src="{{ ! empty($locale->logo_url) ? $locale->logo_url : portal_asset('images/default-language.svg', bagisto_asset('images/default-language.svg')) }}"
                                     width="24"
                                     height="16"
-                                    class="h-[16px] w-[24px] object-cover rounded-sm shadow-sm transition-all {{ $isLocaleDefaultLogo ? 'portal-default-lang-icon dark:invert' : '' }}"
+                                    class="h-[16px] w-[24px] object-cover rounded-sm shadow-sm transition-all {{ $isLocaleDefaultLogo ? 'dark:invert' : '' }}"
                                     alt="{{ $locale->name }}"
                                 />
 

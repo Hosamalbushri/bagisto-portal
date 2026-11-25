@@ -15,25 +15,11 @@
             :class="itemClasses[flash.type]"
         >
             <div class="flex items-center gap-3">
-                <!-- Success Icon -->
-                <svg v-if="flash.type === 'success'" class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-
-                <!-- Error Icon -->
-                <svg v-else-if="flash.type === 'error'" class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-
-                <!-- Warning Icon -->
-                <svg v-else-if="flash.type === 'warning'" class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-
-                <!-- Info Icon -->
-                <svg v-else class="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <span
+                    class="text-2xl shrink-0"
+                    :class="iconClasses[flash.type]"
+                    aria-hidden="true"
+                ></span>
 
                 <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
                     @{{ flash.message }}
@@ -46,9 +32,7 @@
                 @click="remove"
                 aria-label="Close"
             >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <span class="icon-cancel text-base cursor-pointer" aria-hidden="true"></span>
             </button>
         </div>
     </script>
@@ -67,6 +51,13 @@
                             error: 'bg-red-50 dark:bg-red-950/80 border-red-200 dark:border-red-800 text-red-900',
                             warning: 'bg-amber-50 dark:bg-amber-950/80 border-amber-200 dark:border-amber-800 text-amber-900',
                             info: 'bg-blue-50 dark:bg-blue-950/80 border-blue-200 dark:border-blue-800 text-blue-900',
+                        },
+
+                        iconClasses: {
+                            success: 'icon-toast-done text-emerald-600 dark:text-emerald-400',
+                            error: 'icon-toast-error text-red-600 dark:text-red-400',
+                            warning: 'icon-toast-exclamation-mark text-amber-600 dark:text-amber-400',
+                            info: 'icon-toast-info text-blue-600 dark:text-blue-400',
                         },
                     };
                 },

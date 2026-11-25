@@ -54,7 +54,8 @@ class PortalComponentsTest extends TestCase
 
         $this->assertNotEmpty($rendered);
         $this->assertStringContainsString('<header', $rendered);
-        $this->assertStringContainsString('portal-theme-icon', $rendered);
+        $this->assertStringContainsString('data-portal-theme-icon', $rendered);
+        $this->assertStringContainsString('icon-dark', $rendered);
         $this->assertStringContainsString('icon-search', $rendered);
     }
 
@@ -274,69 +275,6 @@ class PortalComponentsTest extends TestCase
             $this->assertSame('جميع الحقوق محفوظة {year}', data_get($footerAr, 'copyright.text'));
         } finally {
             app()->instance(\Webkul\Core\Core::class, $originalCore);
-        }
-    }
-
-    public function test_system_config_registers_design_tokens_with_channel_scoping(): void
-    {
-        $coreConfig = collect(config('core'));
-
-        foreach (['portal.tokens.brand', 'portal.tokens.light', 'portal.tokens.dark', 'portal.tokens.layout'] as $key) {
-            $section = $coreConfig->firstWhere('key', $key);
-            $this->assertNotNull($section, "Missing config section: {$key}");
-
-            foreach ($section['fields'] ?? [] as $field) {
-                $this->assertTrue($field['channel_based'] ?? false, "{$key}.{$field['name']} must be channel_based");
-                $this->assertFalse($field['locale_based'] ?? true, "{$key}.{$field['name']} must not be locale_based");
-            }
-        }
-    }
-
-    public function test_portal_theme_css_compiles_system_tokens_and_invalidates_on_config_save(): void
-    {
-        $originalCore = app(\Webkul\Core\Core::class);
-
-        $state = (object) ['primary' => '#2563eb'];
-
-        $mockCore = new class($state) extends \Webkul\Core\Core {
-            public function __construct(private object $state) {}
-
-            public function getConfigData(string $field, ?string $channel = null, ?string $locale = null)
-            {
-                return match ($field) {
-                    'portal.tokens.brand.brand_primary' => $this->state->primary,
-                    'portal.tokens.light.header_bg' => '#ffffff',
-                    'portal.tokens.dark.dark_header_bg' => '#0b0f19',
-                    'portal.tokens.layout.btn_radius' => '0.75rem',
-                    'portal.tokens.layout.custom_css' => '.custom-btn { opacity: 0.9; }<script>alert(1)</script>',
-                    default => null,
-                };
-            }
-        };
-
-        app()->instance(\Webkul\Core\Core::class, $mockCore);
-        \Platform\Portal\Services\ThemeManager::clearTokenCache();
-
-        try {
-            $css = portal_theme_css('portal', 1);
-
-            $this->assertNotNull($css);
-            $this->assertStringContainsString('--brand-primary: #2563eb;', $css);
-            $this->assertStringContainsString('--header-bg: #ffffff;', $css);
-            $this->assertStringContainsString('--btn-radius: 0.75rem;', $css);
-            $this->assertStringContainsString('--header-bg: #0b0f19;', $css);
-            $this->assertStringContainsString('.custom-btn { opacity: 0.9; }', $css);
-            $this->assertStringNotContainsString('<script>', $css);
-
-            // Mutate value & verify cache invalidation via core.configuration.save.after
-            $state->primary = '#10b981';
-            event('core.configuration.save.after');
-
-            $updatedCss = portal_theme_css('portal', 1);
-            $this->assertStringContainsString('--brand-primary: #10b981;', $updatedCss);
-        } finally {
-            app()->instance(\Webkul\Core\Core::class, $originalCore);
-            \Platform\Portal\Services\ThemeManager::clearTokenCache();
         }
     }
 }

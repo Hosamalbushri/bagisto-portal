@@ -136,7 +136,7 @@
                 aria-label="@lang('portal::app.components.layouts.header.mobile.theme-toggle')"
                 title="@lang('portal::app.components.layouts.header.mobile.theme-toggle')"
             >
-                <span class="portal-theme-icon {{ in_array(request()->cookie('portal_dark_mode'), ['1', 'dark']) ? 'icon-light' : 'icon-dark' }} text-xl"></span>
+                <span data-portal-theme-icon class="{{ in_array(request()->cookie('portal_dark_mode'), ['1', 'dark']) ? 'icon-light text-amber-400' : 'icon-dark' }} text-xl"></span>
             </button>
         @endif
 

@@ -17,53 +17,16 @@
 
 {!! view_render_event('bagisto.portal.layout.header.after') !!}
 
-<style>
-    .portal-theme-icon {
-        display: inline-block;
-        line-height: 1 !important;
-        speak: never;
-        font-style: normal;
-        font-weight: normal;
-        font-variant: normal;
-        text-transform: none;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        transition: color 0.2s ease, transform 0.2s ease;
-    }
-
-    /* Light Mode: Moon icon is cool slate */
-    html:not(.dark) .portal-theme-icon {
-        color: #475569 !important;
-    }
-    html:not(.dark) button:hover .portal-theme-icon {
-        color: #0f172a !important;
-    }
-    html:not(.dark) .portal-theme-icon:before {
-        content: "\e949" !important;
-        font-family: "bagisto-admin" !important;
-    }
-
-    /* Dark Mode: Sun icon is vibrant warm amber / gold */
-    html.dark .portal-theme-icon {
-        color: #f59e0b !important;
-    }
-    html.dark button:hover .portal-theme-icon {
-        color: #fbbf24 !important;
-    }
-    html.dark .portal-theme-icon:before {
-        content: "\e947" !important;
-        font-family: "bagisto-admin" !important;
-    }
-
-    /* Language icon: invert default black SVG in dark mode so it matches theme */
-    html.dark .portal-default-lang-icon,
-    html.dark img[src*="default-language"] {
-        filter: invert(1) brightness(1.2);
-    }
-</style>
-
 @pushOnce('scripts')
     <script>
+        function syncPortalThemeIcons(isDark) {
+            document.querySelectorAll('[data-portal-theme-icon]').forEach(function(icon) {
+                icon.classList.toggle('icon-light', isDark);
+                icon.classList.toggle('icon-dark', ! isDark);
+                icon.classList.toggle('text-amber-400', isDark);
+            });
+        }
+
         function togglePortalDarkMode() {
             const isDark = document.documentElement.classList.toggle('dark');
             const val = isDark ? '1' : '0';
@@ -74,36 +37,19 @@
                 // Ignore storage restrictions
             }
 
-            document.querySelectorAll('.portal-theme-icon').forEach(function(icon) {
-                if (isDark) {
-                    icon.classList.remove('icon-dark');
-                    icon.classList.add('icon-light');
-                } else {
-                    icon.classList.remove('icon-light');
-                    icon.classList.add('icon-dark');
-                }
-            });
+            syncPortalThemeIcons(isDark);
 
             window.dispatchEvent(new CustomEvent('portal:theme-changed', { detail: { isDark: isDark } }));
         }
 
         (function() {
-            function syncThemeIcons() {
-                const isDark = document.documentElement.classList.contains('dark');
-                document.querySelectorAll('.portal-theme-icon').forEach(function(icon) {
-                    if (isDark) {
-                        icon.classList.remove('icon-dark');
-                        icon.classList.add('icon-light');
-                    } else {
-                        icon.classList.remove('icon-light');
-                        icon.classList.add('icon-dark');
-                    }
-                });
-            }
+            const init = function() {
+                syncPortalThemeIcons(document.documentElement.classList.contains('dark'));
+            };
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', syncThemeIcons);
+                document.addEventListener('DOMContentLoaded', init);
             } else {
-                syncThemeIcons();
+                init();
             }
         })();
     </script>

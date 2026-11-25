@@ -262,48 +262,14 @@ img.lazy {
         content: "\e949";
     }
 
-    .portal-theme-icon {
-        display: inline-block;
-        line-height: 1 !important;
-        speak: never;
-        font-style: normal;
-        font-weight: normal;
-        font-variant: normal;
-        text-transform: none;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        transition: color 0.2s ease, transform 0.2s ease;
-    }
-
-    html:not(.dark) .portal-theme-icon {
-        color: #475569 !important;
-    }
-
-    html:not(.dark) button:hover .portal-theme-icon {
-        color: #0f172a !important;
-    }
-
-    html.dark .portal-theme-icon {
-        color: #f59e0b !important;
-    }
-
-    html.dark button:hover .portal-theme-icon {
-        color: #fbbf24 !important;
-    }
-
-    html.dark .portal-theme-icon:before {
-        content: "\e947" !important;
+    .icon-view:before {
         font-family: "bagisto-admin" !important;
+        content: "\e93d";
     }
 
-    html:not(.dark) .portal-theme-icon:before {
-        content: "\e949" !important;
+    .icon-view-close:before {
         font-family: "bagisto-admin" !important;
-    }
-
-    html.dark .portal-default-lang-icon,
-    html.dark img[src*="default-language"] {
-        filter: invert(1) brightness(1.2);
+        content: "\e946";
     }
 
     html.dark .portal-logo-light {

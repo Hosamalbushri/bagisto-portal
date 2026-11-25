@@ -44,9 +44,7 @@
                         </span>
 
                         <span class="w-5 h-5 rounded-md flex items-center justify-center bg-zinc-100/80 dark:bg-zinc-800/80 text-zinc-400 group-open/menu-accordion:rotate-180 transition-transform duration-200">
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                            </svg>
+                            <span class="icon-arrow-down text-sm"></span>
                         </span>
                     </div>
                 </summary>
@@ -126,9 +124,7 @@
 
                 @if ($hasChildren)
                     <span class="w-4 h-4 rounded-md flex items-center justify-center {{ $active ? 'text-[var(--brand-primary)]' : 'text-zinc-400' }} group-hover/nav:text-[var(--brand-primary)] group-hover/nav:rotate-180 transition-all duration-300 ease-out">
-                        <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                        </svg>
+                        <span class="icon-arrow-down text-sm"></span>
                     </span>
                 @endif
 
@@ -185,9 +181,7 @@
 
                 @if ($hasChildren)
                     <span class="w-6 h-6 rounded-lg {{ $active ? 'bg-[var(--brand-primary)] text-white' : 'bg-zinc-100/80 dark:bg-zinc-800/80 text-zinc-400 group-hover/item:bg-[var(--brand-primary)] group-hover/item:text-white group-hover/item:shadow-xs' }} flex items-center justify-center transition-all shrink-0">
-                        <svg class="w-3.5 h-3.5 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                        </svg>
+                        <span class="icon-arrow-right rtl:icon-arrow-left text-sm"></span>
                     </span>
                 @endif
             </a>

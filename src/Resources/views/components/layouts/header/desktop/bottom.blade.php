@@ -138,7 +138,7 @@
                     aria-label="@lang('portal::app.components.layouts.header.desktop.bottom.theme-toggle')"
                     title="@lang('portal::app.components.layouts.header.desktop.bottom.theme-toggle')"
                 >
-                    <span class="portal-theme-icon {{ in_array(request()->cookie('portal_dark_mode'), ['1', 'dark']) ? 'icon-light' : 'icon-dark' }} text-xl"></span>
+                    <span data-portal-theme-icon class="{{ in_array(request()->cookie('portal_dark_mode'), ['1', 'dark']) ? 'icon-light text-amber-400' : 'icon-dark' }} text-xl"></span>
                 </button>
             @endif
 
@@ -257,17 +257,11 @@
                         >
                             <span v-text="category.name"></span>
 
-                            <svg
+                            <span
                                 v-if="category.children && category.children.length"
-                                class="w-3.5 h-3.5 text-slate-400 transition-transform duration-150"
+                                class="icon-arrow-down text-lg text-slate-400 transition-transform duration-150"
                                 :class="{ 'rotate-180': openCategoryId === category.id }"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                stroke-width="1.75"
-                            >
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                            </svg>
+                            ></span>
                         </a>
                     </div>
 

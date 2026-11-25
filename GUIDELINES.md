@@ -213,7 +213,7 @@ Bagisto utilizes Proxy models to allow downstream packages to override models wi
      - Light/Dark logo switching relies on `.portal-logo-light` and `.portal-logo-dark` CSS rules in `layouts/index.blade.php` and `app.css` — never duplicate custom JS logo-swapping scripts.
 3. **CSS Font Icons & Header Architecture**:
    - **FORBIDDEN**: Writing inline `<svg>` elements for standard UI icons when Bagisto/Portal CSS icon classes exist in `src/Resources/assets/css/app.css` (e.g., `.icon-search`, `.icon-users`, `.icon-dark`, `.icon-light`, `.icon-arrow-down`, `.icon-settings`).
-   - **Theme Toggle**: Always use a single `<span class="portal-theme-icon ..."></span>` driven by `.icon-dark` / `.icon-light` CSS rules — never render two separate icon elements side by side.
+   - **Theme Toggle**: Always use a single `<span data-portal-theme-icon class="icon-dark ..."></span>` toggling between Bagisto's native `.icon-dark` and `.icon-light` classes — never render two separate icon elements or custom CSS icon definitions.
    - **Header & Topbar Layout**: Keep `desktop.top` outside `<header class="sticky ...">` so the currency/locale switcher bar scrolls away naturally, and keep `<header>` solid opaque (`bg-white dark:bg-[#0b0f19]`) without transparency/blur.
 
 ---
