@@ -437,4 +437,251 @@ return [
             ],
         ],
     ],
+
+    /**
+     * Portal Design Tokens Group.
+     */
+    [
+        'key' => 'portal.tokens',
+        'name' => 'portal::app.admin.configuration.portal.tokens.title',
+        'info' => 'portal::app.admin.configuration.portal.tokens.info',
+        'icon' => 'settings/theme.svg',
+        'sort' => 5,
+    ],
+
+    /**
+     * Portal Brand Colors Section.
+     */
+    [
+        'key' => 'portal.tokens.brand',
+        'name' => 'portal::app.admin.configuration.portal.tokens.brand.title',
+        'info' => 'portal::app.admin.configuration.portal.tokens.brand.info',
+        'sort' => 1,
+        'fields' => [
+            [
+                'name' => 'brand_primary',
+                'title' => 'portal::app.admin.configuration.portal.tokens.brand.primary',
+                'info' => 'portal::app.admin.configuration.portal.tokens.brand.primary-info',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#1c66f6',
+            ],
+            [
+                'name' => 'brand_accent',
+                'title' => 'portal::app.admin.configuration.portal.tokens.brand.accent',
+                'info' => 'portal::app.admin.configuration.portal.tokens.brand.accent-info',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#fe8312',
+            ],
+        ],
+    ],
+
+    /**
+     * Portal Light Mode Surface & Text Tokens Section.
+     */
+    [
+        'key' => 'portal.tokens.light',
+        'name' => 'portal::app.admin.configuration.portal.tokens.light.title',
+        'info' => 'portal::app.admin.configuration.portal.tokens.light.info',
+        'sort' => 2,
+        'fields' => [
+            [
+                'name' => 'bg_app',
+                'title' => 'portal::app.admin.configuration.portal.tokens.light.bg-app',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#f8fafc',
+            ],
+            [
+                'name' => 'bg_surface',
+                'title' => 'portal::app.admin.configuration.portal.tokens.light.bg-surface',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#ffffff',
+            ],
+            [
+                'name' => 'bg_surface_elevated',
+                'title' => 'portal::app.admin.configuration.portal.tokens.light.bg-surface-elevated',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#f1f5f9',
+            ],
+            [
+                'name' => 'text_primary',
+                'title' => 'portal::app.admin.configuration.portal.tokens.light.text-primary',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#090d16',
+            ],
+            [
+                'name' => 'text_secondary',
+                'title' => 'portal::app.admin.configuration.portal.tokens.light.text-secondary',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#475569',
+            ],
+            [
+                'name' => 'header_bg',
+                'title' => 'portal::app.admin.configuration.portal.tokens.light.header-bg',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#ffffff',
+            ],
+            [
+                'name' => 'footer_bg',
+                'title' => 'portal::app.admin.configuration.portal.tokens.light.footer-bg',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#0f172a',
+            ],
+            [
+                'name' => 'footer_text',
+                'title' => 'portal::app.admin.configuration.portal.tokens.light.footer-text',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#94a3b8',
+            ],
+        ],
+    ],
+
+    /**
+     * Portal Dark Mode Surface & Text Tokens Section.
+     */
+    [
+        'key' => 'portal.tokens.dark',
+        'name' => 'portal::app.admin.configuration.portal.tokens.dark.title',
+        'info' => 'portal::app.admin.configuration.portal.tokens.dark.info',
+        'sort' => 3,
+        'fields' => [
+            [
+                'name' => 'dark_bg_app',
+                'title' => 'portal::app.admin.configuration.portal.tokens.dark.bg-app',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#080b11',
+            ],
+            [
+                'name' => 'dark_bg_surface',
+                'title' => 'portal::app.admin.configuration.portal.tokens.dark.bg-surface',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#0f141f',
+            ],
+            [
+                'name' => 'dark_bg_surface_elevated',
+                'title' => 'portal::app.admin.configuration.portal.tokens.dark.bg-surface-elevated',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#161e2e',
+            ],
+            [
+                'name' => 'dark_text_primary',
+                'title' => 'portal::app.admin.configuration.portal.tokens.dark.text-primary',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#f8fafc',
+            ],
+            [
+                'name' => 'dark_text_secondary',
+                'title' => 'portal::app.admin.configuration.portal.tokens.dark.text-secondary',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#94a3b8',
+            ],
+            [
+                'name' => 'dark_header_bg',
+                'title' => 'portal::app.admin.configuration.portal.tokens.dark.header-bg',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#0b0f19',
+            ],
+            [
+                'name' => 'dark_footer_bg',
+                'title' => 'portal::app.admin.configuration.portal.tokens.dark.footer-bg',
+                'type' => 'color',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '#080b11',
+            ],
+        ],
+    ],
+
+    /**
+     * Portal Layout Dimensions, Radius & Custom CSS Section.
+     */
+    [
+        'key' => 'portal.tokens.layout',
+        'name' => 'portal::app.admin.configuration.portal.tokens.layout.title',
+        'info' => 'portal::app.admin.configuration.portal.tokens.layout.info',
+        'sort' => 4,
+        'fields' => [
+            [
+                'name' => 'btn_radius',
+                'title' => 'portal::app.admin.configuration.portal.tokens.layout.btn-radius',
+                'type' => 'select',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '0.5rem',
+                'options' => [
+                    ['title' => 'portal::app.admin.configuration.portal.tokens.layout.radius-none', 'value' => '0rem'],
+                    ['title' => 'portal::app.admin.configuration.portal.tokens.layout.radius-sm', 'value' => '0.375rem'],
+                    ['title' => 'portal::app.admin.configuration.portal.tokens.layout.radius-md', 'value' => '0.5rem'],
+                    ['title' => 'portal::app.admin.configuration.portal.tokens.layout.radius-lg', 'value' => '0.75rem'],
+                    ['title' => 'portal::app.admin.configuration.portal.tokens.layout.radius-pill', 'value' => '9999px'],
+                ],
+            ],
+            [
+                'name' => 'card_radius',
+                'title' => 'portal::app.admin.configuration.portal.tokens.layout.card-radius',
+                'type' => 'select',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '1rem',
+                'options' => [
+                    ['title' => 'portal::app.admin.configuration.portal.tokens.layout.radius-none', 'value' => '0rem'],
+                    ['title' => 'portal::app.admin.configuration.portal.tokens.layout.radius-md', 'value' => '0.5rem'],
+                    ['title' => 'portal::app.admin.configuration.portal.tokens.layout.radius-xl', 'value' => '1rem'],
+                    ['title' => 'portal::app.admin.configuration.portal.tokens.layout.radius-2xl', 'value' => '1.5rem'],
+                ],
+            ],
+            [
+                'name' => 'container_max_width',
+                'title' => 'portal::app.admin.configuration.portal.tokens.layout.container-max-width',
+                'type' => 'select',
+                'channel_based' => true,
+                'locale_based' => false,
+                'default' => '1280px',
+                'options' => [
+                    ['title' => '1140px', 'value' => '1140px'],
+                    ['title' => '1280px', 'value' => '1280px'],
+                    ['title' => '1440px', 'value' => '1440px'],
+                ],
+            ],
+            [
+                'name' => 'custom_css',
+                'title' => 'portal::app.admin.configuration.portal.tokens.layout.custom-css',
+                'info' => 'portal::app.admin.configuration.portal.tokens.layout.custom-css-info',
+                'type' => 'textarea',
+                'channel_based' => true,
+                'locale_based' => false,
+            ],
+        ],
+    ],
 ];

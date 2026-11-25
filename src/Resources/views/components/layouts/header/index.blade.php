@@ -9,7 +9,7 @@
     <x-portal::layouts.header.desktop.top />
 </div>
 
-<header class="{{ $isSticky ? 'sticky top-0 z-40' : 'relative z-40' }} bg-white dark:bg-[#0b0f19] border-b border-[var(--border-subtle,#e2e8f0)] dark:border-slate-800 transition-all duration-200">
+<header class="{{ $isSticky ? 'sticky top-0 z-40' : 'relative z-40' }} bg-white dark:bg-[#0b0f19] border-b border-[var(--border-subtle,#e2e8f0)] dark:border-slate-800 transition-all duration-200" style="background-color: var(--header-bg);">
     <x-portal::layouts.header.desktop />
 
     <x-portal::layouts.header.mobile />

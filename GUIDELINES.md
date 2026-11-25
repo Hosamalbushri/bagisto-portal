@@ -194,21 +194,42 @@ Bagisto utilizes Proxy models to allow downstream packages to override models wi
 3. **Paginator & Middleware Scoping**:
    - Never globally override Laravel's `Paginator::defaultView` or modify the host application's `shop` middleware group. Always encapsulate middleware inside the dedicated `portal` group.
 
+### 4.6 Native Configuration (`system.php`), Logos & UI Icon Rules (Mandatory)
+> [!CAUTION]
+> **NEVER build custom settings controllers, custom database columns/tables, custom file uploaders, or external UI scripts when Bagisto's native configuration and Portal's built-in helpers/components already exist.**
+
+1. **System Configuration (`src/Config/system.php`) for All Site Settings**:
+   - **REQUIRED**: Every configurable site setting (toggles, announcement bar, CTA button, contact info, social links, copyright, brand logos, feature flags) **MUST** be declared in `src/Config/system.php` under `portal.*` (`portal.general`, `portal.auth`, `portal.header`, `portal.footer`) using Bagisto's native field types (`boolean`, `text`, `textarea`, `select`, `color`, `image`, `file`).
+   - **Scoping Discipline**: Always set `'channel_based'` and `'locale_based'` accurately per field:
+     - Shared settings (booleans, URLs, colors, phone, email, social handles): `'channel_based' => true, 'locale_based' => false`.
+     - Translatable / localized assets & copy (announcement text, CTA text, bio, address, copyright, localized light/dark logos): `'channel_based' => true, 'locale_based' => true`.
+   - **Navigation Customizer Separation**: `admin/portal/navigation/header` and `footer` (`NavigationCustomizeController`) are **strictly for Menu Slot Assignments (`slots`)**. Do NOT re-add configuration setting forms or accordions to `navigation/header.blade.php` or `navigation/footer.blade.php`.
+   - **Reading Settings**: Always read via `core()->getConfigData('portal.*')` or `portal_layout_settings('header' | 'footer')` (which automatically merges `system.php` values via `portal_merge_system_settings()` with default-locale fallback and legacy compatibility).
+2. **Dual-Mode & Localized Site Logo Standard**:
+   - **FORBIDDEN**: Hardcoding `core()->getCurrentChannel()->logo_url`, `bagisto_asset('images/logo.svg')`, or writing manual `<img>` logo markup in Blade templates.
+   - **REQUIRED**:
+     - Always render UI logos using `<x-portal::logo ... />` (`src/Resources/views/components/logo/index.blade.php`).
+     - Always resolve programmatic logo URLs (Manifest, SEO, APIs) using `portal_logo('light' | 'dark', ?string $locale = null)`.
+     - Light/Dark logo switching relies on `.portal-logo-light` and `.portal-logo-dark` CSS rules in `layouts/index.blade.php` and `app.css` — never duplicate custom JS logo-swapping scripts.
+3. **CSS Font Icons & Header Architecture**:
+   - **FORBIDDEN**: Writing inline `<svg>` elements for standard UI icons when Bagisto/Portal CSS icon classes exist in `src/Resources/assets/css/app.css` (e.g., `.icon-search`, `.icon-users`, `.icon-dark`, `.icon-light`, `.icon-arrow-down`, `.icon-settings`).
+   - **Theme Toggle**: Always use a single `<span class="portal-theme-icon ..."></span>` driven by `.icon-dark` / `.icon-light` CSS rules — never render two separate icon elements side by side.
+   - **Header & Topbar Layout**: Keep `desktop.top` outside `<header class="sticky ...">` so the currency/locale switcher bar scrolls away naturally, and keep `<header>` solid opaque (`bg-white dark:bg-[#0b0f19]`) without transparency/blur.
+
 ---
 
 ## 5. Instructions for AI Coding Agents
 
 When working on `platform/portal`:
-1. **Strictly Refrain from Committing**:
+1. **Read Rules & Existing Primitives First**:
+   - Before writing any new feature, setting, or UI element, read `GUIDELINES.md`, `src/Config/system.php`, and `src/Helpers/helpers.php`. Reuse existing Portal/Bagisto primitives instead of inventing external code.
+2. **Strictly Refrain from Committing**:
    - NEVER execute `git commit` unless the human user explicitly commands you to do so.
-2. **Style Verification**:
-   - Run Laravel Pint after any PHP change:
-     ```bash
-     /path/to/bagisto-2.4/vendor/bin/pint /path/to/bagisto-portal/src
-     ```
-3. **Asset Compilation**:
-   - If CSS or JS is touched, always run `npm run build` in `bagisto-portal` and verify Vite compiles assets without warnings.
-4. **No E-Commerce Reintroduction**:
+3. **Verify Tests After Every Change**:
+   - Run `./vendor/bin/phpunit` in the package root and verify 100% pass rate.
+4. **Style & Asset Verification**:
+   - Run Laravel Pint after any PHP change and `npm run build` if `src/Resources/assets/` is modified.
+5. **No E-Commerce Reintroduction**:
    - Do NOT re-introduce hard dependencies on `Webkul\Product`, `Webkul\Cart`, or `Webkul\Checkout` in the core portal flow.
 
 ---

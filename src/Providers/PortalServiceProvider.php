@@ -161,6 +161,12 @@ class PortalServiceProvider extends ServiceProvider
             return "<?php echo \$__env->make('portal::components.menu-slot.index', ['id' => {$expression}], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
         });
 
+        // Listen for Bagisto configuration updates to invalidate cached design tokens & FPC
+        Event::listen('core.configuration.save.after', function () {
+            ThemeManager::clearTokenCache();
+            event('portal.tokens.updated');
+        });
+
         // Listen for Bagisto theme activations and dispatch portal domain event
         Event::listen('appearance.theme.activate.after', function ($channel) {
             $channelId = is_object($channel) ? ($channel->id ?? 0) : (int) $channel;
