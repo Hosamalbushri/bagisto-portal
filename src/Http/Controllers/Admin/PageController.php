@@ -4,6 +4,8 @@ namespace Platform\Portal\Http\Controllers\Admin;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Platform\Portal\DataGrids\PortalPageDataGrid;
 use Platform\Portal\Http\Controllers\Controller;
@@ -101,7 +103,7 @@ class PageController extends Controller
     {
         abort_unless(bouncer()->hasPermission('portal.pages.edit') || bouncer()->hasPermission('pages.edit'), 403);
 
-        $this->validate(request(), $this->getPageValidationRules());
+        $this->validate(request(), $this->getPageValidationRules($id));
 
         $locale = request('locale', core()->getRequestedLocaleCode());
         ['data' => $data, 'error' => $errorResponse] = $this->preparePagePayload($locale);
@@ -130,8 +132,17 @@ class PageController extends Controller
     /**
      * Get the common validation rules for page creation and update.
      */
-    protected function getPageValidationRules(): array
+    protected function getPageValidationRules(?int $ignoreId = null): array
     {
+        $channelId = request('channel_id');
+
+        $uniqueSlugRule = Rule::unique('portal_pages', 'slug')
+            ->where(fn ($query) => $query->where('channel_id', $channelId));
+
+        if ($ignoreId !== null) {
+            $uniqueSlugRule->ignore($ignoreId);
+        }
+
         $rules = [
             'slug' => [
                 'required',
@@ -141,6 +152,7 @@ class PageController extends Controller
                         $fail(trans('portal::app.admin.pages.url-key-home-reserved'));
                     }
                 },
+                $uniqueSlugRule,
             ],
             'channel_id' => ['required', 'exists:channels,id'],
         ];
@@ -276,6 +288,10 @@ class PageController extends Controller
             }
 
             $page->save();
+
+            Event::dispatch('portal.page.updated', $page);
+
+            \Illuminate\Support\Facades\Event::dispatch('portal.page.updated', $page);
         }
 
         return new JsonResponse([

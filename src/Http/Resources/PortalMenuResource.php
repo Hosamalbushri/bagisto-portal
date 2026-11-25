@@ -4,6 +4,7 @@ namespace Platform\Portal\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Platform\Portal\Services\PortalMenuTreeFilter;
 
 class PortalMenuResource extends JsonResource
 {
@@ -15,7 +16,9 @@ class PortalMenuResource extends JsonResource
     public function toArray(Request $request): array
     {
         $rootItems = $this->items
-            ? $this->items->whereNull('parent_id')->filter(fn ($i) => (bool) $i->status)->sortBy('sort_order')
+            ? app(PortalMenuTreeFilter::class)->filterTree(
+                $this->items->whereNull('parent_id')
+            )
             : collect();
 
         return [

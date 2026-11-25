@@ -32,7 +32,14 @@ class MenuController extends Controller
                 ->where('slug', $slug)
                 ->where('channel_id', $channelId)
                 ->where('status', 1)
-                ->with(['items.translations', 'items.children.translations'])
+                ->with([
+                    'items.translations',
+                    'items.page.translations',
+                    'items.children.translations',
+                    'items.children.page.translations',
+                    'items.children.children.translations',
+                    'items.children.children.page.translations',
+                ])
                 ->first();
 
             if (! $menu) {

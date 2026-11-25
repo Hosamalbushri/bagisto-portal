@@ -8,11 +8,14 @@
 ])
 
 @php
-    $children = $item->children ? $item->children->where('status', 1)->filter(fn ($c) => filled($c->getTitle())) : collect();
+    $children = $item->relationLoaded('children')
+        ? $item->children->where('status', 1)->filter(fn ($c) => filled($c->getTitle()))
+        : collect();
     $hasChildren = $children->isNotEmpty();
-    $active = $item->isActive();
+    $isNavigable = method_exists($item, 'isNavigable') ? $item->isNavigable() : true;
+    $active = $isNavigable ? $item->isActive() : $item->isActive();
     $title = $item->getTitle();
-    $url = $item->getUrl();
+    $url = $isNavigable ? $item->getUrl() : '#';
     $viewAllText = trans('portal::app.components.layouts.header.mobile.view-all', ['title' => $title]);
 
     $rootActiveClass = $activeClass ?: '!text-[var(--brand-primary)] font-bold bg-[var(--brand-primary-light,#eef2ff)] dark:bg-[var(--brand-primary)]/15 shadow-xs border border-[var(--brand-primary)]/20';
@@ -51,7 +54,7 @@
 
                 {{-- Enclosed Tree Branch Container --}}
                 <div class="mt-1.5 ms-2.5 p-2 rounded-2xl bg-zinc-50/80 dark:bg-zinc-800/40 border border-zinc-200/60 dark:border-zinc-700/50 space-y-1">
-                    @if ($url && $url !== '#')
+                    @if ($isNavigable && $url && $url !== '#')
                         <a
                             href="{{ $url }}"
                             target="{{ $item->target ?: '_self' }}"

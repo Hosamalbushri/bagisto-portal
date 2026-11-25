@@ -10,15 +10,18 @@ use Illuminate\Support\ServiceProvider;
 use Platform\Portal\Console\Commands\InstallPortalCommand;
 use Platform\Portal\Console\Commands\MakeSectionCommand;
 use Platform\Portal\Console\Commands\MakeThemeCommand;
+use Platform\Portal\Helpers\PortalCache;
 use Platform\Portal\Http\Middleware\CacheResponse;
 use Platform\Portal\Http\Middleware\CheckStorefrontStatus;
 use Platform\Portal\Http\Middleware\Currency;
 use Platform\Portal\Http\Middleware\Locale;
 use Platform\Portal\Http\Middleware\Theme;
+use Platform\Portal\Repositories\PortalMenuRepository;
 use Platform\Portal\Sections\SectionTypeRegistry;
 use Platform\Portal\Services\ExtendedThemeCatalog;
 use Platform\Portal\Services\ThemeManager;
 use Spatie\ResponseCache\ResponseCache;
+use Webkul\Core\Http\Middleware\PreventRequestsDuringMaintenance;
 use Webkul\Core\Repositories\ChannelRepository;
 use Webkul\Theme\Repositories\SectionRepository;
 use Webkul\Theme\ThemeCatalog;
@@ -40,8 +43,8 @@ class PortalServiceProvider extends ServiceProvider
 
         $this->app->alias(SectionTypeRegistry::class, 'portal.section');
 
-        $this->app->singleton(\Platform\Portal\Helpers\PortalCache::class, function () {
-            return new \Platform\Portal\Helpers\PortalCache;
+        $this->app->singleton(PortalCache::class, function () {
+            return new PortalCache;
         });
 
         $this->mergeConfigFrom(
@@ -126,7 +129,7 @@ class PortalServiceProvider extends ServiceProvider
 
         $this->app->booted(function () {
             Route::middleware(['web'])->group(__DIR__.'/../Routes/web.php');
-            Route::middleware(['web', 'portal', \Webkul\Core\Http\Middleware\PreventRequestsDuringMaintenance::class])
+            Route::middleware(['web', 'portal', PreventRequestsDuringMaintenance::class])
                 ->group(__DIR__.'/../Routes/api.php');
 
             // Seamlessly resolve missing core Bagisto named routes (e.g. admin header's "visit-shop" link)
@@ -187,8 +190,8 @@ class PortalServiceProvider extends ServiceProvider
             'portal.tokens.updated',
         ], function () {
             try {
-                if (app()->bound(\Platform\Portal\Helpers\PortalCache::class)) {
-                    app(\Platform\Portal\Helpers\PortalCache::class)->flush();
+                if (app()->bound(PortalCache::class)) {
+                    app(PortalCache::class)->flush();
                 }
             } catch (\Throwable) {
                 // Graceful fallback
@@ -200,6 +203,19 @@ class PortalServiceProvider extends ServiceProvider
                 } catch (\Throwable) {
                     // Graceful fallback
                 }
+            }
+        });
+
+        Event::listen([
+            'portal.page.created',
+            'portal.page.updated',
+            'portal.page.deleted',
+            'portal.page.published',
+        ], function () {
+            try {
+                PortalMenuRepository::clearCache(false);
+            } catch (\Throwable) {
+                // Graceful fallback
             }
         });
 

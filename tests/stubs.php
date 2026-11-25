@@ -68,15 +68,72 @@ namespace {
     if (! function_exists('bouncer')) {
         function bouncer()
         {
-            return new class
-            {
-                public static bool $allowsAll = false;
+            static $instance = null;
 
-                public function hasPermission($permission)
+            if ($instance === null) {
+                $instance = new class
                 {
-                    return self::$allowsAll || (auth()->guard('admin')->check() ?? false);
-                }
-            };
+                    public static bool $allowsAll = false;
+
+                    /**
+                     * Explicit permissions granted for the current test when user/role permissions are not attached to the user model.
+                     *
+                     * @var array<int, string>
+                     */
+                    public static array $permissions = [];
+
+                    public static function allow(array $permissions): void
+                    {
+                        self::$allowsAll = false;
+                        self::$permissions = array_values(array_unique($permissions));
+                    }
+
+                    public static function reset(): void
+                    {
+                        self::$allowsAll = false;
+                        self::$permissions = [];
+                    }
+
+                    public function hasPermission($permission)
+                    {
+                        if (self::$allowsAll) {
+                            return true;
+                        }
+
+                        if (! (auth()->guard('admin')->check() ?? false)) {
+                            return false;
+                        }
+
+                        $admin = auth()->guard('admin')->user();
+
+                        if (is_object($admin)) {
+                            $role = $admin->role ?? null;
+
+                            if (is_object($role)) {
+                                if (($role->permission_type ?? null) === 'all') {
+                                    return true;
+                                }
+
+                                if (is_array($role->permissions ?? null)) {
+                                    return in_array($permission, $role->permissions, true);
+                                }
+                            }
+
+                            if (($admin->permission_type ?? null) === 'all') {
+                                return true;
+                            }
+
+                            if (is_array($admin->permissions ?? null)) {
+                                return in_array($permission, $admin->permissions, true);
+                            }
+                        }
+
+                        return in_array($permission, self::$permissions, true);
+                    }
+                };
+            }
+
+            return $instance;
         }
     }
 }
@@ -229,12 +286,52 @@ namespace Webkul\Core\Eloquent {
                 return parent::getAttribute($key);
             }
 
+            protected array $pendingTranslations = [];
+
             public function translateOrNew($locale)
             {
-                return new class
-                {
-                    public $draft_options = null;
-                };
+                $existing = $this->translate($locale);
+
+                if ($existing) {
+                    $this->pendingTranslations[$locale] = $existing;
+
+                    return $existing;
+                }
+
+                if (isset($this->pendingTranslations[$locale])) {
+                    return $this->pendingTranslations[$locale];
+                }
+
+                $translationClass = static::class.'Translation';
+
+                if (! class_exists($translationClass)) {
+                    return new \stdClass;
+                }
+
+                $translation = new $translationClass;
+                $translation->locale = $locale;
+
+                $this->pendingTranslations[$locale] = $translation;
+
+                return $translation;
+            }
+
+            public function save(array $options = [])
+            {
+                $saved = parent::save($options);
+
+                if ($saved && ! empty($this->pendingTranslations)) {
+                    $fk = $this->translationForeignKey ?? $this->getForeignKey();
+
+                    foreach ($this->pendingTranslations as $translation) {
+                        $translation->setAttribute($fk, $this->getKey());
+                        $translation->save();
+                    }
+
+                    $this->pendingTranslations = [];
+                }
+
+                return $saved;
             }
         }
     }
@@ -613,7 +710,9 @@ namespace Webkul\DataGrid {
 }
 
 namespace Webkul\Core\Providers {
+    use Konekt\Concord\BaseModuleServiceProvider;
+
     if (! class_exists(CoreModuleServiceProvider::class)) {
-        abstract class CoreModuleServiceProvider extends \Konekt\Concord\BaseModuleServiceProvider {}
+        abstract class CoreModuleServiceProvider extends BaseModuleServiceProvider {}
     }
 }

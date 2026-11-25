@@ -22,12 +22,16 @@
             ? 'flex flex-col space-y-2.5 text-sm'
             : 'flex items-center gap-6 text-sm';
     }
+
+    $visibleRootItems = ($menuInstance && $menuInstance->rootItems)
+        ? app(\Platform\Portal\Services\PortalMenuTreeFilter::class)->filterTree($menuInstance->rootItems)
+        : collect();
 @endphp
 
-@if ($menuInstance && $menuInstance->rootItems && $menuInstance->rootItems->isNotEmpty())
+@if ($menuInstance && $visibleRootItems->isNotEmpty())
     <nav {{ $attributes->merge(['class' => 'portal-navigation ' . $class]) }} aria-label="{{ $menuInstance->name }}">
         <ul class="{{ $listClass }}">
-            @foreach ($menuInstance->rootItems as $item)
+            @foreach ($visibleRootItems as $item)
                 @if (filled($item->getTitle()))
                     <x-portal::menu.item
                         :item="$item"

@@ -10,6 +10,8 @@ use Konekt\Concord\ConcordServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use PHPUnit\Framework\TestCase as PhpUnitTestCase;
 use Platform\Portal\Providers\PortalServiceProvider;
+use Platform\Portal\Tests\Support\TestAdminAuthenticate;
+use Platform\PortalTokens\Providers\TokensServiceProvider;
 
 if (class_exists('Tests\TestCase') && ! is_subclass_of('Tests\TestCase', self::class)) {
     class_alias('Tests\TestCase', __NAMESPACE__.'\BaseTestCase');
@@ -31,7 +33,7 @@ abstract class TestCase extends BaseTestCase
             BladeHeroiconsServiceProvider::class,
             BladeIconsServiceProvider::class,
             PortalServiceProvider::class,
-            \Platform\PortalTokens\Providers\TokensServiceProvider::class,
+            TokensServiceProvider::class,
         ];
     }
 
@@ -69,9 +71,47 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        Route::get('admin/login', fn () => 'login')->name('admin.session.create');
+        if (method_exists(bouncer(), 'reset')) {
+            bouncer()::reset();
+        }
+
+        $router = $this->app['router'];
+        if (! array_key_exists('admin', $router->getMiddleware())) {
+            $router->aliasMiddleware('admin', TestAdminAuthenticate::class);
+        }
+
+        if (! Route::has('admin.session.create')) {
+            Route::get('admin/login', fn () => 'login')->name('admin.session.create');
+            $router->getRoutes()->refreshNameLookups();
+        }
+
+        $router = $this->app['router'];
+        if (! array_key_exists('admin', $router->getMiddleware())) {
+            $router->aliasMiddleware('admin', \Platform\Portal\Tests\Support\TestAdminAuthenticate::class);
+        }
+
+        if (! Route::has('admin.session.create')) {
+            Route::get('admin/login', fn () => 'login')->name('admin.session.create');
+            $router->getRoutes()->refreshNameLookups();
+        }
 
         $this->loadMigrationsFrom(__DIR__.'/../src/Database/Migrations');
+    }
+
+    /**
+     * Clean up after each test to prevent static authorization state leakage.
+     */
+    protected function tearDown(): void
+    {
+        if (method_exists(bouncer(), 'reset')) {
+            bouncer()::reset();
+        }
+
+        if ($this->app && $this->app->bound('auth')) {
+            auth()->guard('admin')->logout();
+        }
+
+        parent::tearDown();
     }
 }
 

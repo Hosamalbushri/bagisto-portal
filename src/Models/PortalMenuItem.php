@@ -99,11 +99,29 @@ class PortalMenuItem extends TranslatableModel implements PortalMenuItemContract
     }
 
     /**
+     * Determine whether this menu item has a navigable destination.
+     *
+     * Page items pointing to missing or unpublished pages are non-navigable.
+     */
+    public function isNavigable(): bool
+    {
+        if ($this->type !== 'page') {
+            return true;
+        }
+
+        return $this->page !== null && (bool) $this->page->status;
+    }
+
+    /**
      * Resolve the target URL dynamically.
      */
     public function getUrl(): string
     {
-        if ($this->type === 'page' && $this->page) {
+        if ($this->type === 'page') {
+            if (! $this->isNavigable()) {
+                return '#';
+            }
+
             return route('portal.page.show', $this->page->slug);
         }
 

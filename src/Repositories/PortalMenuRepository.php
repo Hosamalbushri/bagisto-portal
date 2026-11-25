@@ -25,7 +25,7 @@ class PortalMenuRepository extends Repository
     /**
      * Invalidate all cached menu trees.
      */
-    public static function clearCache(): void
+    public static function clearCache(bool $dispatchEvent = true): void
     {
         try {
             if (! Cache::has(self::CACHE_VERSION_KEY)) {
@@ -37,7 +37,9 @@ class PortalMenuRepository extends Repository
             Cache::put(self::CACHE_VERSION_KEY, time(), now()->addDays(30));
         }
 
-        Event::dispatch('portal.menu.updated');
+        if ($dispatchEvent) {
+            Event::dispatch('portal.menu.updated');
+        }
     }
 
     /**
@@ -74,13 +76,14 @@ class PortalMenuRepository extends Repository
     }
 
     /**
-     * Get menu by slug and channel.
+     * Get menu by slug and channel, preferring channel-specific override over global fallback.
      */
     public function findBySlug(string $slug, ?int $channelId = null): ?PortalMenuContract
     {
         return $this->model
             ->where('slug', $slug)
             ->forChannel($channelId)
+            ->orderByRaw('CASE WHEN channel_id IS NULL THEN 1 ELSE 0 END')
             ->first();
     }
 
@@ -101,6 +104,7 @@ class PortalMenuRepository extends Repository
                 ->where('slug', $slug)
                 ->forChannel($channelId)
                 ->where('status', 1)
+                ->orderByRaw('CASE WHEN channel_id IS NULL THEN 1 ELSE 0 END')
                 ->with([
                     'rootItems' => function ($query) use ($locale) {
                         $this->scopeTranslatedItems($query, $locale);
